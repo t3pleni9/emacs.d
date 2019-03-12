@@ -8,6 +8,7 @@
 (add-to-list 'package-archives
 	     '("melpa" . "http://melpa.org/packages/"))
 
+
 (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -16,7 +17,10 @@
   '(better-defaults
     dracula-theme
     neotree
-    magit))
+    elpy
+    flycheck
+    magit
+    projectile))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -29,7 +33,10 @@
 (setq inhibit-startup-message t) ;; hide the startup message
 (load-theme 'dracula t) ;; load material theme
 (global-linum-mode t) ;; enable line numbers globally
-
+(require 'projectile)
+(projectile-global-mode)
+(setq projectile-enable-caching t)
+(global-set-key (kbd "C-c p") 'projectile-command-map)
 ;; init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -46,7 +53,12 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-
+(elpy-enable)
+(setq projectile-project-search-path '("~/Documents/Projects/"))
+(setq projectile-indexing-method 'alien)
 (load "~/.emacs.d/keybinding")
 (require 'neotree)
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
 
