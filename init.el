@@ -47,7 +47,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (dockerfile-mode csv-mode csv git-gutter-fringe+ helm multiple-cursors magit material-theme better-defaults))))
+    (zotxt org-pdfview jupyter dockerfile-mode csv-mode csv git-gutter-fringe+ helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -75,3 +75,4 @@
 (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
 (setenv "SHELL" shell-file-name)
 (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+(add-hook 'org-mode 'org-zotxt-mode)
