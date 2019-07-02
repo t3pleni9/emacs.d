@@ -65,6 +65,12 @@
 (setq projectile-indexing-method 'alien)
 (helm-mode 1)
 (load "~/.emacs.d/keybinding")
+(load "~/.emacs.d/org-config")
+
+(require 'epa-file)
+(custom-set-variables '(epg-gpg-program  "/usr/local/bin/gpg"))
+(epa-file-enable)
+
 (require 'neotree)
 (when (require 'flycheck nil t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
@@ -75,4 +81,3 @@
 (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
 (setenv "SHELL" shell-file-name)
 (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
-(add-hook 'org-mode 'org-zotxt-mode)
