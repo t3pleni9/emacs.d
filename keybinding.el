@@ -1,5 +1,8 @@
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c g") 'magit-status)
+(global-set-key (kbd "C-c p") 'projectile-command-map)
 (defun neotree-project-dir ()
     "Open NeoTree using the git root."
     (interactive)
@@ -37,7 +40,7 @@
   )
 (global-set-key (kbd "C-c C-d") 'duplicate-line)
 
-(require 'multiple-cursors)
+
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 
