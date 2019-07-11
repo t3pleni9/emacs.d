@@ -45,9 +45,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(epg-gpg-program "/usr/local/bin/gpg")
  '(package-selected-packages
    (quote
-    (zotxt org-pdfview jupyter dockerfile-mode csv-mode csv git-gutter-fringe+ helm multiple-cursors magit material-theme better-defaults))))
+    (pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv git-gutter-fringe+ helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -61,6 +62,8 @@
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
 (elpy-enable)
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin/"))
+(setq doc-view-ghostscript-program "/usr/local/bin/gs")
 (setq projectile-project-search-path '("~/Documents/Projects/"))
 (setq projectile-indexing-method 'alien)
 (helm-mode 1)
@@ -68,7 +71,7 @@
 (load "~/.emacs.d/org-config")
 
 (require 'epa-file)
-(custom-set-variables '(epg-gpg-program  "/usr/local/bin/gpg"))
+
 (epa-file-enable)
 
 (require 'neotree)
