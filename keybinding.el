@@ -37,6 +37,7 @@
   (open-line 1)
   (next-line 1)
   (yank)
+  (move-beginning-of-line 1)
   )
 (global-set-key (kbd "C-c C-d") 'duplicate-line)
 
