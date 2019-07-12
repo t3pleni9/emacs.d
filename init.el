@@ -45,7 +45,8 @@
 
 (add-hook 'neotree-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
-(add-hook 'helm-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
+
 
 (require 'autopair) 
 (require 'projectile)

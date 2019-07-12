@@ -1,4 +1,6 @@
 (require 'org)
+(setq secrets-file (cons 'file "~/Documents/Personal/secrets.org.gpg"))
+(set-register ?s secrets-file)
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
 (setq org-directory "~/Documents/org-notes")
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
