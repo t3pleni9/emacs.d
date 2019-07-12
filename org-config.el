@@ -33,3 +33,17 @@
 (add-hook 'org-mode-hook
           (lambda ()
             (writegood-mode)))
+(add-hook 'org-mode-hook 'org-password-manager-key-bindings)
+
+(defun my/insert-password-entry ()
+  (interactive)
+  (insert (concat "* [[" (read-string "Link:") "]["  (read-string "Description:") "]]
+:PROPERTIES:
+:USERNAME: "  (read-string "Username:") "
+:PASSWORD: " (read-string "Password:") "
+:END:")))
+
+(defun my/insert-password-entry-key-binding ()
+   (local-set-key (kbd "C-c C-p e") #'my/insert-password-entry))
+
+(add-hook 'org-mode-hook #'my/insert-password-entry-key-binding)

@@ -7,11 +7,9 @@
 (require 'epa-file)
 
 
-(add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
-
-
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
+
 (when (not package-archive-contents)
   (package-refresh-contents))
 
@@ -35,7 +33,19 @@
 ;; --------------------------------------
 (setq inhibit-startup-message t) ;; hide the startup message
 (load-theme 'dracula t) ;; load material theme
-(global-linum-mode t) ;; enable line numbers globally
+
+(global-display-line-numbers-mode t)
+(global-auto-complete-mode t)
+;; (setq display-line-numbers "%3d\u2502")
+(setq-default display-line-numbers-width 2
+              display-line-numbers-widen t)
+(defun display-line-numbers-disable-hook ()
+  "Disable display-line-numbers locally."
+  (display-line-numbers-mode 0))
+
+(add-hook 'neotree-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'helm-mode-hook 'display-line-numbers-disable-hook)
 
 (require 'autopair) 
 (require 'projectile)
@@ -45,6 +55,7 @@
 
 (load "~/.emacs.d/keybinding")
 (load "~/.emacs.d/org-config")
+(load "~/.emacs.d/git-config")
 
 (projectile-global-mode)
 (setq projectile-enable-caching t)
@@ -55,10 +66,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(epa-pinentry-mode (quote loopback))
  '(epg-gpg-program "/usr/local/bin/gpg")
  '(package-selected-packages
    (quote
-    (writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv git-gutter-fringe+ helm multiple-cursors magit material-theme better-defaults))))
+    (auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -68,7 +80,6 @@
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
-(global-git-gutter+-mode +1)
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
 (setq tab-width 2
