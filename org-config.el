@@ -1,5 +1,6 @@
 (require 'org)
-(setq secrets-file (cons 'file "~/Documents/Personal/secrets.org.gpg"))
+(setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
+(setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
 (setq org-directory "~/Documents/org-notes")
@@ -36,16 +37,17 @@
           (lambda ()
             (writegood-mode)))
 (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
+(add-hook 'org-mode-hook 'org-beamer-mode)
 
-(defun my/insert-password-entry ()
-  (interactive)
-  (insert (concat "* [[" (read-string "Link:") "]["  (read-string "Description:") "]]
-:PROPERTIES:
-:USERNAME: "  (read-string "Username:") "
-:PASSWORD: " (read-string "Password:") "
-:END:")))
-
-(defun my/insert-password-entry-key-binding ()
-   (local-set-key (kbd "C-c C-p e") #'my/insert-password-entry))
-
-(add-hook 'org-mode-hook #'my/insert-password-entry-key-binding)
+(setq org-capture-templates
+      (quote
+       (("p" "Personal")
+	("ps" "Secrets" entry
+        (file secrets-file-path)
+"* [[%^{Link}][%^{Description}]]
+ :PROPERTIES:
+ :USERNAME: %^{Username}
+ :PASSWORD: %^{Password}
+ :END:
+"
+))))

@@ -9,6 +9,7 @@
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
+(add-to-list 'load-path "~/.emacs.d/external/")
 
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -53,6 +54,7 @@
 (require 'neotree)
 (require 'all-the-icons)
 (require 'multiple-cursors)
+(require 'netlogo-mode)
 
 (load "~/.emacs.d/keybinding")
 (load "~/.emacs.d/org-config")
@@ -60,6 +62,18 @@
 
 (projectile-global-mode)
 (setq projectile-enable-caching t)
+
+
+(setq elfeed-feeds
+      '("https://www.reddit.com/r/emacs/.rss"
+	"https://www.reddit.com/r/MachinesLearn/.rss"
+	"https://www.reddit.com/r/psychology/.rss"
+	"https://www.reddit.com/r/science/.rss"
+	"https://www.reddit.com/r/singularity/.rss"
+	"https://www.thehindu.com/news/feeder/default.rss"
+	"https://timesofindia.indiatimes.com/rssfeeds/-2128821991.cms"
+	"https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms"
+	"https://www.reddit.com/r/Python/.rss"))
 
 ;; init.el ends here
 (custom-set-variables
@@ -71,7 +85,7 @@
  '(epg-gpg-program "/usr/local/bin/gpg")
  '(package-selected-packages
    (quote
-    (auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
+    (elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
