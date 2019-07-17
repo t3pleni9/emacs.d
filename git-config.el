@@ -14,8 +14,8 @@
   _n_ Next Hunk       _p_ Previous Hunk
   _w_ Show Hunk       _t_ Stage Hunk
   _q_ Quit            _b_ Blame
-  ^^                  _s_ Status
-  ^^                  ^^
+  _c_ Clone           _s_ Status
+  _i_ Init            ^^
   "
   ("q" nil)
   ("n" git-gutter+-next-hunk)
