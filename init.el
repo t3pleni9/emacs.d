@@ -83,9 +83,12 @@
  ;; If there is more than one, they won't work right.
  '(epa-pinentry-mode (quote loopback))
  '(epg-gpg-program "/usr/local/bin/gpg")
+ '(org-agenda-files
+   (quote
+    ("~/Documents/org-notes/projects/reading-list.org" "~/Documents/org-notes/projects/bibliography/notes.org" "~/.emacs.d/elpa/org-ref-20190706.2059/org-ref.org" "~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org" "~/Documents/org-notes/projects/tickler.org")))
  '(package-selected-packages
    (quote
-    (elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
+    (org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

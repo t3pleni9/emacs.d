@@ -1,4 +1,6 @@
 (require 'org)
+(setq org-latex-pdf-process
+    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
@@ -27,6 +29,31 @@
 (setq org-refile-targets '(("~/Documents/org-notes/projects/projects.org" :maxlevel . 3)
                            ("~/Documents/org-notes/projects/someday.org" :level . 1)
                            ("~/Documents/org-notes/projects/tickler.org" :maxlevel . 2)))
+
+;; Org ref
+(require 'org-ref)
+(require 'org-ref-pdf)
+(require 'org-ref-url-utils)
+(require 'org-ref-arxiv)
+;; Append new packages
+(add-to-list 'org-latex-default-packages-alist '("" "natbib" "") t)
+(add-to-list 'org-latex-default-packages-alist
+	     '("linktocpage,pdfstartview=FitH,colorlinks,
+linkcolor=blue,anchorcolor=blue,
+citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
+	       "hyperref" nil)
+	     t)
+
+(setq reftex-default-bibliography '("~/Documents/org-notes/projects/bibliography/references.bib"))
+;; see org-ref for use of these variables
+(setq org-ref-bibliography-notes "~/Documents/org-notes/projects/bibliography/notes.org"
+      org-ref-default-bibliography '("~/Documents/org-notes/projects/bibliography/references.bib")
+      org-ref-pdf-directory "~/Documents/org-notes/projects/bibliography/bibtex-pdfs/")
+
+(setq bibtex-completion-bibliography "~/Documents/org-notes/projects/bibliography/references.bib"
+      bibtex-completion-library-path "~/Documents/org-notes/projects/bibliography/bibtex-pdfs"
+      bibtex-completion-notes-path "~/Documents/org-notes/projects/bibliography/helm-bibtex-notes")
+
 
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
