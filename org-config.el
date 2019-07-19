@@ -4,6 +4,7 @@
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
+(set-register ?r (cons 'file "~/Documents/org-notes/projects/reading-list.org"))
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
 (setq org-directory "~/Documents/org-notes")
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
@@ -12,19 +13,13 @@
 (setq org-agenda-files '("~/Documents/org-notes/projects/agenda.org"
 			 "~/Documents/org-notes/projects/inbox.org"
                          "~/Documents/org-notes/projects/projects.org"
-                         "~/Documents/org-notes/projects/tickler.org"))
+			 "~/Documents/org-notes/projects/reading-list.org"
+			 "~/Documents/org-notes/projects/bibliography/notes.org"))
 (setq org-default-notes-file (concat org-directory "/projects/capture.org"))
 
 (setq org-todo-keywords '((sequence "TODO(t)" "WORKING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 (setq org-log-done t
       org-todo-keyword-faces '(("WORKING" . (:foreground "#00CCFF" :weight bold :background "#353535"))))
-
-(setq org-capture-templates '(("t" "Todo [inbox]" entry
-                               (file+headline "~/Documents/org-notes/projects/inbox.org" "Tasks")
-                               "* TODO %i%?")
-                              ("T" "Tickler" entry
-                               (file+headline "~/Documents/org-notes/projects/tickler.org" "Tickler")
-                               "* %i%? \n %U")))
 
 (setq org-refile-targets '(("~/Documents/org-notes/projects/projects.org" :maxlevel . 3)
                            ("~/Documents/org-notes/projects/someday.org" :level . 1)
@@ -52,7 +47,13 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 (setq bibtex-completion-bibliography "~/Documents/org-notes/projects/bibliography/references.bib"
       bibtex-completion-library-path "~/Documents/org-notes/projects/bibliography/bibtex-pdfs"
-      bibtex-completion-notes-path "~/Documents/org-notes/projects/bibliography/helm-bibtex-notes")
+      bibtex-completion-notes-path "~/Documents/org-notes/projects/bibliography/helm-bibtex-notes"
+      bibtex-completion-pdf-field "File"
+      bibtex-completion-pdf-symbol "⌘"
+      bibtex-completion-notes-symbol "✎"
+      bibtex-completion-additional-search-fields '(tags keywords))
+(setq bibtex-completion-display-formats
+    '((t . "${author:30} ${title:100} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7} ${tags:50}")))
 
 
 (require 'org-bullets)
@@ -67,14 +68,17 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 (add-hook 'org-mode-hook 'org-beamer-mode)
 
 (setq org-capture-templates
-      (quote
-       (("p" "Personal")
+      '(
+	("p" "Personal")
 	("ps" "Secrets" entry
-        (file secrets-file-path)
-"* [[%^{Link}][%^{Description}]]
+	 (file secrets-file-path)
+	 "* [[%^{Link}][%^{Description}]]
  :PROPERTIES:
  :USERNAME: %^{Username}
  :PASSWORD: %^{Password}
- :END:
-"
-))))
+ :END:")
+	("t" "Todo [inbox]" entry
+	 (file+headline "~/Documents/org-notes/projects/inbox.org" "Tasks")
+	 "* TODO %i%?")
+))
+      

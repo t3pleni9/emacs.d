@@ -1,3 +1,4 @@
+
 ;; init.el --- Emacs configuration
 
 ;; INSTALL PACKAGES
@@ -88,7 +89,7 @@
     ("~/Documents/org-notes/projects/reading-list.org" "~/Documents/org-notes/projects/bibliography/notes.org" "~/.emacs.d/elpa/org-ref-20190706.2059/org-ref.org" "~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org" "~/Documents/org-notes/projects/tickler.org")))
  '(package-selected-packages
    (quote
-    (org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
+    (interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -117,6 +118,7 @@
 
 (epa-file-enable)
 (setq neo-theme (if (display-graphic-p) 'icons))
+(setq projectile-switch-project-action 'neotree-projectile-action)
 (when (require 'flycheck nil t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))

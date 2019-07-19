@@ -24,6 +24,20 @@
 (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
 (global-set-key (kbd "C-x C-f") #'helm-find-files)
 
+;; Org-ref
+(defun my/helm-bibtex-publications (&optional arg)
+  "Search BibTeX entries authored by “Jane Doe”.
+
+With a prefix ARG, the cache is invalidated and the bibliography reread."
+  (interactive "P")
+  (helm-bibtex arg nil ""))
+
+;; Bind this search function to Ctrl-x p:
+(global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
+(setq org-ref-insert-cite-key "C-c M-]")
+
+(defun my/neo-copy-path () (interactive) (kill-new (neo-buffer--get-filename-current-line)))
+(define-key neotree-mode-map (kbd "C-c M-p") 'my/neo-copy-path)
 
 (defun prev-window ()
   (interactive)
