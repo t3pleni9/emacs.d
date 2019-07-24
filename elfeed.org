@@ -1,16 +1,15 @@
 * blogs                                                        :elfeed:
 ** daily                                                        :daily:
 *** https://www.thehindu.com/news/feeder/default.rss            
-*** https://timesofindia.indiatimes.com/rssfeeds/-2128821991.cms
-*** https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms
+*** https://www.hindustantimes.com/rss/topnews/rssfeed.xml
 ** AI-ML                                                             :ai_ml:
 *** https://www.reddit.com/r/MachinesLearn/.rss                 
 *** https://www.reddit.com/r/singularity/.rss                   
+*** https://www.reddit.com/r/Futurology/.rss
+*** [[https://www.datasciencecentral.com/profiles/blog/feed?promoted=1&xn_auth=no][DataScienceCentral]]                                                :dcs:
 ** reddit                                                           :reddit:
-*** https://www.reddit.com/r/emacs/.rss                         
 *** https://www.reddit.com/r/psychology/.rss                    
-*** https://www.reddit.com/r/science/.rss                       
+*** https://www.reddit.com/r/science/.rss                        
+*** https://www.reddit.com/r/creepypasta/.rss                :creepy_pasta:
 ** Astro                                                             :astro:
 *** https://www.reddit.com/r/Mars/.rss                          
-** Programming                                                 :programming:
-*** https://www.reddit.com/r/Python/.rss                        

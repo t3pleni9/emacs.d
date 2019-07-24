@@ -30,11 +30,19 @@
                            ("~/Documents/org-notes/projects/references.org" :level . 1)
                            ("~/Documents/org-notes/projects/capture.org" :maxlevel . 2)))
 
+;; Org-babel
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)))
+
 ;; Org ref
 (require 'org-ref)
 (require 'org-ref-pdf)
 (require 'org-ref-url-utils)
 (require 'org-ref-arxiv)
+;; export citations
+;; (require 'ox-bibtex)
+;; (setq org-bibtex-file "~/Documents/org-notes/projects/bibliography/references.org")
 ;; Append new packages
 (add-to-list 'org-latex-default-packages-alist '("" "natbib" "") t)
 (add-to-list 'org-latex-default-packages-alist
@@ -66,6 +74,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	(let ((bibtex-completion-bibliography (org-ref-find-bibliography)))
 	  (bibtex-completion-edit-notes
 	   (list (car (org-ref-get-bibtex-key-and-file thekey)))))))
+(setq org-latex-prefer-user-labels t)
 
 
 (require 'org-bullets)
@@ -78,12 +87,15 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
             (writegood-mode)))
 (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
 (add-hook 'org-mode-hook 'org-beamer-mode)
+(defun my/org-auto-tag ()
+  (interactive)
+  (let ((alltags (append org-tag-persistent-alist org-tag-alist))
+	(headline-words (split-string (org-get-heading t t))))
+    (mapcar (lambda (word)
+	      (if (assoc word alltags) (org-toggle-tag word 'on)))
+            headline-words)))
 
-(setq ref-capture-template
-      "* %^{title}
-       :PROPERTIES:
-       :STATUS:   New
-       :END:")
+
 (setq org-capture-templates
       '(
 	("p" "Personal")
@@ -100,17 +112,18 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	 "* TODO %i%?")
 
 	("r" "References")
-	("ra" "Paper" entry
+	("rp" "Paper" entry
 	 (file+headline references-file-path "Papers")
-	 "* TODO %^{title}  :@article:
+       	 "* %i%?
        :PROPERTIES:
        :TYPE: Paper
-       :URL: [[%^{url}][source]]
        :END:
 ")
+
+
 	("rb" "Book" entry
 	 (file+headline references-file-path "Books")
-	   "* TODO %^{title}  :@book:
+	   "* %^{title}
        :PROPERTIES:
        :TYPE: Book
        :URL: [[%^{url}][source]]
@@ -118,7 +131,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 ")
 	("rw" "Web URL" entry
 	 (file+headline references-file-path "Web")
-	   "* TODO %^{title}  :@web:
+	   "* %^{title}
        :PROPERTIES:
        :TYPE: Web
        :URL: [[%^{url}][source]]
@@ -127,19 +140,35 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 	("rv" "Videos" entry
 	 (file+headline references-file-path "Videos")
-	   "* TODO %^{title}  :@video:
+	   "* %^{title}
        :PROPERTIES:
        :TYPE: Video
        :URL: [[%^{url}][source]]
        :END:
 ")
 
-	("rp" "Podcasts" entry
+	("ra" "Podcasts" entry
 	 (file+headline references-file-path "Podcasts")
-	   "* TODO %^{title}  :@podcast:
+	   "* %^{title}
        :PROPERTIES:
        :TYPE: Podcast
        :URL: [[%^{url}][source]]
        :END:
-")
-))
+")))
+
+
+(defhydra hydra-org-ref (:color blue)
+  "
+  ^
+  ^Org-ref  ^             ^Do^
+  ^─────^─────────────^──^─────────────
+  _l_ Create label    _i_ Insert Reference
+  _b_ Add doi bibtex  _y_ Bibtex Yank          
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("l" org-ref-helm-insert-label-link) 
+  ("i" org-ref-helm-insert-ref-link)
+  ("b" doi-add-bibtex-entry)
+  ("y" org-bibtex-yank))
+(define-key org-mode-map (kbd "C-c r") 'hydra-org-ref/body)

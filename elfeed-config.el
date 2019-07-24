@@ -42,5 +42,4 @@
               ("A" . my/elfeed-show-all)
               ("M" . my/elfeed-show-AI-ML)
               ("D" . my/elfeed-show-daily)
-              ("R" . my/elfeed-show-reddit)
-              ("q" . my/elfeed-save-db-and-bury)))
+              ("R" . my/elfeed-show-reddit)))

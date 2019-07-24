@@ -2,7 +2,7 @@
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c g") 'magit-status)
-(global-set-key (kbd "C-c p") 'projectile-command-map)
+(global-set-key (kbd "C-c p") 'hydra-projectile/body)
 (defun neotree-project-dir ()
     "Open NeoTree using the git root."
     (interactive)

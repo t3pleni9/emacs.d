@@ -38,7 +38,8 @@
 
 (global-display-line-numbers-mode t)
 (global-auto-complete-mode t)
-;; (setq display-line-numbers "%3d\u2502")
+(auto-save-visited-mode t)
+
 (setq-default display-line-numbers-width 2
               display-line-numbers-widen t)
 (defun display-line-numbers-disable-hook ()
@@ -56,6 +57,7 @@
 (require 'all-the-icons)
 (require 'multiple-cursors)
 (require 'netlogo-mode)
+(require 'virtualenvwrapper)
 
 (load "~/.emacs.d/keybinding")
 (load "~/.emacs.d/org-config")
@@ -64,6 +66,31 @@
 
 (projectile-global-mode)
 (setq projectile-enable-caching t)
+
+(defhydra hydra-projectile (:color blue)
+  "
+^
+^Projectile^        ^Buffers^           ^Find^              ^Search^
+^──────────^────────^───────^───────────^────^──────────────^──────^────────────
+_q_ quit            _b_ list            _d_ directory       _r_ replace
+_i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
+^^                  _S_ save all        _f_ file            _s_ ag
+^^                  ^^                  _p_ project         ^^
+^^                  ^^                  ^^                  ^^
+"
+  ("q" nil)
+  ("b" helm-projectile-switch-to-buffer)
+  ("d" helm-projectile-find-dir)
+  ("D" projectile-dired)
+  ("f" helm-projectile-find-file)
+  ("i" projectile-invalidate-cache :color red)
+  ("K" projectile-kill-buffers)
+  ("p" helm-projectile-switch-project)
+  ("r" projectile-replace)
+  ("R" projectile-replace-regexp)
+  ("s" helm-projectile-ag)
+  ("S" projectile-save-project-buffers))
+
 
 
 
@@ -77,16 +104,18 @@
  '(epg-gpg-program "/usr/local/bin/gpg")
  '(org-agenda-files
    (quote
-    ("~/Documents/org-notes/projects/references.org" "~/.emacs.d/elpa/org-ref-20190706.2059/org-ref.org" "~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org")))
+    ("~/Documents/org-notes/projects/references.org" "~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org")))
+ '(org-export-backends (quote (ascii beamer html icalendar latex md odt)))
  '(package-selected-packages
    (quote
-    (use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
+    (helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -109,7 +138,6 @@
 
 (epa-file-enable)
 (setq neo-theme (if (display-graphic-p) 'icons))
-(setq projectile-switch-project-action 'neotree-projectile-action)
 (when (require 'flycheck nil t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
@@ -141,5 +169,13 @@
             (writegood-mode t)
             (flyspell-mode t)))
 
+
+(venv-initialize-interactive-shells) ;; if you want interactive shell support
+(venv-initialize-eshell) ;; if you want eshell support
+(setq venv-location "/Users/in-justin.jose/.miniconda/envs")
 (setenv "WORKON_HOME" "/Users/in-justin.jose/.miniconda/envs")
 (pyvenv-mode 1)
+(defun my-org-confirm-babel-evaluate (lang body)
+  (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "sh"))))
+
+(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
