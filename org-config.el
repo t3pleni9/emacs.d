@@ -98,8 +98,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 (setq org-capture-templates
       '(
-	("p" "Personal")
-	("ps" "Secrets" entry
+	("s" "Secrets" entry
 	 (file secrets-file-path)
 	 "* [[%^{Link}][%^{Description}]]
  :PROPERTIES:

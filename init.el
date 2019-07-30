@@ -58,6 +58,7 @@
 (require 'multiple-cursors)
 (require 'netlogo-mode)
 (require 'virtualenvwrapper)
+(require 'helm-projectile)
 
 (load "~/.emacs.d/keybinding")
 (load "~/.emacs.d/org-config")
@@ -65,34 +66,8 @@
 (load "~/.emacs.d/elfeed-config")
 
 (projectile-global-mode)
+(helm-projectile-toggle 1)
 (setq projectile-enable-caching t)
-
-(defhydra hydra-projectile (:color blue)
-  "
-^
-^Projectile^        ^Buffers^           ^Find^              ^Search^
-^──────────^────────^───────^───────────^────^──────────────^──────^────────────
-_q_ quit            _b_ list            _d_ directory       _r_ replace
-_i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
-^^                  _S_ save all        _f_ file            _s_ ag
-^^                  ^^                  _p_ project         ^^
-^^                  ^^                  ^^                  ^^
-"
-  ("q" nil)
-  ("b" helm-projectile-switch-to-buffer)
-  ("d" helm-projectile-find-dir)
-  ("D" projectile-dired)
-  ("f" helm-projectile-find-file)
-  ("i" projectile-invalidate-cache :color red)
-  ("K" projectile-kill-buffers)
-  ("p" helm-projectile-switch-project)
-  ("r" projectile-replace)
-  ("R" projectile-replace-regexp)
-  ("s" helm-projectile-ag)
-  ("S" projectile-save-project-buffers))
-
-
-
 
 ;; init.el ends here
 (custom-set-variables
@@ -100,15 +75,18 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
  '(epa-pinentry-mode (quote loopback))
  '(epg-gpg-program "/usr/local/bin/gpg")
  '(org-agenda-files
    (quote
-    ("~/Documents/org-notes/projects/references.org" "~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org")))
+    ("~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org" "~/Documents/org-notes/projects/references.org")))
  '(org-export-backends (quote (ascii beamer html icalendar latex md odt)))
  '(package-selected-packages
    (quote
-    (helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
+    (smart-mode-line-powerline-theme geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -179,3 +157,53 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "sh"))))
 
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+;; Smart Mode line
+(require 'smart-mode-line)
+(sml/setup)
+(setq sml/no-confirm-load-theme t)
+(setq sml/theme 'powerline)
+
+
+;; Hydra
+
+(defhydra hydra-helm (:color blue)
+  "
+^
+^Helm^              ^Browse^
+^────^──────────────^──────^────────────
+_q_ quit            _a_ Arxiv Search
+_r_ resume          _g_ google
+^^                  _i_ imenu
+^^                  _k_ kill-ring
+^^                  ^^
+"
+  ("q" nil)
+  ("g" helm-google-suggest)
+  ("a" arxiv-lookup)
+  ("i" helm-imenu)
+  ("k" helm-show-kill-ring)
+  ("r" helm-resume))
+
+(defhydra hydra-projectile (:color blue)
+  "
+^
+^Projectile^        ^Buffers^           ^Find^              ^Search^
+^──────────^────────^───────^───────────^────^──────────────^──────^────────────
+_q_ quit            _b_ list            _d_ directory       _r_ replace
+_i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
+^^                  _S_ save all        _f_ file            _s_ ag
+^^                  ^^                  _p_ project         ^^
+^^                  ^^                  ^^                  ^^
+"
+  ("q" nil)
+  ("b" helm-projectile-switch-to-buffer)
+  ("d" helm-projectile-find-dir)
+  ("D" projectile-dired)
+  ("f" helm-projectile-find-file)
+  ("i" projectile-invalidate-cache :color red)
+  ("K" projectile-kill-buffers)
+  ("p" helm-projectile-switch-project)
+  ("r" projectile-replace)
+  ("R" projectile-replace-regexp)
+  ("s" helm-projectile-ag)
+  ("S" projectile-save-project-buffers))
