@@ -113,7 +113,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	("r" "References")
 	("rp" "Paper" entry
 	 (file+headline references-file-path "Papers")
-       	 "* %i%?
+       	 "*  %^g %i%?
        :PROPERTIES:
        :TYPE: Paper
        :END:
@@ -122,7 +122,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 	("rb" "Book" entry
 	 (file+headline references-file-path "Books")
-	   "* %^{title}
+	   "* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Book
        :URL: [[%^{url}][source]]
@@ -130,7 +130,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 ")
 	("rw" "Web URL" entry
 	 (file+headline references-file-path "Web")
-	   "* %^{title}
+	   "* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Web
        :URL: [[%^{url}][source]]
@@ -139,7 +139,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 	("rv" "Videos" entry
 	 (file+headline references-file-path "Videos")
-	   "* %^{title}
+	   "* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Video
        :URL: [[%^{url}][source]]
@@ -148,7 +148,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 
 	("ra" "Podcasts" entry
 	 (file+headline references-file-path "Podcasts")
-	   "* %^{title}
+	   "* %^{title} %^g
        :PROPERTIES:
        :TYPE: Podcast
        :URL: [[%^{url}][source]]
