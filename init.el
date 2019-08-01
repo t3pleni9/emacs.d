@@ -39,6 +39,7 @@
 (global-display-line-numbers-mode t)
 (global-auto-complete-mode t)
 (auto-save-visited-mode t)
+(global-visual-line-mode t)
 
 (setq-default display-line-numbers-width 2
               display-line-numbers-widen t)
@@ -46,12 +47,17 @@
   "Disable display-line-numbers locally."
   (display-line-numbers-mode 0))
 
+
+(defun disable-visual-line-mode ()
+  "Disable display-line-numbers locally."
+   (visual-line-mode -1))
+
 (add-hook 'neotree-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'neotree-mode-hook 'disable-visual-line-mode)
 (add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'minibuffer-setup-hook 'disable-visual-line-mode)
 
-
-(require 'autopair) 
 (require 'projectile)
 (require 'neotree)
 (require 'all-the-icons)
@@ -68,6 +74,8 @@
 (projectile-global-mode)
 (helm-projectile-toggle 1)
 (setq projectile-enable-caching t)
+(electric-pair-mode t)
+
 
 ;; init.el ends here
 (custom-set-variables
@@ -77,16 +85,20 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
+    ("b9e9ba5aeedcc5ba8be99f1cc9301f6679912910ff92fdf7980929c2fc83ab4d" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
  '(epa-pinentry-mode (quote loopback))
  '(epg-gpg-program "/usr/local/bin/gpg")
+ '(explicit-shell-file-name "/bin/zsh")
  '(org-agenda-files
    (quote
-    ("~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org" "~/Documents/org-notes/projects/references.org")))
+    ("~/Documents/org-notes/bibliography/references.org" "~/Documents/org-notes/projects/agenda.org" "~/Documents/org-notes/projects/inbox.org" "~/Documents/org-notes/projects/projects.org")))
  '(org-export-backends (quote (ascii beamer html icalendar latex md odt)))
  '(package-selected-packages
    (quote
-    (smart-mode-line-powerline-theme geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode autopair all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults))))
+    (json-mode org-brain smart-mode-line-powerline-theme geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults)))
+ '(term-char-mode-point-at-process-mark t)
+ '(term-eol-on-send t)
+ '(term-suppress-hard-newline t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -99,6 +111,7 @@
 (scroll-bar-mode -1)
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
+
 (setq tab-width 2
       indent-tabs-mode nil)
    
@@ -153,16 +166,12 @@
 (setq venv-location "/Users/in-justin.jose/.miniconda/envs")
 (setenv "WORKON_HOME" "/Users/in-justin.jose/.miniconda/envs")
 (pyvenv-mode 1)
-(defun my-org-confirm-babel-evaluate (lang body)
-  (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "sh"))))
-
-(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 ;; Smart Mode line
 (require 'smart-mode-line)
 (sml/setup)
-(setq sml/no-confirm-load-theme t)
-(setq sml/theme 'powerline)
-
+;; (setq sml/no-confirm-load-theme t)
+(setq sml/theme 'light-powerline)
+;; (setq sml/theme 'respectful)
 
 ;; Hydra
 
@@ -207,3 +216,7 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   ("R" projectile-replace-regexp)
   ("s" helm-projectile-ag)
   ("S" projectile-save-project-buffers))
+(put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
+(setq comint-process-echoes t)
+(toggle-frame-fullscreen)

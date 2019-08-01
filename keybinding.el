@@ -1,9 +1,18 @@
+(global-set-key (kbd "C-x w") 'delete-frame)
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "C-c g") 'magit-status)
 (global-set-key (kbd "C-c p") 'hydra-projectile/body)
 (global-set-key (kbd "C-c h") 'hydra-helm/body)
+(global-set-key (kbd "C-c b") 'org-brain-visualize)
+
+(defun my/kill-this-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
+(global-set-key (kbd "C-x k") 'my/kill-this-buffer)
 (defun neotree-project-dir ()
     "Open NeoTree using the git root."
     (interactive)
@@ -39,6 +48,8 @@ With a prefix ARG, the cache is invalidated and the bibliography reread."
 
 (defun my/neo-copy-path () (interactive) (kill-new (neo-buffer--get-filename-current-line)))
 (define-key neotree-mode-map (kbd "C-c M-p") 'my/neo-copy-path)
+(require 'json-mode)
+(define-key json-mode-map (kbd "C-M-/") 'json-pretty-print-buffer)
 
 (defun prev-window ()
   (interactive)
@@ -63,5 +74,22 @@ With a prefix ARG, the cache is invalidated and the bibliography reread."
 (global-set-key (kbd "C-c l") 'org-store-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c w") 'elfeed)
 
-(global-set-key (kbd "C-x w") 'elfeed)
+(defhydra hydra-org-ref (:color blue)
+  "
+  ^
+  ^Org-ref  ^             ^Do^
+  ^─────^─────────────-^──^─────────────
+  _l_ Create label     _i_ Insert Reference
+  _b_ Add doi bibtex   _y_ Bibtex Yank          
+  _a_ Add arxiv bibtex ^^
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("l" org-ref-helm-insert-label-link) 
+  ("i" org-ref-helm-insert-ref-link)
+  ("b" doi-add-bibtex-entry)
+  ("a" arxiv-add-bibtex-entry)
+  ("y" org-bibtex-yank))
+(global-set-key (kbd "C-c r") 'hydra-org-ref/body)
