@@ -9,6 +9,5 @@
 *** https://www.reddit.com/r/psychology/.rss                    
 *** https://www.reddit.com/r/science/.rss                        
 *** https://www.reddit.com/r/Futurology/.rss                       :future:
-*** https://www.reddit.com/r/creepypasta/.rss                :creepy_pasta:
 ** Astro                                                             :astro:
 *** https://www.reddit.com/r/Mars/.rss                          

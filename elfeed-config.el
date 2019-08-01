@@ -43,3 +43,25 @@
               ("M" . my/elfeed-show-AI-ML)
               ("D" . my/elfeed-show-daily)
               ("R" . my/elfeed-show-reddit)))
+
+(defalias 'elfeed-toggle-star
+  (elfeed-expose #'elfeed-search-toggle-all 'star))
+
+(eval-after-load 'elfeed-search
+  '(define-key elfeed-search-mode-map (kbd "*") 'elfeed-toggle-star))
+
+;; face for starred articles
+(defface elfeed-search-starred-title-face
+  '((t :foreground "#f77"))
+  "Marks a starred Elfeed entry.")
+
+(push '(starred elfeed-search-starred-title-face) elfeed-search-face-alist)
+
+
+(defun my/show-full-title ()
+  (interactive)
+  (let ((entry (elfeed-search-selected :single)))
+    (message "%s" (propertize (elfeed-entry-title entry)))
+))
+
+(define-key elfeed-search-mode-map " " #'my/show-full-title)
