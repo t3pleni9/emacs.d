@@ -33,7 +33,7 @@
       myPackages)
 
 
-(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
+
 
 ;; init.el ends here
 (custom-set-variables
@@ -65,3 +65,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))

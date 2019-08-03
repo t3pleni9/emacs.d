@@ -62,7 +62,6 @@ Make life a little bit more easier
 
 Full screen, and server
 #+begin_src emacs-lisp
-
 (toggle-frame-fullscreen)
 (server-mode t)
 #+end_src
@@ -89,8 +88,8 @@ Setup python venv with conda
 
 (venv-initialize-interactive-shells) ;; if you want interactive shell support
 (venv-initialize-eshell) ;; if you want eshell support
-(setq venv-location "/Users/in-justin.jose/.miniconda/envs")
-(setenv "WORKON_HOME" "/Users/in-justin.jose/.miniconda/envs")
+(setq venv-location "~/.miniconda/envs")
+(setenv "WORKON_HOME" "~/.miniconda/envs")
 
 #+end_src
 
