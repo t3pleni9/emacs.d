@@ -1,8 +1,8 @@
 #+TITLE: Emacs Configurations
 #+AUTHOR: Justin Jose
 
-* Emacs Configuration
-A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration, drawing inspirations from [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org][angrybacon]] .emacs.org
+* Config
+A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration, drawing inspirations from [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org][angrybacon]] dotemacs.org
 
 ** Require
 One require to rule them all
