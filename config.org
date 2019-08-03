@@ -1,0 +1,795 @@
+#+TITLE: Emacs Configurations
+#+AUTHOR: Justin Jose
+
+* Emacs Configuration
+A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration, drawing inspirations from [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org][angrybacon]] .emacs.org
+
+** Require
+One require to rule them all
+#+begin_src emacs-lisp
+(require 'org)
+(require 'projectile)
+(require 'neotree)
+(require 'all-the-icons)
+(require 'multiple-cursors)
+(require 'netlogo-mode)
+(require 'virtualenvwrapper)
+(require 'helm-projectile)
+(require 'json-mode)
+(require 'emms-setup)
+(require 'async nil :noerror)
+(require 'org-ref)
+(require 'org-ref-pdf)
+(require 'org-ref-url-utils)
+(require 'org-ref-arxiv)
+(require 'org-bullets)
+(require 'smart-mode-line)
+#+end_src
+
+** Emacs startup, theme, and others
+#+begin_src emacs-lisp
+(setq inhibit-startup-message t) ;; hide the startup messag
+(load-theme 'dracula t)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(elpy-enable)
+(epa-file-enable)
+
+(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin/"))
+(sml/setup)
+(setq sml/no-confirm-load-theme t)
+#+end_src
+
+Have time displayed in status bar
+#+begin_src emacs-lisp
+(setq display-time-string-forms
+       '((propertize (concat day "." month "." (substring year -2) " " 12-hours ":" minutes " "  am-pm)
+ 		    'face 'bold)))
+
+#+end_src
+
+Disable Backup
+#+begin_src emacs-lisp
+(setq make-backup-files nil)
+#+end_src
+
+Make life a little bit more easier
+#+begin_src emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+(setq echo-keystrokes 0.1)
+#+end_src
+
+Full screen, and server
+#+begin_src emacs-lisp
+
+(toggle-frame-fullscreen)
+(server-mode t)
+#+end_src
+
+Garbage Collection
+#+begin_src emacs-lisp
+(add-hook 'focus-out-hook #'garbage-collect)
+#+end_src
+
+Danger Scripts
+#+begin_src emacs-lisp
+(put 'narrow-to-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
+#+end_src
+
+Make shell not to repeat commands
+#+begin_src emacs-lisp
+(setq comint-process-echoes t)
+#+end_src
+
+*** Python
+Setup python venv with conda
+#+begin_src emacs-lisp
+
+(venv-initialize-interactive-shells) ;; if you want interactive shell support
+(venv-initialize-eshell) ;; if you want eshell support
+(setq venv-location "/Users/in-justin.jose/.miniconda/envs")
+(setenv "WORKON_HOME" "/Users/in-justin.jose/.miniconda/envs")
+
+#+end_src
+
+** Global Modes
+#+begin_src emacs-lisp
+(global-display-line-numbers-mode t)
+(global-auto-complete-mode t)
+(auto-save-visited-mode t)
+(global-visual-line-mode t)
+(sml-modeline-mode t)
+(helm-mode 1)
+(pyvenv-mode 1)
+
+(electric-pair-mode t)
+(show-paren-mode 1)
+
+(wrap-region-global-mode 1)
+(delete-selection-mode 1)
+
+
+(setq-default display-line-numbers-width 2
+              display-line-numbers-widen t)
+
+(setq tab-width 2
+      indent-tabs-mode nil)
+   
+(display-time-mode 1)
+
+#+end_src
+
+Disable line numbers in some buffers
+#+begin_src emacs-lisp
+(defun display-line-numbers-disable-hook ()
+  "Disable display-line-numbers locally."
+  (display-line-numbers-mode 0))
+
+(add-hook 'neotree-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
+
+#+end_src
+
+Disable visual line mode in some buffers
+#+begin_src emacs-lisp
+
+(defun disable-visual-line-mode ()
+  "Disable display-line-numbers locally."
+   (visual-line-mode -1))
+
+(add-hook 'neotree-mode-hook 'disable-visual-line-mode)
+(add-hook 'minibuffer-setup-hook 'disable-visual-line-mode)
+
+#+end_src
+
+Org export support
+#+begin_src emacs-lisp
+(setq doc-view-ghostscript-program "/usr/local/bin/gs")
+#+end_src
+
+NeoTree with display icons
+#+begin_src emacs-lisp
+(setq neo-theme (if (display-graphic-p) 'icons))
+#+end_src
+
+
+*** Projectile
+Enable Projectile Globally
+#+begin_src emacs-lisp
+(projectile-global-mode)
+(helm-projectile-toggle 1)
+(setq projectile-enable-caching t)
+#+end_src
+
+Projectile default search path and indexing
+#+begin_src emacs-lisp
+(setq projectile-project-search-path '("~/Documents/Projects/"))
+(setq projectile-indexing-method 'alien)
+#+end_src
+
+*** Shell
+Setup shell setting to work with zsh
+#+begin_src emacs-lisp
+(setq explicit-shell-file-name "/bin/zsh")
+(setq shell-file-name "zsh")
+(setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
+(setenv "SHELL" shell-file-name)
+(add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+
+#+end_src
+
+*** Flycheck
+#+begin_src emacs-lisp
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+#+end_src
+
+Use aspell to fix my mistakes
+#+begin_src emacs-lisp
+(setq flyspell-issue-welcome-flag nil)
+(if (eq system-type 'darwin)
+    (setq-default ispell-program-name "/usr/local/bin/aspell")
+  (setq-default ispell-program-name "/usr/bin/aspell"))
+(setq-default ispell-list-command "list")
+
+#+end_src
+
+*** Markdown
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.mdown$" . markdown-mode))
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (visual-line-mode t)
+            (writegood-mode t)
+            (flyspell-mode t)))
+
+#+end_src
+
+*** Org
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+
+(add-hook 'org-mode-hook 'org-zotxt-mode)
+(add-hook 'org-mode-hook 'org-indent-mode)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(add-hook 'org-mode-hook 'flyspell-mode)
+(add-hook 'org-mode-hook 'writegood-mode)
+(add-hook 'org-mode-hook 'org-password-manager-key-bindings)
+(add-hook 'org-mode-hook 'org-beamer-mode)
+#+end_src
+
+** Hydra
+*** GIT
+#+begin_src emacs-lisp
+(defhydra hydra-magit (:color blue)
+  "
+  ^
+  ^Git  ^             ^Do^
+  ^─────^─────────────^──^─────────────
+  _n_ Next Hunk       _p_ Previous Hunk
+  _w_ Show Hunk       _t_ Stage Hunk
+  _q_ Quit            _b_ Blame
+  _c_ Clone           _s_ Status
+  _i_ Init            ^^
+  "
+  ("q" nil)
+  ("n" git-gutter+-next-hunk)
+  ("p" git-gutter+-previous-hunk)
+  ("w" git-gutter+-show-hunk)
+  ("t" git-gutter+-stage-hunks)
+  ("b" magit-blame)
+  ("c" magit-clone)
+  ("i" magit-init)
+  ("s" magit-status))
+#+end_src
+*** Projectile
+#+begin_src emacs-lisp
+(defhydra hydra-projectile (:color blue)
+  "
+^
+^Projectile^        ^Buffers^           ^Find^              ^Search^
+^──────────^────────^───────^───────────^────^──────────────^──────^────────────
+_q_ quit            _b_ list            _d_ directory       _r_ replace
+_i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
+^^                  _S_ save all        _f_ file            _s_ ag
+^^                  ^^                  _p_ project         ^^
+^^                  ^^                  ^^                  ^^
+"
+  ("q" nil)
+  ("b" helm-projectile-switch-to-buffer)
+  ("d" helm-projectile-find-dir)
+  ("D" projectile-dired)
+  ("f" helm-projectile-find-file)
+  ("i" projectile-invalidate-cache :color red)
+  ("K" projectile-kill-buffers)
+  ("p" helm-projectile-switch-project)
+  ("r" projectile-replace)
+  ("R" projectile-replace-regexp)
+  ("s" helm-projectile-ag)
+  ("S" projectile-save-project-buffers))
+#+end_src
+*** Helm
+#+begin_src emacs-lisp
+(defhydra hydra-helm (:color blue)
+  "
+^
+^Helm^              ^Browse^
+^────^──────────────^──────^────────────
+_q_ quit            _a_ Arxiv Search
+_r_ resume          _g_ google
+^^                  _i_ imenu
+^^                  _k_ kill-ring
+^^                  ^^
+"
+  ("q" nil)
+  ("g" helm-google-suggest)
+  ("a" arxiv-lookup)
+  ("i" helm-imenu)
+  ("k" helm-show-kill-ring)
+  ("r" helm-resume))
+
+#+end_src
+*** Org
+Org-ref Sugars
+#+begin_src emacs-lisp
+(defhydra hydra-org-ref (:color blue)
+  "
+  ^
+  ^Org-ref  ^             ^Do^
+  ^─────^─────────────-^──^─────────────
+  _l_ Create label     _i_ Insert Reference
+  _b_ Add doi bibtex   _y_ Bibtex Yank          
+  _a_ Add arxiv bibtex ^^
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("l" org-ref-helm-insert-label-link) 
+  ("i" org-ref-helm-insert-ref-link)
+  ("b" doi-add-bibtex-entry)
+  ("a" arxiv-add-bibtex-entry)
+  ("y" org-bibtex-yank))
+#+end_src
+
+** Org
+*** Files
+List of global org files
+#+begin_src emacs-lisp
+(setq org-directory "~/Documents/org-notes")
+(setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
+(setq references-file-path "~/Documents/org-notes/bibliography/references.org")
+(setq bookmarks-file-path "~/Documents/org-notes/projects/bookmarks.org")
+(setq secrets-file (cons 'file secrets-file-path))
+(set-register ?s secrets-file)
+(set-register ?r (cons 'file references-file-path))
+
+(setq org-agenda-files '("~/Documents/org-notes/projects/agenda.org"
+			 "~/Documents/org-notes/projects/inbox.org"
+                         "~/Documents/org-notes/projects/projects.org"
+                         "~/Documents/org-notes/projects/bookmarks.org"
+			 "~/Documents/org-notes/bibliography/references.org"))
+(setq org-default-notes-file (concat org-directory "/projects/capture.org"))
+
+#+end_src
+
+*** Org TODO
+TODO workflow configurations
+#+begin_src emacs-lisp
+(setq org-todo-keywords '((sequence "TODO(t)" "QUEUED(q)" "WORKING(w)" "|" "DONE(d)" "CANCELLED(c)" "RE-VISIT(r)")))
+(setq org-log-done t
+      org-todo-keyword-faces '(("WORKING" . (:foreground "#00CCFF" :weight bold :background "#353535"))
+			       ("QUEUED" . (:foreground "#F7FF00" :weight bold :background "#353535"))
+			       ("CANCELLED" . (:foreground "#FF0000" :weight bold :background "#353535"))
+			       ("RE-VISIT" . (:foreground "#00FFFF" :weight bold))))
+
+(setq org-refile-targets '(("~/Documents/org-notes/projects/projects.org" :maxlevel . 3)
+                           ("~/Documents/org-notes/bibliography/references.org" :level . 1)
+                           ("~/Documents/org-notes/projects/capture.org" :maxlevel . 2)))
+
+#+end_src
+
+*** Org Babel
+#+begin_src emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((python . t)))
+
+(defun my-org-confirm-babel-evaluate (lang body)
+  (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "sh"))))
+
+(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+
+#+end_src
+
+*** Org latex
+#+begin_src emacs-lisp
+(setq org-latex-pdf-process
+    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
+
+(add-to-list 'org-latex-default-packages-alist '("" "natbib" "") t)
+(add-to-list 'org-latex-default-packages-alist
+	     '("linktocpage,pdfstartview=FitH,colorlinks,
+linkcolor=blue,anchorcolor=blue,
+citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
+	       "hyperref" nil)
+	     t)
+(setq org-latex-prefer-user-labels t)
+#+end_src
+*** Org ref
+Search through bibtex reference using helm reference
+#+begin_src emacs-lisp
+(defun my/helm-bibtex-publications (&optional arg)
+  "Search BibTeX entries authored by “Jane Doe”.
+
+With a prefix ARG, the cache is invalidated and the bibliography reread."
+  (interactive "P")
+  (helm-bibtex arg nil ""))
+
+#+end_src
+
+Manage notes using helm bibtex
+#+begin_src emacs-lisp
+;; Tell org-ref to let helm-bibtex find notes for it
+(setq org-ref-notes-function
+      (lambda (thekey)
+	(let ((bibtex-completion-bibliography (org-ref-find-bibliography)))
+	  (bibtex-completion-edit-notes
+	   (list (car (org-ref-get-bibtex-key-and-file thekey)))))))
+#+end_src
+
+Org-ref Files
+#+begin_src emacs-lisp
+(setq reftex-default-bibliography '("~/Documents/org-notes/bibliography/references.bib")
+      org-ref-default-bibliography '("~/Documents/org-notes/bibliography/references.bib")
+      org-ref-pdf-directory "~/Documents/org-notes/bibliography/bibtex-pdfs/")
+
+#+end_src
+**** Bibtex
+#+begin_src emacs-lisp
+(setq bibtex-completion-bibliography "~/Documents/org-notes/bibliography/references.bib"
+      bibtex-completion-library-path "~/Documents/org-notes/bibliography/bibtex-pdfs"
+      bibtex-completion-notes-path "~/Documents/org-notes/bibliography/helm-bibtex-notes"
+      bibtex-completion-pdf-field "File"
+      bibtex-completion-pdf-symbol "⌘"
+      bibtex-completion-notes-symbol "✎"
+      bibtex-completion-additional-search-fields '(tags keywords))
+(setq bibtex-completion-display-formats
+      '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
+#+end_src
+*** Capture Templates
+#+begin_src emacs-lisp
+(setq org-capture-templates
+      '(
+	("s" "Secrets" entry
+	 (file secrets-file-path)
+	 "* [[%^{Link}][%^{Description}]]
+ :PROPERTIES:
+ :USERNAME: %^{Username}
+ :PASSWORD: %^{Password}
+ :END:
+")
+	("t" "Todo [inbox]" entry
+	 (file+headline "~/Documents/org-notes/projects/inbox.org" "Tasks")
+	 "* TODO %i%?")
+
+	("r" "References")
+	("rp" "Paper" entry
+	 (file+headline references-file-path "Papers")
+       	 "*  %^g %i%?
+       :PROPERTIES:
+       :TYPE: Paper
+       :END:
+")
+	("rb" "Book" entry
+	 (file+headline references-file-path "Books")
+	   "* %^{title}  %^g
+       :PROPERTIES:
+       :TYPE: Book
+       :URL: [[%^{url}][source]]
+       :END:
+")
+
+	("b" "Bookmarks")
+	("bw" "Web URL" entry
+	 (file+headline bookmarks-file-path "Web")
+	   "* TODO %^{title}  %^g
+       :PROPERTIES:
+       :TYPE: Web
+       :URL: [[%^{url}][source]]
+       :END:
+")
+
+	("bv" "Videos" entry
+	 (file+headline bookmarks-file-path "Videos")
+	   "* TODO %^{title}  %^g
+       :PROPERTIES:
+       :TYPE: Video
+       :URL: [[%^{url}][source]]
+       :END:
+")
+
+	("bp" "Podcasts" entry
+	 (file+headline bookmarks-file-path "Podcasts")
+	   "* TODO %^{title} %^g
+       :PROPERTIES:
+       :TYPE: Podcast
+       :URL: [[%^{url}][source]]
+       :END:
+")))
+#+end_src
+
+** Elfeed
+Feed reader setups
+*** Configuration 
+[[file:elfeed.org][Configuration Org]]
+#+begin_src emacs-lisp
+(use-package elfeed-org
+  :ensure t
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")))
+#+end_src
+*** EMMS
+Should have its own header, but as of now just lives inside the elfeed section
+#+begin_src emacs-lisp
+(emms-all)
+(emms-default-players)
+(define-emms-simple-player afplay '(file)
+      (regexp-opt '(".mp3" ".m4a" ".aac" ".ogg" ".wav" ".pls"))
+      "afplay")
+    (setq emms-player-list `(,emms-player-afplay))
+#+end_src
+
+Download an enclosure and play
+#+begin_src emacs-lisp
+(defun my/download-enclosure-and-play (url)
+  "Download asynchronously the enclosure from URL to PATH."
+  (emms-stop)
+  (let  ((url-enclosure url))
+        (async-start
+         `(lambda ()
+           ,(url-copy-file url-enclosure "/tmp/audio.mp3" t))
+         `(lambda (_)
+	   ,(emms-play-file "/tmp/audio.mp3")))))
+
+(defun my/replay-previous ()
+  (interactive)
+  (emms-play-file "/tmp/audio.mp3"))
+
+(defun my/elfeed-show-play-enclosure ()
+  "Play enclosure number ENCLOSURE-INDEX from current entry using EMMS.
+Prompts for ENCLOSURE-INDEX when called interactively."
+  (interactive)
+  (elfeed-search-untag-all-unread)
+  (let ((entry (elfeed-search-selected :single)))
+  (setq url-enclosure (car (elt (elfeed-entry-enclosures entry) 0))))
+  (my/download-enclosure-and-play url-enclosure))
+
+#+end_src
+
+*** Bookmarks
+All the bookmark loaders
+#+begin_src emacs-lisp
+(defun my/elfeed-show-all ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-all"))
+
+(defun my/elfeed-show-AI-ML ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-ai_ml"))
+
+(defun my/elfeed-show-daily ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-daily"))
+
+(defun my/elfeed-show-reddit ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-reddit"))
+
+(defun my/elfeed-show-astro ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-astro"))
+
+(defun my/elfeed-show-podcast ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-podcast"))
+#+end_src
+*** Customizations
+Custom functions to make life a little easier
+- Save state before Quit
+#+begin_src emacs-lisp
+;;write to disk when quiting
+(defun my/elfeed-save-db-and-bury ()
+  "Wrapper to save the elfeed db to disk before burying buffer"
+  (interactive)
+  (elfeed-db-save)
+  (quit-window))
+#+end_src
+- Mark the favourites
+#+begin_src emacs-lisp
+(defalias 'elfeed-toggle-star
+  (elfeed-expose #'elfeed-search-toggle-all 'star))
+
+;; face for starred articles
+(defface elfeed-search-starred-title-face
+  '((t :foreground "#f77"))
+  "Marks a starred Elfeed entry."
+  :group 'elfeed)
+
+(push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
+#+end_src
+
+- Podcasts
+#+begin_src emacs-lisp
+(defface elfeed-audio
+  '((t :foreground "#FA0"))
+  "Marks podcasts in Elfeed."
+  :group 'elfeed)
+
+(push '(podcast elfeed-audio) elfeed-search-face-alist)
+#+end_src
+
+- Titles, Let the computer read out the title ( Mac only)
+#+begin_src emacs-lisp
+(defun my/show-full-title ()
+  (interactive)
+  (let ((entry (elfeed-search-selected :single)))
+    (message "%s" (propertize (elfeed-entry-title entry)))
+))
+
+(defun say (message)
+  (call-process "say" nil nil nil message))
+
+(defun my/elfeed-say ()
+  (interactive)
+  (let ((entry (elfeed-search-selected :single)))
+    (say (elfeed-entry-title entry))))
+
+#+end_src
+
+** Custom Configurations and Functions
+*** Projectile/NeoTree
+Open NeoTree using the git root.
+#+begin_src emacs-lisp
+(defun neotree-project-dir ()
+
+    (interactive)
+    (let ((project-dir (projectile-project-root))
+          (file-name (buffer-file-name)))
+      (neotree-toggle)
+      (if project-dir
+          (if (neo-global--window-exists-p)
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name)))
+        (message "Could not find git project root."))))
+
+#+end_src
+
+NeoTree copy full path at cursor
+#+begin_src emacs-lisp
+(defun my/neo-copy-path () (interactive) (kill-new (neo-buffer--get-filename-current-line)))
+#+end_src
+*** Git
+Magit and git-gutter configurations
+#+begin_src emacs-lisp
+(global-git-gutter+-mode t)
+(setq git-gutter+-disabled-modes '(asm-mode image-mode))
+(set-face-background 'git-gutter+-modified "purple") ;; background color
+(set-face-foreground 'git-gutter+-added "green")
+(set-face-foreground 'git-gutter+-deleted "red")
+#+end_src
+
+*** Kill buffer
+Kill buffer asks way too many questions on what to kill, and since I would want to kill what I am on 
+#+begin_src emacs-lisp
+(defun my/kill-this-buffer ()
+  "Kill the current buffer."
+  (interactive)
+  (kill-buffer (current-buffer)))
+#+end_src
+*** Windows and Frames
+Have a easier navigation around open windows
+#+begin_src emacs-lisp
+(defun prev-window ()
+  (interactive)
+  (other-window -1))
+#+end_src
+*** Basic Text editing
+Duplicate an entire line
+#+begin_src emacs-lisp
+(defun duplicate-line()
+  (interactive)
+  (move-beginning-of-line 1)
+  (kill-line)
+  (yank)
+  (open-line 1)
+  (next-line 1)
+  (yank)
+  (move-beginning-of-line 1)
+  )
+#+end_src
+** Key Bindings
+Define custom key bindings.
+*** Windows and Frames
+Basic key bindings to play around with frames and window. Binding Delete frame defaulted at  =C-x 5 0= to =C-x w=
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x w") 'delete-frame)
+(global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "s->") #'other-window)
+(global-set-key (kbd "s-<") #'prev-window)
+#+end_src
+**** Shell
+Have a Doom styled console launch binding
+#+begin_src emacs-lisp
+(global-set-key (kbd "s-`") 'shell)
+#+end_src
+*** Basic Text editing
+Duplicate a line
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c C-d") 'duplicate-line)
+#+end_src
+
+Mark occurrences ( Rudimentary version of iedit)
+#+begin_src emacs-lisp
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+#+end_src
+*** GIT
+Git key bindings, with added sugar of hydra
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c g") 'magit-status)
+(global-set-key (kbd "C-c m") 'hydra-magit/body)
+#+end_src
+
+*** Projectile/NeoTree
+#+begin_src emacs-lisp
+(global-set-key (kbd "s-1") 'neotree-project-dir)
+(global-set-key (kbd "C-c p") 'hydra-projectile/body)
+(define-key neotree-mode-map (kbd "C-c M-p") 'my/neo-copy-path)
+#+end_src
+
+*** Kill buffer
+Just kill the current buffer without asking too many questions
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x k") 'my/kill-this-buffer)
+#+end_src
+
+*** Helm
+Have helm handle most of the things around
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
+(global-set-key (kbd "C-c h") 'hydra-helm/body)
+(global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
+#+end_src
+
+*** Org
+References, Publications and Citations
+#+begin_src emacs-lisp
+(setq org-ref-insert-cite-key "C-c M-]")
+#+end_src
+
+Links agendas and capture templates
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
+#+end_src
+
+Org-ref hydra sugar
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c r") 'hydra-org-ref/body)
+#+end_src
+
+*** Elfeed
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c w") 'elfeed)
+#+end_src
+Mark as Favourite
+#+begin_src emacs-lisp
+(eval-after-load 'elfeed-search
+  '(define-key elfeed-search-mode-map (kbd "*") 'elfeed-toggle-star))
+#+end_src
+
+Elfeed bookmarks and custom keymaps
+
+#+begin_src emacs-lisp
+(use-package elfeed
+  :ensure t
+  :bind (:map elfeed-search-mode-map
+              ("A" . my/elfeed-show-all)
+              ("M" . my/elfeed-show-AI-ML)
+              ("D" . my/elfeed-show-daily)
+              ("R" . my/elfeed-show-reddit)
+              ("P" . my/elfeed-show-podcast)
+              (">" . my/elfeed-show-play-enclosure)
+              (";" . emms-stop)
+              (":" . my/replay-previous)
+              ("x" . my/elfeed-say)
+              (" " . my/show-full-title)))
+#+end_src
+*** Json
+Pretty print JSON buffer
+#+begin_src emacs-lisp
+(define-key json-mode-map (kbd "C-M-/") 'json-pretty-print-buffer)
+#+end_src
+
