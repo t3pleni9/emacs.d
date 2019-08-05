@@ -566,9 +566,9 @@ All the bookmark loaders
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-podcast"))
 #+end_src
-*** Customizations
+*** Customization
 Custom functions to make life a little easier
-- Save state before Quit
+**** Save state before Quit
 #+begin_src emacs-lisp
 ;;write to disk when quiting
 (defun my/elfeed-save-db-and-bury ()
@@ -577,21 +577,33 @@ Custom functions to make life a little easier
   (elfeed-db-save)
   (quit-window))
 #+end_src
-- Mark the favourites
+**** Mark the favourites
 #+begin_src emacs-lisp
 (defalias 'elfeed-toggle-star
   (elfeed-expose #'elfeed-search-toggle-all 'star))
+#+end_src
+**** Custom Colors
+***** Stars
+#+begin_src emacs-lisp
+  ;; face for starred articles
+  (defface elfeed-search-starred-title-face
+    '((t :foreground "#f77"))
+    "Marks a starred Elfeed entry."
+    :group 'elfeed)
 
-;; face for starred articles
-(defface elfeed-search-starred-title-face
-  '((t :foreground "#f77"))
-  "Marks a starred Elfeed entry."
+  (push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
+    #+end_src
+    
+***** News
+#+begin_src emacs-lisp
+(defface daily-news
+  '((t :foreground "#AFF"))
+  "Marks podcasts in Elfeed."
   :group 'elfeed)
 
-(push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
+(push '(daily daily-news) elfeed-search-face-alist)
 #+end_src
-
-- Podcasts
+***** Podcasts
 #+begin_src emacs-lisp
 (defface elfeed-audio
   '((t :foreground "#FA0"))
@@ -600,8 +612,16 @@ Custom functions to make life a little easier
 
 (push '(podcast elfeed-audio) elfeed-search-face-alist)
 #+end_src
+***** Reddit
+#+begin_src emacs-lisp
+(defface elfeed-reddit
+  '((t :foreground "#0FA"))
+  "Marks podcasts in Elfeed."
+  :group 'elfeed)
 
-- Titles, Let the computer read out the title ( Mac only)
+(push '(reddit elfeed-reddit) elfeed-search-face-alist)
+#+end_src
+**** Titles, See more titles and Let the computer read out the title ( Mac only)
 #+begin_src emacs-lisp
 (defun my/show-full-title ()
   (interactive)
@@ -763,11 +783,6 @@ Org-ref hydra sugar
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c w") 'elfeed)
 #+end_src
-Mark as Favourite
-#+begin_src emacs-lisp
-(eval-after-load 'elfeed-search
-  '(define-key elfeed-search-mode-map (kbd "*") 'elfeed-toggle-star))
-#+end_src
 
 Elfeed bookmarks and custom keymaps
 
@@ -784,7 +799,8 @@ Elfeed bookmarks and custom keymaps
               (";" . emms-stop)
               (":" . my/replay-previous)
               ("x" . my/elfeed-say)
-              (" " . my/show-full-title)))
+              ("*" . elfeed-toggle-star)
+              ("<SPC>" . my/show-full-title)))
 #+end_src
 *** Json
 Pretty print JSON buffer
