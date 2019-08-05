@@ -583,17 +583,6 @@ Custom functions to make life a little easier
   (elfeed-expose #'elfeed-search-toggle-all 'star))
 #+end_src
 **** Custom Colors
-***** Stars
-#+begin_src emacs-lisp
-  ;; face for starred articles
-  (defface elfeed-search-starred-title-face
-    '((t :foreground "#f77"))
-    "Marks a starred Elfeed entry."
-    :group 'elfeed)
-
-  (push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
-    #+end_src
-    
 ***** News
 #+begin_src emacs-lisp
 (defface daily-news
@@ -621,6 +610,17 @@ Custom functions to make life a little easier
 
 (push '(reddit elfeed-reddit) elfeed-search-face-alist)
 #+end_src
+***** Stars
+#+begin_src emacs-lisp
+  ;; face for starred articles
+  (defface elfeed-search-starred-title-face
+    '((t :foreground "#f77"))
+    "Marks a starred Elfeed entry."
+    :group 'elfeed)
+
+  (push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
+    #+end_src
+    
 **** Titles, See more titles and Let the computer read out the title ( Mac only)
 #+begin_src emacs-lisp
 (defun my/show-full-title ()
