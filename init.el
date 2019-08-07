@@ -56,7 +56,7 @@
  '(org-export-backends (quote (ascii beamer html icalendar latex md odt)))
  '(package-selected-packages
    (quote
-    (vterm yaml-mode anaconda-mode sml-modeline iedit emms json-mode org-brain smart-mode-line-powerline-theme geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults)))
+    (dumb-jump helm-spotify spotify vterm yaml-mode anaconda-mode sml-modeline iedit emms json-mode org-brain smart-mode-line-powerline-theme geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+ org-password-manager writegood-mode all-the-icons org-bullets treemacs pdf-tools helm-company markdown-mode+ ssh zotxt jupyter dockerfile-mode csv-mode csv helm multiple-cursors magit material-theme better-defaults)))
  '(send-mail-function (quote mailclient-send-it))
  '(term-char-mode-point-at-process-mark t)
  '(term-suppress-hard-newline t))

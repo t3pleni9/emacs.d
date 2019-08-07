@@ -24,11 +24,12 @@ One require to rule them all
 (require 'org-ref-arxiv)
 (require 'org-bullets)
 (require 'smart-mode-line)
+(require 'dumb-jump)
 #+end_src
 
 ** Emacs startup, theme, and others
 #+begin_src emacs-lisp
-(setq inhibit-startup-message t) ;; hide the startup messag
+(setq inhibit-startup-message t) ;; outline-hide the startup messag
 (load-theme 'dracula t)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -106,7 +107,7 @@ Setup python venv with conda
 (pyvenv-mode 1)
 
 (electric-pair-mode t)
-(show-paren-mode 1)
+(outline-show-paren-mode 1)
 
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
@@ -230,6 +231,16 @@ Use aspell to fix my mistakes
 (add-hook 'org-mode-hook 'org-beamer-mode)
 #+end_src
 
+*** Dumb Jump
+Dumb jump lets me goto definitions easily using a dumb =ag= search
+#+begin_src emacs-lisp
+(dumb-jump-mode 1)
+(setq dumb-jump-selector 'helm)
+#+end_src
+
+#+RESULTS:
+: helm
+
 ** Hydra
 *** GIT
 #+begin_src emacs-lisp
@@ -247,7 +258,7 @@ Use aspell to fix my mistakes
   ("q" nil)
   ("n" git-gutter+-next-hunk)
   ("p" git-gutter+-previous-hunk)
-  ("w" git-gutter+-show-hunk)
+  ("w" git-gutter+-outline-show-hunk)
   ("t" git-gutter+-stage-hunks)
   ("b" magit-blame)
   ("c" magit-clone)
@@ -297,7 +308,7 @@ _r_ resume          _g_ google
   ("g" helm-google-suggest)
   ("a" arxiv-lookup)
   ("i" helm-imenu)
-  ("k" helm-show-kill-ring)
+  ("k" helm-outline-show-kill-ring)
   ("r" helm-resume))
 
 #+end_src
@@ -501,6 +512,39 @@ Feed reader setups
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")))
 #+end_src
+*** Bookmarks
+All the bookmark loaders
+#+begin_src emacs-lisp
+(defun my/elfeed-outline-show-all ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-all"))
+
+(defun my/elfeed-outline-show-AI-ML ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-ai_ml"))
+
+(defun my/elfeed-outline-show-daily ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-daily"))
+
+(defun my/elfeed-outline-show-reddit ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-reddit"))
+
+(defun my/elfeed-outline-show-astro ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-astro"))
+
+(defun my/elfeed-outline-show-podcast ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-podcast"))
+#+end_src
 *** EMMS
 Should have its own header, but as of now just lives inside the elfeed section
 #+begin_src emacs-lisp
@@ -528,7 +572,7 @@ Download an enclosure and play
   (interactive)
   (emms-play-file "/tmp/audio.mp3"))
 
-(defun my/elfeed-show-play-enclosure ()
+(defun my/elfeed-outline-show-play-enclosure ()
   "Play enclosure number ENCLOSURE-INDEX from current entry using EMMS.
 Prompts for ENCLOSURE-INDEX when called interactively."
   (interactive)
@@ -539,39 +583,6 @@ Prompts for ENCLOSURE-INDEX when called interactively."
 
 #+end_src
 
-*** Bookmarks
-All the bookmark loaders
-#+begin_src emacs-lisp
-(defun my/elfeed-show-all ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-all"))
-
-(defun my/elfeed-show-AI-ML ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-ai_ml"))
-
-(defun my/elfeed-show-daily ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-daily"))
-
-(defun my/elfeed-show-reddit ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-reddit"))
-
-(defun my/elfeed-show-astro ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-astro"))
-
-(defun my/elfeed-show-podcast ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-podcast"))
-#+end_src
 *** Customization
 Custom functions to make life a little easier
 **** Save state before Quit
@@ -629,7 +640,7 @@ Custom functions to make life a little easier
     
 **** Titles, See more titles and Let the computer read out the title ( Mac only)
 #+begin_src emacs-lisp
-(defun my/show-full-title ()
+(defun my/outline-show-full-title ()
   (interactive)
   (let ((entry (elfeed-search-selected :single)))
     (message "%s" (propertize (elfeed-entry-title entry)))
@@ -800,21 +811,50 @@ Elfeed bookmarks and custom keymaps
 (use-package elfeed
   :ensure t
   :bind (:map elfeed-search-mode-map
-              ("A" . my/elfeed-show-all)
-              ("M" . my/elfeed-show-AI-ML)
-              ("D" . my/elfeed-show-daily)
-              ("R" . my/elfeed-show-reddit)
-              ("P" . my/elfeed-show-podcast)
-              (">" . my/elfeed-show-play-enclosure)
+              ("A" . my/elfeed-outline-show-all)
+              ("M" . my/elfeed-outline-show-AI-ML)
+              ("D" . my/elfeed-outline-show-daily)
+              ("R" . my/elfeed-outline-show-reddit)
+              ("P" . my/elfeed-outline-show-podcast)
+              (">" . my/elfeed-outline-show-play-enclosure)
               (";" . emms-stop)
               (":" . my/replay-previous)
               ("x" . my/elfeed-say)
               ("*" . elfeed-toggle-star)
-              ("<SPC>" . my/show-full-title)))
+              ("<SPC>" . my/outline-show-full-title)))
 #+end_src
 *** Json
 Pretty print JSON buffer
 #+begin_src emacs-lisp
 (define-key json-mode-map (kbd "C-M-/") 'json-pretty-print-buffer)
 #+end_src
+*** Outline
+Rebind outline minor mode key bindings
+#+begin_src emacs-lisp
+; Outline-minor-mode key map
+ (define-prefix-command 'cm-map nil "Outline-")
+ ; HIDE
+ (define-key cm-map "q" 'outline-hide-sublevels)    ; Hide everything but the top-level headings
+ (define-key cm-map "t" 'outline-hide-body)         ; Hide everything but headings (all body lines)
+ (define-key cm-map "o" 'outline-hide-other)        ; Hide other branches
+ (define-key cm-map "c" 'outline-hide-entry)        ; Hide this entry's body
+ (define-key cm-map "l" 'outline-hide-leaves)       ; Hide body lines in this entry and sub-entries
+ (define-key cm-map "d" 'outline-hide-subtree)      ; Hide everything in this entry and sub-entries
+ ; SHOW
+ (define-key cm-map "a" 'outline-show-all)          ; Show (expand) everything
+ (define-key cm-map "e" 'outline-show-entry)        ; Show this heading's body
+ (define-key cm-map "i" 'outline-show-children)     ; Show this heading's immediate child sub-headings
+ (define-key cm-map "k" 'outline-show-branches)     ; Show all sub-headings under this heading
+ (define-key cm-map "s" 'outline-show-subtree)      ; Show (expand) everything in this heading & below
+ ; MOVE
+ (define-key cm-map "u" 'outline-up-heading)                ; Up
+ (define-key cm-map "n" 'outline-next-visible-heading)      ; Next
+ (define-key cm-map "p" 'outline-previous-visible-heading)  ; Previous
+ (define-key cm-map "f" 'outline-forward-same-level)        ; Forward - same level
+ (define-key cm-map "b" 'outline-backward-same-level)       ; Backward - same level
+ (global-set-key (kbd "C-c o") cm-map)
+#+end_src
+
+#+RESULTS:
+: (keymap (98 . outline-backward-same-level) (102 . outline-forward-same-level) (112 . outline-previous-visible-heading) (110 . outline-next-visible-heading) (117 . outline-up-heading) (115 . outline-show-subtree) (107 . outline-show-branches) (105 . outline-show-children) (101 . outline-show-entry) (97 . outline-show-all) (100 . outline-hide-subtree) (108 . outline-hide-leaves) (99 . outline-hide-entry) (111 . outline-hide-other) (116 . outline-hide-body) (113 . outline-hide-sublevels) Outline-)
 
