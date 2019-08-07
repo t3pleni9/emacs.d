@@ -94,6 +94,8 @@ Setup python venv with conda
 #+end_src
 
 ** Global Modes
+*** Global 
+
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode t)
 (global-auto-complete-mode t)
@@ -154,7 +156,6 @@ NeoTree with display icons
 (setq neo-theme (if (display-graphic-p) 'icons))
 #+end_src
 
-
 *** Projectile
 Enable Projectile Globally
 #+begin_src emacs-lisp
@@ -167,6 +168,11 @@ Projectile default search path and indexing
 #+begin_src emacs-lisp
 (setq projectile-project-search-path '("~/Documents/Projects/"))
 (setq projectile-indexing-method 'alien)
+#+end_src
+
+Bind switch project to =helm-projectile=
+#+begin_src emacs-lisp
+(setq projectile-switch-project-action 'helm-projectile)
 #+end_src
 
 *** Shell
@@ -717,8 +723,12 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 **** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
-(global-set-key (kbd "s-`") 'shell)
+(global-set-key (kbd "s-`") 'vterm)
 #+end_src
+
+#+RESULTS:
+: shell
+
 *** Basic Text editing
 Duplicate a line
 #+begin_src emacs-lisp
