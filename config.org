@@ -25,6 +25,7 @@ One require to rule them all
 (require 'org-bullets)
 (require 'smart-mode-line)
 (require 'dumb-jump)
+(require 'outline)
 #+end_src
 
 ** Emacs startup, theme, and others
@@ -105,13 +106,15 @@ Setup python venv with conda
 (sml-modeline-mode t)
 (helm-mode 1)
 (pyvenv-mode 1)
-
+(global-undo-tree-mode)
 (electric-pair-mode t)
-(outline-show-paren-mode 1)
-
+(rainbow-delimiters-mode 1)
+(show-paren-mode 1)
+(setq show-paren-delay 0)
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
 
+(customize-set-variable 'helm-ff-lynx-style-map t)
 
 (setq-default display-line-numbers-width 2
               display-line-numbers-widen t)
@@ -120,7 +123,6 @@ Setup python venv with conda
       indent-tabs-mode nil)
    
 (display-time-mode 1)
-
 #+end_src
 
 Disable line numbers in some buffers
@@ -156,7 +158,16 @@ NeoTree with display icons
 #+begin_src emacs-lisp
 (setq neo-theme (if (display-graphic-p) 'icons))
 #+end_src
+*** Prog-Mode hooks
+Programming Mode Hooks
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook #'outline-minor-mode)
+(add-hook 'prog-mode-hook #'highlight-thing-mode)
+(add-hook 'python-mode-hook 'anaconda-mode)
+(add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
+#+end_src
 *** Projectile
 Enable Projectile Globally
 #+begin_src emacs-lisp
@@ -332,6 +343,63 @@ Org-ref Sugars
   ("a" arxiv-add-bibtex-entry)
   ("y" org-bibtex-yank))
 #+end_src
+*** Spotify
+Spotify sugars
+#+begin_src emacs-lisp
+(defhydra hydra-spotify (:color blue)
+  "
+  ^
+  ^Spotify  ^             ^Do^
+  ^─---────^─────────────-^──^─────────────
+  _P_ Play/Pause          _n_ Next
+  _s_ Stop                _p_ Previous
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("P" spotify-playpause)
+  ("n" spotify-next)
+  ("p" spotify-previous)
+  ("s" spotify-quit))
+#+end_src
+*** Outline
+Outline and Code folding
+#+begin_src emacs-lisp
+  (defhydra hydra-outline (:color blue)
+    "
+    ^
+    ^Outline  ^           ^Hide ^                ^Show ^               ^Move ^
+    ^─────────^───────────^─────^────────────────^─────^───────────────^─────^─────────────────────
+    _q_ Quit              _g_ Hide Sublevels     _a_ Show All          _u_ Up Heading                
+                        _t_ Hide Body          _e_ Show Entry        _n_ Next Visible Heading     
+                        _o_ Hide Other         _i_ Show Children     _p_ Previous Visible Heading 
+                        _c_ Hide Entry         _k_ Show Branches     _f_ Forward Same Level       
+                        _l_ Hide Leaves        _s_ Show Subtree      _b_ Backward Same Level       
+                        _d_ Hide Subtree      
+    "
+  ("q" nil)
+  ;; HIDE
+  ("g" outline-hide-sublevels)   
+  ("t" outline-hide-body)        
+  ("o" outline-hide-other)       
+  ("c" outline-hide-entry)       
+  ("l" outline-hide-leaves)      
+  ("d" outline-hide-subtree)     
+  ;; SHOW
+  ("a" outline-show-all)         
+  ("e" outline-show-entry)       
+  ("i" outline-show-children)    
+  ("k" outline-show-branches)    
+  ("s" outline-show-subtree)     
+  ;; MOVE
+  ("u" outline-up-heading)               
+  ("n" outline-next-visible-heading)     
+  ("p" outline-previous-visible-heading) 
+  ("f" outline-forward-same-level)       
+  ("b" outline-backward-same-level))      
+#+end_src
+
+#+RESULTS:
+: hydra-outline/body
 
 ** Org
 *** Files
@@ -800,6 +868,12 @@ Org-ref hydra sugar
 (global-set-key (kbd "C-c r") 'hydra-org-ref/body)
 #+end_src
 
+*** Spotify
+Spotify hydra sugar
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c s") 'hydra-spotify/body)
+#+end_src
+
 *** Elfeed
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c w") 'elfeed)
@@ -831,30 +905,5 @@ Pretty print JSON buffer
 *** Outline
 Rebind outline minor mode key bindings
 #+begin_src emacs-lisp
-; Outline-minor-mode key map
- (define-prefix-command 'cm-map nil "Outline-")
- ; HIDE
- (define-key cm-map "q" 'outline-hide-sublevels)    ; Hide everything but the top-level headings
- (define-key cm-map "t" 'outline-hide-body)         ; Hide everything but headings (all body lines)
- (define-key cm-map "o" 'outline-hide-other)        ; Hide other branches
- (define-key cm-map "c" 'outline-hide-entry)        ; Hide this entry's body
- (define-key cm-map "l" 'outline-hide-leaves)       ; Hide body lines in this entry and sub-entries
- (define-key cm-map "d" 'outline-hide-subtree)      ; Hide everything in this entry and sub-entries
- ; SHOW
- (define-key cm-map "a" 'outline-show-all)          ; Show (expand) everything
- (define-key cm-map "e" 'outline-show-entry)        ; Show this heading's body
- (define-key cm-map "i" 'outline-show-children)     ; Show this heading's immediate child sub-headings
- (define-key cm-map "k" 'outline-show-branches)     ; Show all sub-headings under this heading
- (define-key cm-map "s" 'outline-show-subtree)      ; Show (expand) everything in this heading & below
- ; MOVE
- (define-key cm-map "u" 'outline-up-heading)                ; Up
- (define-key cm-map "n" 'outline-next-visible-heading)      ; Next
- (define-key cm-map "p" 'outline-previous-visible-heading)  ; Previous
- (define-key cm-map "f" 'outline-forward-same-level)        ; Forward - same level
- (define-key cm-map "b" 'outline-backward-same-level)       ; Backward - same level
- (global-set-key (kbd "C-c o") cm-map)
+ (define-key outline-minor-mode-map (kbd "C-c o") 'hydra-outline/body)
 #+end_src
-
-#+RESULTS:
-: (keymap (98 . outline-backward-same-level) (102 . outline-forward-same-level) (112 . outline-previous-visible-heading) (110 . outline-next-visible-heading) (117 . outline-up-heading) (115 . outline-show-subtree) (107 . outline-show-branches) (105 . outline-show-children) (101 . outline-show-entry) (97 . outline-show-all) (100 . outline-hide-subtree) (108 . outline-hide-leaves) (99 . outline-hide-entry) (111 . outline-hide-other) (116 . outline-hide-body) (113 . outline-hide-sublevels) Outline-)
-
