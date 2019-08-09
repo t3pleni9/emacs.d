@@ -43,14 +43,6 @@ One require to rule them all
 (setq sml/no-confirm-load-theme t)
 #+end_src
 
-Have time displayed in status bar
-#+begin_src emacs-lisp
-(setq display-time-string-forms
-       '((propertize (concat day "." month "." (substring year -2) " " 12-hours ":" minutes " "  am-pm)
- 		    'face 'bold)))
-
-#+end_src
-
 Disable Backup
 #+begin_src emacs-lisp
 (setq make-backup-files nil)
@@ -83,6 +75,24 @@ Make shell not to repeat commands
 #+begin_src emacs-lisp
 (setq comint-process-echoes t)
 #+end_src
+
+*** Date and Time 
+Have time displayed in status bar
+#+begin_src emacs-lisp
+(setq display-time-string-forms
+       '((propertize (concat day "." month "." (substring year -2) " " 12-hours ":" minutes " "  am-pm)
+ 		    'face 'bold)))
+
+#+end_src
+
+*** Display battery
+#+begin_src emacs-lisp
+(setq battery-mode-line-format " %p%%")
+(display-battery-mode)
+#+end_src
+
+#+RESULTS:
+: t
 
 *** Python
 Setup python venv with conda
@@ -179,7 +189,7 @@ Enable Projectile Globally
 Projectile default search path and indexing
 #+begin_src emacs-lisp
 (setq projectile-project-search-path '("~/Documents/Projects/"))
-(setq projectile-indexing-method 'alien)
+(setq projectile-indexing-method 'native)
 #+end_src
 
 Bind switch project to =helm-projectile=
@@ -293,7 +303,7 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   ("b" helm-projectile-switch-to-buffer)
   ("d" helm-projectile-find-dir)
   ("D" projectile-dired)
-  ("f" helm-projectile-find-file)
+  ("f" helm-projectile)
   ("i" projectile-invalidate-cache :color red)
   ("K" projectile-kill-buffers)
   ("p" helm-projectile-switch-project)
@@ -302,6 +312,10 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   ("s" helm-projectile-ag)
   ("S" projectile-save-project-buffers))
 #+end_src
+
+#+RESULTS:
+: hydra-projectile/body
+
 *** Helm
 #+begin_src emacs-lisp
 (defhydra hydra-helm (:color blue)
@@ -805,13 +819,10 @@ Have a Doom styled console launch binding
 (global-set-key (kbd "s-`") 'vterm)
 #+end_src
 
-#+RESULTS:
-: shell
-
 *** Basic Text editing
 Duplicate a line
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c C-d") 'duplicate-line)
+(global-set-key (kbd "C-c d") 'duplicate-line)
 #+end_src
 
 Mark occurrences ( Rudimentary version of iedit)
@@ -867,6 +878,14 @@ Org-ref hydra sugar
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c r") 'hydra-org-ref/body)
 #+end_src
+
+Org-brain
+#+begin_src emacs-lisp
+ (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
+#+end_src
+
+#+RESULTS:
+: org-brain-visualize
 
 *** Spotify
 Spotify hydra sugar
