@@ -26,6 +26,7 @@ One require to rule them all
 (require 'smart-mode-line)
 (require 'dumb-jump)
 (require 'outline)
+(require 'calfw-org)
 #+end_src
 
 ** Emacs startup, theme, and others
@@ -80,14 +81,17 @@ Make shell not to repeat commands
 Have time displayed in status bar
 #+begin_src emacs-lisp
 (setq display-time-string-forms
-       '((propertize (concat day "." month "." (substring year -2) " " 12-hours ":" minutes " "  am-pm)
+       '((propertize (concat dayname " " day  " "  monthname " " 12-hours ":" minutes " "  am-pm)
  		    'face 'bold)))
 
 #+end_src
 
+#+RESULTS:
+| propertize | (concat dayname   day   monthname   12-hours : minutes   am-pm) | (quote face) | (quote bold) |
+
 *** Display battery
 #+begin_src emacs-lisp
-(setq battery-mode-line-format " %p%%")
+(setq battery-mode-line-format " [%p%%] ")
 (display-battery-mode)
 #+end_src
 
@@ -173,7 +177,6 @@ Programming Mode Hooks
 #+begin_src emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook #'outline-minor-mode)
-(add-hook 'prog-mode-hook #'highlight-thing-mode)
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
@@ -242,8 +245,6 @@ Use aspell to fix my mistakes
 (add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-
-(add-hook 'org-mode-hook 'org-zotxt-mode)
 (add-hook 'org-mode-hook 'org-indent-mode)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 (add-hook 'org-mode-hook 'flyspell-mode)
@@ -333,10 +334,11 @@ _r_ resume          _g_ google
   ("g" helm-google-suggest)
   ("a" arxiv-lookup)
   ("i" helm-imenu)
-  ("k" helm-outline-show-kill-ring)
+  ("k" helm-show-kill-ring)
   ("r" helm-resume))
 
 #+end_src
+
 *** Org
 Org-ref Sugars
 #+begin_src emacs-lisp
@@ -423,16 +425,21 @@ List of global org files
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
 (setq references-file-path "~/Documents/org-notes/bibliography/references.org")
 (setq bookmarks-file-path "~/Documents/org-notes/projects/bookmarks.org")
+(setq tasks-file-path "~/Documents/org-notes/projects/inbox.org")
+(setq home-tasks-file-path "~/Dropbox/org-notes/home/tasks.org")
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
 (set-register ?r (cons 'file references-file-path))
+(set-register ?b (cons 'file bookmarks-file-path))
 
-(setq org-agenda-files '("~/Documents/org-notes/projects/agenda.org"
-			 "~/Documents/org-notes/projects/inbox.org"
+(setq org-agenda-files '("~/Documents/org-notes/projects/inbox.org"
                          "~/Documents/org-notes/projects/projects.org"
                          "~/Documents/org-notes/projects/bookmarks.org"
-			 "~/Documents/org-notes/bibliography/references.org"))
+			 "~/Documents/org-notes/bibliography/references.org"
+                         "~/Documents/Personal/.journal/"))
 (setq org-default-notes-file (concat org-directory "/projects/capture.org"))
+(setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+$")
+(add-hook 'diary-display-hook 'diary-fancy-display)
 
 #+end_src
 
@@ -521,40 +528,62 @@ Org-ref Files
 (setq bibtex-completion-display-formats
       '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
 #+end_src
+*** Org-journal
+Org-Journal settings
+#+begin_src emacs-lisp
+  (setq org-journal-dir "~/Documents/Personal/.journal/")
+  (setq org-journal-file-format "%Y%m%d")
+  (setq org-journal-file-type 'yearly)
+  (setq org-journal-carryover-items "nil")
+  (require 'org-journal)
+  (org-reload)
+#+end_src
+
 *** Capture Templates
 #+begin_src emacs-lisp
 (setq org-capture-templates
       '(
 	("s" "Secrets" entry
-	 (file secrets-file-path)
+	 (file+headline secrets-file-path "Secrets")
 	 "* [[%^{Link}][%^{Description}]]
  :PROPERTIES:
  :USERNAME: %^{Username}
  :PASSWORD: %^{Password}
  :END:
 ")
-	("t" "Todo [inbox]" entry
-	 (file+headline "~/Documents/org-notes/projects/inbox.org" "Tasks")
+("t" "Todos")
+("tt" "Task [inbox]" entry
+	 (file+headline tasks-file-path "Tasks")
 	 "* TODO %i%?")
 
-	("r" "References")
-	("rp" "Paper" entry
-	 (file+headline references-file-path "Papers")
-       	 "*  %^g %i%?
-       :PROPERTIES:
-       :TYPE: Paper
-       :END:
+("tc" "Course [inbox]" entry
+	 (file+headline tasks-file-path "Courses")
+	 "* TODO %i%?")
+
+("ts" "Shopping list [inbox]" checkitem
+	 (file+headline home-tasks-file-path "Shopping")
+	 "- [ ] %i%? ")
+
+("tr" "Reminder [inbox]" entry
+	 (file+headline tasks-file-path "Reminders")
+	 "* TODO %i%?")
+
+("r" "Paper" entry
+(file+headline references-file-path "Papers")
+	 "*  %^g %i%?
+     :PROPERTIES:
+     :TYPE: Paper
+     :END:
 ")
-	("rb" "Book" entry
-	 (file+headline references-file-path "Books")
+	("b" "Bookmarks")
+	("bb" "Book" entry
+	 (file+headline bookmarks-file-path "Books")
 	   "* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Book
        :URL: [[%^{url}][source]]
        :END:
 ")
-
-	("b" "Bookmarks")
 	("bw" "Web URL" entry
 	 (file+headline bookmarks-file-path "Web")
 	   "* TODO %^{title}  %^g
@@ -578,6 +607,15 @@ Org-ref Files
 	   "* TODO %^{title} %^g
        :PROPERTIES:
        :TYPE: Podcast
+       :URL: [[%^{url}][source]]
+       :END:
+")
+
+("bc" "Courses" entry
+	 (file+headline bookmarks-file-path "Courses")
+	   "* TODO %^{title} %^g
+       :PROPERTIES:
+       :TYPE: Course
        :URL: [[%^{url}][source]]
        :END:
 ")))
@@ -883,9 +921,6 @@ Org-brain
 #+begin_src emacs-lisp
  (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
 #+end_src
-
-#+RESULTS:
-: org-brain-visualize
 
 *** Spotify
 Spotify hydra sugar

@@ -36,5 +36,6 @@
 
 
 ;; init.el ends here
-(load "~/.emacs.d/external/custom-variables")
+(setq custom-file "~/.emacs.d/external/custom-variables.el")
+(load custom-file)
 (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
