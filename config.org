@@ -2,7 +2,7 @@
 #+AUTHOR: Justin Jose
 
 * Config
-A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration, drawing inspirations from [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org][angrybacon]] dotemacs.org
+A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration.
 
 ** Require
 One require to rule them all
@@ -12,7 +12,6 @@ One require to rule them all
 (require 'neotree)
 (require 'all-the-icons)
 (require 'multiple-cursors)
-(require 'netlogo-mode)
 (require 'virtualenvwrapper)
 (require 'helm-projectile)
 (require 'json-mode)
@@ -27,22 +26,27 @@ One require to rule them all
 (require 'dumb-jump)
 (require 'outline)
 (require 'calfw-org)
+(require 'iedit)
 #+end_src
 
 ** Emacs startup, theme, and others
+*** Global
 #+begin_src emacs-lisp
-(setq inhibit-startup-message t) ;; outline-hide the startup messag
-(load-theme 'dracula t)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
-(elpy-enable)
-(epa-file-enable)
+  (setq inhibit-startup-message t) ;; outline-hide the startup messag
+  (load-theme 'dracula t)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (elpy-enable)
+  (epa-file-enable)
 
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin/"))
-(sml/setup)
-(setq sml/no-confirm-load-theme t)
+  (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin/"))
+  (sml/setup)
+  (setq sml/no-confirm-load-theme t)
 #+end_src
+
+#+RESULTS:
+: t
 
 Disable Backup
 #+begin_src emacs-lisp
@@ -87,16 +91,20 @@ Have time displayed in status bar
 #+end_src
 
 #+RESULTS:
-| propertize | (concat dayname   day   monthname   12-hours : minutes   am-pm) | (quote face) | (quote bold) |
 
 *** Display battery
 #+begin_src emacs-lisp
-(setq battery-mode-line-format " [%p%%] ")
-(display-battery-mode)
+    (require 'battery)
+    (defun my/battery-mode-line () (let* ((bat (read (cdr (assoc 112 (funcall battery-status-function)))))
+        (index (cl-position-if (lambda(e) (> bat e)) '(85 75 50 35 15 7 2 -1)))
+        (charging (if (string-match-p "charging" (format "%s" (funcall battery-status-function))) "⚡" ""))
+        (symbol (nth index '("[+++]" "[++-]" "[++ ]" "[+- ]" "[+  ]" "[-  ]" "[!  ]" "[.  ]")))
+        (color (nth index (mapcar (lambda(c) (apply 'color-rgb-to-hex c)) (color-gradient '(0.3 1 0.2) '(1 0.2 0.1) 8)))))
+      (propertize (concat symbol charging " " (number-to-string bat) "%% ") 'face (list :foreground color :weight 'bold))))
 #+end_src
 
 #+RESULTS:
-: t
+: my/battery-mode-line
 
 *** Python
 Setup python venv with conda
@@ -148,8 +156,10 @@ Disable line numbers in some buffers
 (add-hook 'neotree-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'vterm-mode-hook 'display-line-numbers-disable-hook)
 
 #+end_src
+
 
 Disable visual line mode in some buffers
 #+begin_src emacs-lisp
@@ -177,10 +187,15 @@ Programming Mode Hooks
 #+begin_src emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook #'outline-minor-mode)
+(add-hook 'nxml-mode-hook #'outline-minor-mode)
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 
 #+end_src
+
+#+RESULTS:
+| anaconda-eldoc-mode | anaconda-mode | elpy-mode |
+
 *** Projectile
 Enable Projectile Globally
 #+begin_src emacs-lisp
@@ -280,13 +295,14 @@ Dumb jump lets me goto definitions easily using a dumb =ag= search
   ("q" nil)
   ("n" git-gutter+-next-hunk)
   ("p" git-gutter+-previous-hunk)
-  ("w" git-gutter+-outline-show-hunk)
+  ("w" git-gutter+-show-hunk)
   ("t" git-gutter+-stage-hunks)
   ("b" magit-blame)
   ("c" magit-clone)
   ("i" magit-init)
   ("s" magit-status))
 #+end_src
+
 *** Projectile
 #+begin_src emacs-lisp
 (defhydra hydra-projectile (:color blue)
@@ -366,17 +382,18 @@ Spotify sugars
   "
   ^
   ^Spotify  ^             ^Do^
-  ^─---────^─────────────-^──^─────────────
-  _P_ Play/Pause          _n_ Next
-  _s_ Stop                _p_ Previous
+  ^────────^──────────────^──^─────────────
+  _p_ Play/Pause          _N_ Next
+  _s_ Stop                _P_ Previous
   _q_ Quit            
   "
   ("q" nil)
-  ("P" spotify-playpause)
-  ("n" spotify-next)
-  ("p" spotify-previous)
+  ("p" spotify-playpause)
+  ("N" spotify-next)
+  ("P" spotify-previous)
   ("s" spotify-quit))
 #+end_src
+
 *** Outline
 Outline and Code folding
 #+begin_src emacs-lisp
@@ -418,13 +435,66 @@ Outline and Code folding
 : hydra-outline/body
 
 ** Org
+*** Global
+TODO Cycles
+#+begin_src emacs-lisp
+(setq org-todo-keywords
+(quote ((sequence "TODO(t)" "QUEUED(q)" "INPROGRESS(i)"  "|" "DONE(d!)" "CANCELLED(c)" )
+(sequence "READ(r)" "WATCH(w)" "|" )
+(sequence "BUY(b)" "VISIT(v)" "TRY(T)"  "|")
+(sequence "RE-VISIT(V)" "RE-CONSIDER (C)" "|")
+(sequence "POSTPONED(p)" "|")
+)))
+
+(setq org-todo-keyword-faces '(
+("TODO" . (:foreground "#ff39a3" :weight bold))
+("TRY" . (:foreground "#ff39a3" :weight bold))
+("READ" . (:foreground "#ff39a3" :weight bold))
+("BUY" . (:foreground "#ff39a3" :weight bold))
+("WATCH" . (:foreground "#ff39a3" :weight bold))
+("VISIT" . (:foreground "#ff39a3" :weight bold))
+("QUEUED" . (:foreground "#ff9a00" :weight bold))
+("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
+("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
+("RE-CONSIDER" . (:foreground "#88ddee" :background "#454545" :weight bold))
+("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
+("POSTPONED" . "#008080")))
+#+end_src
+
+#+RESULTS:
+: ((TODO :foreground #ff39a3 :weight bold) (TRY :foreground #ff39a3 :weight bold) (READ :foreground #ff39a3 :weight bold) (BUY :foreground #ff39a3 :weight bold) (WATCH :foreground #ff39a3 :weight bold) (VISIT :foreground #ff39a3 :weight bold) (QUEUED :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-CONSIDER :foreground #88ddee :background #454545 :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
+
+Time tracking on tasks
+#+begin_src emacs-lisp
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+#+end_src
+
+Image Scaling 
+#+begin_src emacs-lisp
+(setq org-image-actual-width nil)
+#+end_src
+
+*** Org-agenda
+#+begin_src emacs-lisp
+  (require 'org-agenda)
+
+  (setq org-agenda-prefix-format '(
+    ;; (agenda  . " %i %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
+    (agenda  . "  • %?-12t% s")
+    (timeline  . "  % s")
+    (todo  . " %i %-12:c")
+    (tags  . " %i %-12:c")
+    (search . " %i %-12:c")))
+#+end_src
+
 *** Files
 List of global org files
 #+begin_src emacs-lisp
 (setq org-directory "~/Documents/org-notes")
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
 (setq references-file-path "~/Documents/org-notes/bibliography/references.org")
-(setq bookmarks-file-path "~/Documents/org-notes/projects/bookmarks.org")
+(setq bookmarks-file-path "~/Documents/org-notes/projects/inbox.org")
 (setq tasks-file-path "~/Documents/org-notes/projects/inbox.org")
 (setq home-tasks-file-path "~/Dropbox/org-notes/home/tasks.org")
 (setq secrets-file (cons 'file secrets-file-path))
@@ -434,30 +504,28 @@ List of global org files
 
 (setq org-agenda-files '("~/Documents/org-notes/projects/inbox.org"
                          "~/Documents/org-notes/projects/projects.org"
-                         "~/Documents/org-notes/projects/bookmarks.org"
 			 "~/Documents/org-notes/bibliography/references.org"
+			 "~/Dropbox/org-notes/home/tasks.org"
                          "~/Documents/Personal/.journal/"))
 (setq org-default-notes-file (concat org-directory "/projects/capture.org"))
 (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+$")
 (add-hook 'diary-display-hook 'diary-fancy-display)
 
-#+end_src
-
-*** Org TODO
-TODO workflow configurations
-#+begin_src emacs-lisp
-(setq org-todo-keywords '((sequence "TODO(t)" "QUEUED(q)" "WORKING(w)" "|" "DONE(d)" "CANCELLED(c)" "RE-VISIT(r)")))
-(setq org-log-done t
-      org-todo-keyword-faces '(("WORKING" . (:foreground "#00CCFF" :weight bold :background "#353535"))
-			       ("QUEUED" . (:foreground "#F7FF00" :weight bold :background "#353535"))
-			       ("CANCELLED" . (:foreground "#FF0000" :weight bold :background "#353535"))
-			       ("RE-VISIT" . (:foreground "#00FFFF" :weight bold))))
-
 (setq org-refile-targets '(("~/Documents/org-notes/projects/projects.org" :maxlevel . 3)
-                           ("~/Documents/org-notes/bibliography/references.org" :level . 1)
-                           ("~/Documents/org-notes/projects/capture.org" :maxlevel . 2)))
+                           ("~/Documents/org-notes/projects/inbox.org" :level . 1)
+                           ("~/Documents/org-notes/projects/archive.org" :level . 1)
+                           ("~/Documents/org-notes/projects/capture.org" :maxlevel . 1)))
+
 
 #+end_src
+
+*** Path setting
+#+begin_src emacs-lisp
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin"))
+#+end_src
+
+#+RESULTS:
+: /usr/bin:/bin:/usr/sbin:/sbin:/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_10:/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_10:/usr/local/bin/:/Library/TeX/texbin:/Library/TeX/texbin/:/Library/TeX/texbin
 
 *** Org Babel
 #+begin_src emacs-lisp
@@ -540,6 +608,7 @@ Org-Journal settings
 #+end_src
 
 *** Capture Templates
+
 #+begin_src emacs-lisp
 (setq org-capture-templates
       '(
@@ -560,12 +629,12 @@ Org-Journal settings
 	 (file+headline tasks-file-path "Courses")
 	 "* TODO %i%?")
 
-("ts" "Shopping list [inbox]" checkitem
+("ts" "Shopping list [home]" checkitem
 	 (file+headline home-tasks-file-path "Shopping")
 	 "- [ ] %i%? ")
 
-("tr" "Reminder [inbox]" entry
-	 (file+headline tasks-file-path "Reminders")
+("tr" "Reminder [home]" entry
+	 (file+headline home-tasks-file-path "Reminders")
 	 "* TODO %i%?")
 
 ("r" "Paper" entry
@@ -586,7 +655,7 @@ Org-Journal settings
 ")
 	("bw" "Web URL" entry
 	 (file+headline bookmarks-file-path "Web")
-	   "* TODO %^{title}  %^g
+	   "* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Web
        :URL: [[%^{url}][source]]
@@ -595,7 +664,7 @@ Org-Journal settings
 
 	("bv" "Videos" entry
 	 (file+headline bookmarks-file-path "Videos")
-	   "* TODO %^{title}  %^g
+	   "* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Video
        :URL: [[%^{url}][source]]
@@ -604,7 +673,7 @@ Org-Journal settings
 
 	("bp" "Podcasts" entry
 	 (file+headline bookmarks-file-path "Podcasts")
-	   "* TODO %^{title} %^g
+	   "* %^{title} %^g
        :PROPERTIES:
        :TYPE: Podcast
        :URL: [[%^{url}][source]]
@@ -893,11 +962,15 @@ Have helm handle most of the things around
 
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
 (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
 (global-set-key (kbd "C-x C-f") #'helm-find-files)
 (global-set-key (kbd "C-c h") 'hydra-helm/body)
 (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
 #+end_src
+
+#+RESULTS:
+: my/helm-bibtex-publications
 
 *** Org
 References, Publications and Citations
@@ -961,3 +1034,12 @@ Rebind outline minor mode key bindings
 #+begin_src emacs-lisp
  (define-key outline-minor-mode-map (kbd "C-c o") 'hydra-outline/body)
 #+end_src
+*** Python
+Pytest keybinding in python mode
+#+begin_src emacs-lisp
+(define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
+#+end_src
+
+#+RESULTS:
+: python-pytest-popup
+

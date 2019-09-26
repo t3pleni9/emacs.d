@@ -25,6 +25,7 @@
     projectile
     org
     git-gutter
+    use-package
     wrap-region))
 
 (mapc #'(lambda (package)
@@ -38,4 +39,8 @@
 ;; init.el ends here
 (setq custom-file "~/.emacs.d/external/custom-variables.el")
 (load custom-file)
+
 (org-babel-load-file (expand-file-name "~/.emacs.d/config.org"))
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(put 'set-goal-column 'disabled nil)
