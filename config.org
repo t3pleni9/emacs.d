@@ -27,13 +27,14 @@ One require to rule them all
 (require 'outline)
 (require 'calfw-org)
 (require 'iedit)
+(require 'rust-mode)
 #+end_src
 
 ** Emacs startup, theme, and others
 *** Global
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t) ;; outline-hide the startup messag
-  (load-theme 'dracula t)
+  (load-theme 'darktooth t)
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -186,15 +187,15 @@ NeoTree with display icons
 Programming Mode Hooks
 #+begin_src emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook #'yafolding-mode)
+(add-hook 'json-mode-hook #'yafolding-mode)
 (add-hook 'prog-mode-hook #'outline-minor-mode)
 (add-hook 'nxml-mode-hook #'outline-minor-mode)
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
 #+end_src
-
-#+RESULTS:
-| anaconda-eldoc-mode | anaconda-mode | elpy-mode |
 
 *** Projectile
 Enable Projectile Globally
