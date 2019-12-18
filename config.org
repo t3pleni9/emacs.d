@@ -1043,4 +1043,8 @@ Pytest keybinding in python mode
 
 #+RESULTS:
 : python-pytest-popup
+*** Password Generator
+#+begin_src emacs-lisp
+(define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
+#+end_src
 
