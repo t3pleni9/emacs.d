@@ -11,6 +11,7 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 (add-to-list 'load-path "~/.emacs.d/external/")
+(add-to-list 'load-path "~/.emacs.d/external/emacs-totp")
 
 (when (not package-archive-contents)
   (package-refresh-contents))

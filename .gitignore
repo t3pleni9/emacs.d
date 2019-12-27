@@ -20,3 +20,8 @@ config.el
 /url
 *.last
 /external
+config.pdf
+config.tex
+games/
+notes
+org-clock-save.el

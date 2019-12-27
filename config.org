@@ -28,7 +28,12 @@ One require to rule them all
 (require 'calfw-org)
 (require 'iedit)
 (require 'rust-mode)
+(require 'org-super-agenda)
+(require 'emacs-totp)
 #+end_src
+
+#+RESULTS:
+: emacs-totp
 
 ** Emacs startup, theme, and others
 *** Global
@@ -136,6 +141,7 @@ Setup python venv with conda
 (setq show-paren-delay 0)
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
+(org-super-agenda-mode 1)
 
 (customize-set-variable 'helm-ff-lynx-style-map t)
 
@@ -441,6 +447,7 @@ TODO Cycles
 #+begin_src emacs-lisp
 (setq org-todo-keywords
 (quote ((sequence "TODO(t)" "QUEUED(q)" "INPROGRESS(i)"  "|" "DONE(d!)" "CANCELLED(c)" )
+(sequence "FILE-CLAIM(f)" "|" )
 (sequence "READ(r)" "WATCH(w)" "|" )
 (sequence "BUY(b)" "VISIT(v)" "TRY(T)"  "|")
 (sequence "RE-VISIT(V)" "RE-CONSIDER (C)" "|")
@@ -452,7 +459,8 @@ TODO Cycles
 ("TRY" . (:foreground "#ff39a3" :weight bold))
 ("READ" . (:foreground "#ff39a3" :weight bold))
 ("BUY" . (:foreground "#ff39a3" :weight bold))
-("WATCH" . (:foreground "#ff39a3" :weight bold))
+("FILE-CLAIM" . (:foreground "#ff39a3" :weight bold))
+("WATCH" . (:foreground "#ffdd00" :weight bold))
 ("VISIT" . (:foreground "#ff39a3" :weight bold))
 ("QUEUED" . (:foreground "#ff9a00" :weight bold))
 ("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
@@ -463,7 +471,7 @@ TODO Cycles
 #+end_src
 
 #+RESULTS:
-: ((TODO :foreground #ff39a3 :weight bold) (TRY :foreground #ff39a3 :weight bold) (READ :foreground #ff39a3 :weight bold) (BUY :foreground #ff39a3 :weight bold) (WATCH :foreground #ff39a3 :weight bold) (VISIT :foreground #ff39a3 :weight bold) (QUEUED :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-CONSIDER :foreground #88ddee :background #454545 :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
+: ((TODO :foreground #ff39a3 :weight bold) (TRY :foreground #ff39a3 :weight bold) (READ :foreground #ff39a3 :weight bold) (BUY :foreground #ff39a3 :weight bold) (FILE-CLAIM :foreground #ff39a3 :weight bold) (WATCH :foreground #ffdd00 :weight bold) (VISIT :foreground #ff39a3 :weight bold) (QUEUED :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-CONSIDER :foreground #88ddee :background #454545 :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
 
 Time tracking on tasks
 #+begin_src emacs-lisp
@@ -481,7 +489,7 @@ Image Scaling
   (require 'org-agenda)
 
   (setq org-agenda-prefix-format '(
-    ;; (agenda  . " %i %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
+    ;;(agenda  . " %i %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
     (agenda  . "  • %?-12t% s")
     (timeline  . "  % s")
     (todo  . " %i %-12:c")
@@ -495,38 +503,41 @@ List of global org files
 (setq org-directory "~/Documents/org-notes")
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
 (setq references-file-path "~/Documents/org-notes/bibliography/references.org")
-(setq bookmarks-file-path "~/Documents/org-notes/projects/inbox.org")
-(setq tasks-file-path "~/Documents/org-notes/projects/inbox.org")
+(setq bookmarks-file-path "~/Documents/org-notes/exocortex/capture.org")
+(setq journal-file-path "~/Documents/org-notes/exocortex/journal.org")
+(setq tasks-file-path "~/Documents/org-notes/exocortex/inbox.org")
 (setq home-tasks-file-path "~/Dropbox/org-notes/home/tasks.org")
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
 (set-register ?r (cons 'file references-file-path))
 (set-register ?b (cons 'file bookmarks-file-path))
+(set-register ?j (cons 'file journal-file-path))
 
-(setq org-agenda-files '("~/Documents/org-notes/projects/inbox.org"
-                         "~/Documents/org-notes/projects/projects.org"
-			 "~/Documents/org-notes/bibliography/references.org"
-			 "~/Dropbox/org-notes/home/tasks.org"
-                         "~/Documents/Personal/.journal/"))
-(setq org-default-notes-file (concat org-directory "/projects/capture.org"))
+(setq org-agenda-files '("~/Documents/org-notes/exocortex/inbox.org"
+"~/Documents/org-notes/exocortex/projects.org"
+"~/Documents/org-notes/exocortex/capture.org"
+"~/Documents/org-notes/exocortex/journal.org"
+"~/Documents/org-notes/bibliography/references.org"
+"~/Dropbox/org-notes/home/tasks.org"))
+(setq org-default-notes-file (concat org-directory "/exocortex/capture.org"))
 (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+$")
 (add-hook 'diary-display-hook 'diary-fancy-display)
 
-(setq org-refile-targets '(("~/Documents/org-notes/projects/projects.org" :maxlevel . 3)
-                           ("~/Documents/org-notes/projects/inbox.org" :level . 1)
-                           ("~/Documents/org-notes/projects/archive.org" :level . 1)
-                           ("~/Documents/org-notes/projects/capture.org" :maxlevel . 1)))
+(setq org-refile-targets '(("~/Documents/org-notes/exocortex/projects.org" :maxlevel . 3)
+                           ("~/Dropbox/org-notes/home/tasks.org" :maxlevel . 2)
+                           ("~/Documents/org-notes/exocortex/inbox.org" :level . 1)
+                           ("~/Documents/org-notes/exocortex/capture.org" :maxlevel . 1)))
 
 
 #+end_src
+
+#+RESULTS:
+: ((~/Documents/org-notes/exocortex/projects.org :maxlevel . 3) (~/Dropbox/org-notes/home/tasks.org :maxlevel . 2) (~/Documents/org-notes/exocortex/inbox.org :level . 1) (~/Documents/org-notes/exocortex/capture.org :maxlevel . 1))
 
 *** Path setting
 #+begin_src emacs-lisp
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin"))
 #+end_src
-
-#+RESULTS:
-: /usr/bin:/bin:/usr/sbin:/sbin:/Applications/Emacs.app/Contents/MacOS/bin-x86_64-10_10:/Applications/Emacs.app/Contents/MacOS/libexec-x86_64-10_10:/usr/local/bin/:/Library/TeX/texbin:/Library/TeX/texbin/:/Library/TeX/texbin
 
 *** Org Babel
 #+begin_src emacs-lisp
@@ -635,7 +646,7 @@ Org-Journal settings
 	 "- [ ] %i%? ")
 
 ("tr" "Reminder [home]" entry
-	 (file+headline home-tasks-file-path "Reminders")
+	 (file+headline home-tasks-file-path "Non-Recurring")
 	 "* TODO %i%?")
 
 ("r" "Paper" entry
@@ -645,7 +656,11 @@ Org-Journal settings
      :TYPE: Paper
      :END:
 ")
-	("b" "Bookmarks")
+("j" "Journal" entry
+(file+datetree journal-file-path)
+   "* %?")
+
+("b" "Bookmarks")
 	("bb" "Book" entry
 	 (file+headline bookmarks-file-path "Books")
 	   "* %^{title}  %^g
@@ -690,6 +705,9 @@ Org-Journal settings
        :END:
 ")))
 #+end_src
+
+#+RESULTS:
+| s | Secrets | entry | (file+headline secrets-file-path Secrets) | * [[%^{Link}][%^{Description}]] |
 
 ** Elfeed
 Feed reader setups
@@ -915,12 +933,17 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w") 'delete-frame)
+(global-set-key (kbd "C-x C-b") 'switch-to-buffer)
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "s->") #'other-window)
 (global-set-key (kbd "s-<") #'prev-window)
 #+end_src
+
+#+RESULTS:
+: prev-window
+
 **** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
