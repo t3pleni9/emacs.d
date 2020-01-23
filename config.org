@@ -262,6 +262,7 @@ Use aspell to fix my mistakes
 (add-hook 'org-mode-hook 'writegood-mode)
 (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
 (add-hook 'org-mode-hook 'org-beamer-mode)
+(add-hook 'org-mode-hook (lambda ()  (local-set-key (kbd "C-c C-p C-p") 'org-get-pin)))
 #+end_src
 
 *** Dumb Jump
