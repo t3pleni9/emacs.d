@@ -253,16 +253,15 @@ Use aspell to fix my mistakes
 
 *** Org
 #+begin_src emacs-lisp
-(add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
-(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+  (add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
+  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
-(add-hook 'org-mode-hook 'org-indent-mode)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-(add-hook 'org-mode-hook 'flyspell-mode)
-(add-hook 'org-mode-hook 'writegood-mode)
-(add-hook 'org-mode-hook 'org-password-manager-key-bindings)
-(add-hook 'org-mode-hook 'org-beamer-mode)
-(add-hook 'org-mode-hook (lambda ()  (local-set-key (kbd "C-c C-p C-p") 'org-get-pin)))
+  (add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  (add-hook 'org-mode-hook 'flyspell-mode)
+  (add-hook 'org-mode-hook 'writegood-mode)
+  (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
+  (add-hook 'org-mode-hook 'org-beamer-mode)
 #+end_src
 
 *** Dumb Jump
@@ -1062,8 +1061,9 @@ Pytest keybinding in python mode
 (define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
 #+end_src
 
-*** Password Generator
+*** Password Manager
 #+begin_src emacs-lisp
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
+(define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin)
 #+end_src
 
