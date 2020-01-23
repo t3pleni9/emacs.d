@@ -32,9 +32,6 @@ One require to rule them all
 (require 'emacs-totp)
 #+end_src
 
-#+RESULTS:
-: emacs-totp
-
 ** Emacs startup, theme, and others
 *** Global
 #+begin_src emacs-lisp
@@ -50,9 +47,6 @@ One require to rule them all
   (sml/setup)
   (setq sml/no-confirm-load-theme t)
 #+end_src
-
-#+RESULTS:
-: t
 
 Disable Backup
 #+begin_src emacs-lisp
@@ -96,8 +90,6 @@ Have time displayed in status bar
 
 #+end_src
 
-#+RESULTS:
-
 *** Display battery
 #+begin_src emacs-lisp
     (require 'battery)
@@ -108,9 +100,6 @@ Have time displayed in status bar
         (color (nth index (mapcar (lambda(c) (apply 'color-rgb-to-hex c)) (color-gradient '(0.3 1 0.2) '(1 0.2 0.1) 8)))))
       (propertize (concat symbol charging " " (number-to-string bat) "%% ") 'face (list :foreground color :weight 'bold))))
 #+end_src
-
-#+RESULTS:
-: my/battery-mode-line
 
 *** Python
 Setup python venv with conda
@@ -282,9 +271,6 @@ Dumb jump lets me goto definitions easily using a dumb =ag= search
 (setq dumb-jump-selector 'helm)
 #+end_src
 
-#+RESULTS:
-: helm
-
 ** Hydra
 *** GIT
 #+begin_src emacs-lisp
@@ -336,9 +322,6 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   ("s" helm-projectile-ag)
   ("S" projectile-save-project-buffers))
 #+end_src
-
-#+RESULTS:
-: hydra-projectile/body
 
 *** Helm
 #+begin_src emacs-lisp
@@ -438,9 +421,6 @@ Outline and Code folding
   ("b" outline-backward-same-level))      
 #+end_src
 
-#+RESULTS:
-: hydra-outline/body
-
 ** Org
 *** Global
 TODO Cycles
@@ -469,9 +449,6 @@ TODO Cycles
 ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
 ("POSTPONED" . "#008080")))
 #+end_src
-
-#+RESULTS:
-: ((TODO :foreground #ff39a3 :weight bold) (TRY :foreground #ff39a3 :weight bold) (READ :foreground #ff39a3 :weight bold) (BUY :foreground #ff39a3 :weight bold) (FILE-CLAIM :foreground #ff39a3 :weight bold) (WATCH :foreground #ffdd00 :weight bold) (VISIT :foreground #ff39a3 :weight bold) (QUEUED :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-CONSIDER :foreground #88ddee :background #454545 :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
 
 Time tracking on tasks
 #+begin_src emacs-lisp
@@ -530,9 +507,6 @@ List of global org files
 
 
 #+end_src
-
-#+RESULTS:
-: ((~/Documents/org-notes/exocortex/projects.org :maxlevel . 3) (~/Dropbox/org-notes/home/tasks.org :maxlevel . 2) (~/Documents/org-notes/exocortex/inbox.org :level . 1) (~/Documents/org-notes/exocortex/capture.org :maxlevel . 1))
 
 *** Path setting
 #+begin_src emacs-lisp
@@ -705,9 +679,6 @@ Org-Journal settings
        :END:
 ")))
 #+end_src
-
-#+RESULTS:
-| s | Secrets | entry | (file+headline secrets-file-path Secrets) | * [[%^{Link}][%^{Description}]] |
 
 ** Elfeed
 Feed reader setups
@@ -941,9 +912,6 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 (global-set-key (kbd "s-<") #'prev-window)
 #+end_src
 
-#+RESULTS:
-: prev-window
-
 **** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
@@ -992,9 +960,6 @@ Have helm handle most of the things around
 (global-set-key (kbd "C-c h") 'hydra-helm/body)
 (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
 #+end_src
-
-#+RESULTS:
-: my/helm-bibtex-publications
 
 *** Org
 References, Publications and Citations
@@ -1064,8 +1029,6 @@ Pytest keybinding in python mode
 (define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
 #+end_src
 
-#+RESULTS:
-: python-pytest-popup
 *** Password Generator
 #+begin_src emacs-lisp
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
