@@ -462,6 +462,32 @@ Image Scaling
 (setq org-image-actual-width nil)
 #+end_src
 
+*** PDF view
+Install PDF tools 
+#+begin_src emacs-lisp
+(pdf-tools-install)
+#+end_src
+
+Always open PDF inside EMACS itself
+#+begin_src emacs-lisp
+(eval-after-load 'org '(require 'org-pdfview))
+
+(add-to-list 'org-file-apps 
+             '("\\.pdf\\'" . (lambda (file link)
+                                     (org-pdfview-open link))))
+#+end_src
+
+Fine grained zoom with + and - to 10% 
+#+begin_src emacs-lisp
+(setq pdf-view-resize-factor 1.1)
+#+end_src
+
+Dark Mode always
+#+begin_src emacs-lisp
+(add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+(setq-default pdf-view-display-size 'fit-page)
+#+end_src
+
 *** Org-agenda
 #+begin_src emacs-lisp
   (require 'org-agenda)
@@ -983,6 +1009,12 @@ Org-ref hydra sugar
 Org-brain
 #+begin_src emacs-lisp
  (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
+#+end_src
+
+PDF View
+#+begin_src emacs-lisp
+(define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+(define-key org-mode-map (kbd "C-c i") 'interleave-mode)
 #+end_src
 
 *** Spotify
