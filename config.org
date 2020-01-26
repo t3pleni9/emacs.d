@@ -464,33 +464,6 @@ Outline and Code folding
 
 ** Org
 *** Global
-TODO Cycles
-#+begin_src emacs-lisp
-(setq org-todo-keywords
-(quote ((sequence "TODO(t)" "QUEUED(q)" "INPROGRESS(i)"  "|" "DONE(d!)" "CANCELLED(c)" )
-(sequence "FILE-CLAIM(f)" "|" )
-(sequence "READ(r)" "WATCH(w)" "|" )
-(sequence "BUY(b)" "VISIT(v)" "TRY(T)"  "|")
-(sequence "RE-VISIT(V)" "RE-CONSIDER (C)" "|")
-(sequence "POSTPONED(p)" "|")
-)))
-
-(setq org-todo-keyword-faces '(
-("TODO" . (:foreground "#ff39a3" :weight bold))
-("TRY" . (:foreground "#ff39a3" :weight bold))
-("READ" . (:foreground "#ff39a3" :weight bold))
-("BUY" . (:foreground "#ff39a3" :weight bold))
-("FILE-CLAIM" . (:foreground "#ff39a3" :weight bold))
-("WATCH" . (:foreground "#ffdd00" :weight bold))
-("VISIT" . (:foreground "#ff39a3" :weight bold))
-("QUEUED" . (:foreground "#ff9a00" :weight bold))
-("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
-("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
-("RE-CONSIDER" . (:foreground "#88ddee" :background "#454545" :weight bold))
-("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
-("POSTPONED" . "#008080")))
-#+end_src
-
 Time tracking on tasks
 #+begin_src emacs-lisp
 (setq org-clock-persist 'history)
@@ -500,6 +473,71 @@ Time tracking on tasks
 Image Scaling 
 #+begin_src emacs-lisp
 (setq org-image-actual-width nil)
+#+end_src
+*** Exo-cortex
+A place to store and remember everything that I can't burden my brain with thinking about. 
+**** File Organization
+- Capture :: All unscheduled sudden surges of things which I remember get captured into this file. Mostly things here are without a schedule or deadline, which need to refiling and revisiting sometime in the future. Also serves as the Bookmark collection of websites, videos, books, courses and podcasts. 
+#+begin_src emacs-lisp
+(setq bookmarks-file-path "~/Documents/org-notes/exocortex/capture.org")
+(setq org-default-notes-file bookmarks-file-path)
+#+end_src
+
+- Inbox :: All the scheduled tasks go into this file. If something gets scheduled from the capture file, they move into inbox. 
+#+begin_src emacs-lisp
+(setq tasks-file-path "~/Documents/org-notes/exocortex/inbox.org")
+#+end_src
+
+- Home Tasks :: Its better to keep work and home separate. So a separate home task file
+#+begin_src emacs-lisp
+(setq home-tasks-file-path "~/Dropbox/org-notes/home/tasks.org")
+#+end_src
+
+- References :: All the papers which need to be read, are captured into references.bib, whose offshot gets captured in references. They get planned and scheduled, and at max may be a part of a project. The section in references only moves to Projects, and never to Inbox.
+#+begin_src emacs-lisp
+(setq references-file-path "~/Documents/org-notes/bibliography/references.org")
+#+end_src
+
+- Projects :: This makes sure that everything I start gets done. Things move from capture into projects, gets scheduled and mostly has notes and sub items - scheduled or unscheduled. Nothing gets added to projects without having lived in capture
+
+***** ORG-Agenda: 
+All the above mentioned files just form a part of the bigger agenda.
+#+begin_src emacs-lisp
+(setq org-agenda-files '("~/Documents/org-notes/exocortex/inbox.org"
+"~/Documents/org-notes/exocortex/projects.org"
+"~/Documents/org-notes/exocortex/capture.org"
+"~/Documents/org-notes/exocortex/journal.org"
+"~/Documents/org-notes/bibliography/references.org"
+"~/Dropbox/org-notes/home/tasks.org"))
+#+end_src
+
+**** Org TODO cycles
+
+After multiple iterations of the TODO cycles, finally decided on using a simple list of TODOS, and to rely more on tags to mark the kind of TODO
+
+- TODO :: Anything that needs to be done. Mostly without a schedule or a deadline, but must be picked up on priority
+- SCHEDULED :: Things move from TODO to SCHEDULED, when a schedule or a deadline is attached to them.
+- QUEUED :: Things which need to be picked up next before focusing on the things in the TODO item list.
+- INPROGRESS :: Currently in play
+- DONE :: Finished, and ready to be archived.
+- CANCELLED :: No more important. Ready to be archived.
+- RE-VISIT :: Things done, but need a second opinion
+- POSTPONED :: Not important at this moment. Can't be archived until DONE or CANCELLED
+
+#+begin_src emacs-lisp
+(setq org-todo-keywords
+(quote ((sequence "TODO(t)" "SCHEDULED(s)" "QUEUED(q)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
+(sequence "POSTPONED(p)" "|" "RE-VISIT(v)")
+)))
+
+(setq org-todo-keyword-faces '(
+("TODO" . (:foreground "#ff39a3" :weight bold))
+("SCHEDULED" . (:foreground "#6666ff"  :weight bold))
+("QUEUED" . (:foreground "#ff9a00" :weight bold))
+("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
+("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
+("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
+("POSTPONED" . "#008080")))
 #+end_src
 
 *** PDF view
@@ -529,14 +567,76 @@ Dark Mode always
 #+end_src
 
 *** Org-agenda
+Org-super-agenda
+#+begin_src emacs-lisp
+(setq org-agenda-time-grid '((daily today require-timed)
+ (800 1000 1200 1400 1600 1800 2000)
+ "......" "----------------")
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t
+        org-agenda-include-diary nil
+        org-agenda-use-time-grid t
+        org-agenda-block-separator nil
+        org-agenda-compact-blocks t
+        org-agenda-start-with-log-mode t)
+
+    (setq org-super-agenda-groups
+           '((:log t)
+             (:name "Schedule"
+                    :time-grid t)
+             (:name "Today"
+                    :scheduled today)
+             (:name "Due Today"
+                    :deadline today)
+             (:name "Books"
+                    :tag "@book"
+                    :order 8)
+             (:name "Papers"
+                    :tag "@article"
+                    :order 8)
+             (:name "Overdue"
+                    :deadline past)
+             (:name "Bills and Payments"
+                    :tag "@bills_and_payments")
+             (:name "Important"
+                    :priority ("A" "B"))
+             (:name "Due soon"
+                    :deadline future)
+             (:name "Inprogress"
+                    :todo "INPROGRESS"
+                    :order 6)
+             (:name "Queued"
+                    :todo "QUEUED"
+                    :order 7)
+             (:name "Shopping List"
+                    :tag "@shopping_list")
+             (:name "Scheduled earlier"
+                    :scheduled past)))
+
+#+end_src
+
+Display TODO list in a formatted manner
+#+begin_src emacs-lisp
+  (add-to-list 'org-agenda-custom-commands
+  '("t" "All TODOs groups by category" alltodo ""
+    ((org-super-agenda-groups '((:auto-category t))))))
+
+#+end_src
+
+Display agenda in a full window view instead of a frame view
+#+begin_src emacs-lisp
+(setq org-agenda-window-setup 'reorganize-frame)
+#+end_src
+
 #+begin_src emacs-lisp
   (require 'org-agenda)
 
   (setq org-agenda-prefix-format '(
-    ;;(agenda  . " %i %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
+   ;;(agenda  . " %i  %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
     (agenda  . "  • %?-12t% s")
-    (timeline  . "  % s")
-    (todo  . " %i %-12:c")
+    (timeline . " % s")
+    (todo  . " %?-12:c")
     (tags  . " %i %-12:c")
     (search . " %i %-12:c")))
 #+end_src
@@ -546,24 +646,15 @@ List of global org files
 #+begin_src emacs-lisp
 (setq org-directory "~/Documents/org-notes")
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
-(setq references-file-path "~/Documents/org-notes/bibliography/references.org")
-(setq bookmarks-file-path "~/Documents/org-notes/exocortex/capture.org")
 (setq journal-file-path "~/Documents/org-notes/exocortex/journal.org")
-(setq tasks-file-path "~/Documents/org-notes/exocortex/inbox.org")
-(setq home-tasks-file-path "~/Dropbox/org-notes/home/tasks.org")
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
 (set-register ?r (cons 'file references-file-path))
 (set-register ?b (cons 'file bookmarks-file-path))
 (set-register ?j (cons 'file journal-file-path))
 
-(setq org-agenda-files '("~/Documents/org-notes/exocortex/inbox.org"
-"~/Documents/org-notes/exocortex/projects.org"
-"~/Documents/org-notes/exocortex/capture.org"
-"~/Documents/org-notes/exocortex/journal.org"
-"~/Documents/org-notes/bibliography/references.org"
-"~/Dropbox/org-notes/home/tasks.org"))
-(setq org-default-notes-file (concat org-directory "/exocortex/capture.org"))
+
+
 (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+$")
 (add-hook 'diary-display-hook 'diary-fancy-display)
 
@@ -577,7 +668,7 @@ List of global org files
 
 *** Path setting
 #+begin_src emacs-lisp
-(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin"))
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
 #+end_src
 
 *** Org Babel
@@ -608,6 +699,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 	     t)
 (setq org-latex-prefer-user-labels t)
 #+end_src
+
 *** Org ref
 Search through bibtex reference using helm reference
 #+begin_src emacs-lisp
@@ -637,6 +729,7 @@ Org-ref Files
       org-ref-pdf-directory "~/Documents/org-notes/bibliography/bibtex-pdfs/")
 
 #+end_src
+
 **** Bibtex
 #+begin_src emacs-lisp
 (setq bibtex-completion-bibliography "~/Documents/org-notes/bibliography/references.bib"
@@ -961,6 +1054,7 @@ Duplicate an entire line
   (open-line 1)
   (next-line 1)
   (yank)
+  (pop kill-ring)
   (move-beginning-of-line 1)
   )
 #+end_src
@@ -995,7 +1089,9 @@ Mark occurrences ( Rudimentary version of iedit)
 #+begin_src emacs-lisp
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-s-<mouse-1>") 'mc/add-cursor-on-click)
 #+end_src
+
 *** GIT
 Git key bindings, with added sugar of hydra
 #+begin_src emacs-lisp
@@ -1038,6 +1134,7 @@ Links agendas and capture templates
 #+begin_src emacs-lisp
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c A") 'cfw:open-org-calendar)
   (global-set-key (kbd "C-c c") 'org-capture)
 #+end_src
 
