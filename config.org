@@ -753,11 +753,14 @@ Org-Journal settings
   (org-reload)
 #+end_src
 
-*** Capture Templates
-
+*** Capture Templates                                      :non_exec_block:
 #+begin_src emacs-lisp
 (setq org-capture-templates
       '(
+#+end_src
+
+**** Secrets
+#+begin_src emacs-lisp
 	("s" "Secrets" entry
 	 (file+headline secrets-file-path "Secrets")
 	 "* [[%^{Link}][%^{Description}]]
@@ -766,15 +769,19 @@ Org-Journal settings
  :PASSWORD: %^{Password}
  :END:
 ")
+#+end_src
+
+**** Inbox Tasks
+#+begin_src emacs-lisp
+
 ("t" "Todos")
 ("tt" "Task [inbox]" entry
 	 (file+headline tasks-file-path "Tasks")
 	 "* TODO %i%?")
+#+end_src
 
-("tc" "Course [inbox]" entry
-	 (file+headline tasks-file-path "Courses")
-	 "* TODO %i%?")
-
+Also the home tasks
+#+begin_src emacs-lisp
 ("ts" "Shopping list [home]" checkitem
 	 (file+headline home-tasks-file-path "Shopping")
 	 "- [ ] %i%? ")
@@ -782,7 +789,11 @@ Org-Journal settings
 ("tr" "Reminder [home]" entry
 	 (file+headline home-tasks-file-path "Non-Recurring")
 	 "* TODO %i%?")
+#+end_src
 
+**** Reference Papers
+Capture reference papers with a small help of =C-r y=
+#+begin_src emacs-lisp
 ("r" "Paper" entry
 (file+headline references-file-path "Papers")
 	 "*  %^g %i%?
@@ -790,49 +801,49 @@ Org-Journal settings
      :TYPE: Paper
      :END:
 ")
+#+end_src
+
+**** Journal
+#+begin_src emacs-lisp
+
 ("j" "Journal" entry
 (file+datetree journal-file-path)
    "* %?")
+#+end_src
 
-("b" "Bookmarks")
-	("bb" "Book" entry
-	 (file+headline bookmarks-file-path "Books")
-	   "* %^{title}  %^g
+**** Capture
+#+begin_src emacs-lisp
+("c" "Capture")
+("cb" "Book" entry
+(file+headline bookmarks-file-path "Books")
+"* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Book
        :URL: [[%^{url}][source]]
        :END:
 ")
-	("bw" "Web URL" entry
-	 (file+headline bookmarks-file-path "Web")
-	   "* %^{title}  %^g
+("cw" "Web URL" entry
+(file+headline bookmarks-file-path "Web")
+"* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Web
        :URL: [[%^{url}][source]]
        :END:
 ")
-
-	("bv" "Videos" entry
-	 (file+headline bookmarks-file-path "Videos")
-	   "* %^{title}  %^g
+("cv" "Videos" entry
+(file+headline bookmarks-file-path "Videos")
+"* %^{title}  %^g
        :PROPERTIES:
        :TYPE: Video
        :URL: [[%^{url}][source]]
        :END:
 ")
-
-	("bp" "Podcasts" entry
-	 (file+headline bookmarks-file-path "Podcasts")
-	   "* %^{title} %^g
-       :PROPERTIES:
-       :TYPE: Podcast
-       :URL: [[%^{url}][source]]
-       :END:
-")
-
-("bc" "Courses" entry
-	 (file+headline bookmarks-file-path "Courses")
-	   "* TODO %^{title} %^g
+("cm" "Miscelleneous" entry
+(file+headline bookmarks-file-path "Misc")
+"* TODO %i%?")
+("cc" "Courses" entry
+(file+headline bookmarks-file-path "Courses")
+"* TODO %^{title} %^g
        :PROPERTIES:
        :TYPE: Course
        :URL: [[%^{url}][source]]
