@@ -7,29 +7,30 @@ A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configu
 ** Require
 One require to rule them all
 #+begin_src emacs-lisp
-(require 'org)
-(require 'projectile)
-(require 'neotree)
-(require 'all-the-icons)
-(require 'multiple-cursors)
-(require 'virtualenvwrapper)
-(require 'helm-projectile)
-(require 'json-mode)
-(require 'emms-setup)
-(require 'async nil :noerror)
-(require 'org-ref)
-(require 'org-ref-pdf)
-(require 'org-ref-url-utils)
-(require 'org-ref-arxiv)
-(require 'org-bullets)
-(require 'smart-mode-line)
-(require 'dumb-jump)
-(require 'outline)
-(require 'calfw-org)
-(require 'iedit)
-(require 'rust-mode)
-(require 'org-super-agenda)
-(require 'emacs-totp)
+  (require 'org)
+  (require 'projectile)
+  (require 'neotree)
+  (require 'all-the-icons)
+  (require 'multiple-cursors)
+  (require 'virtualenvwrapper)
+  (require 'helm-projectile)
+  (require 'json-mode)
+  (require 'emms-setup)
+  (require 'async nil :noerror)
+  (require 'org-ref)
+  (require 'org-ref-pdf)
+  (require 'org-ref-url-utils)
+  (require 'org-ref-arxiv)
+  (require 'org-bullets)
+  (require 'smart-mode-line)
+  (require 'dumb-jump)
+  (require 'outline)
+  (require 'calfw-org)
+  (require 'iedit)
+  (require 'rust-mode)
+  (require 'org-super-agenda)
+  (require 'emacs-totp)
+  (require 'image+)
 #+end_src
 
 ** Emacs startup, theme, and others
@@ -178,6 +179,12 @@ NeoTree with display icons
 #+begin_src emacs-lisp
 (setq neo-theme (if (display-graphic-p) 'icons))
 #+end_src
+
+Image view mode
+#+begin_src emacs-lisp
+(eval-after-load 'image+ '(imagex-global-sticky-mode 1))
+#+end_src
+
 *** Prog-Mode hooks
 Programming Mode Hooks
 #+begin_src emacs-lisp
