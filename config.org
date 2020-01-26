@@ -193,10 +193,44 @@ Programming Mode Hooks
 (add-hook 'json-mode-hook #'yafolding-mode)
 (add-hook 'prog-mode-hook #'outline-minor-mode)
 (add-hook 'nxml-mode-hook #'outline-minor-mode)
-(add-hook 'python-mode-hook 'anaconda-mode)
-(add-hook 'python-mode-hook 'anaconda-eldoc-mode)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
+#+end_src
+
+**** JavaScript
+JavaScript specific setups
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+#+end_src
+
+**** Python
+Python Specific Setups
+#+begin_src emacs-lisp
+(add-hook 'python-mode-hook 'anaconda-mode)
+(add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+#+end_src
+
+Setting iPython as the default REPL for python
+#+begin_src emacs-lisp
+(when (executable-find "ipython")
+  (setq
+   python-shell-interpreter "ipython"
+   python-shell-interpreter-args "--simple-prompt -i"
+   python-shell-prompt-regexp "In \\[[0-9]+\\]: "
+   python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
+   python-shell-completion-setup-code
+   "from IPython.core.completerlib import module_completion"
+   python-shell-completion-module-string-code
+   "';'.join(module_completion('''%s'''))\n"
+   python-shell-completion-string-code
+   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
+
+(add-hook 'inferior-python-mode-hook 'no-trailing-whitespace)
+(add-hook 'inferior-python-mode-hook
+          '(lambda ()
+             (setq-local ml-interactive? t)))
 #+end_src
 
 *** Projectile
