@@ -508,15 +508,17 @@ All the above mentioned files just form a part of the bigger agenda.
 "~/Documents/org-notes/exocortex/capture.org"
 "~/Documents/org-notes/exocortex/journal.org"
 "~/Documents/org-notes/bibliography/references.org"
-"~/Dropbox/org-notes/home/tasks.org"))
+"~/Documents/org-notes/exocortex/daily.org"
+"~/Dropbox/org-notes/home/tasks.org"
+))
 #+end_src
 
-**** Org TODO cycles
+**** QUEUED Org TODO cycles
 
 After multiple iterations of the TODO cycles, finally decided on using a simple list of TODOS, and to rely more on tags to mark the kind of TODO
 
-- TODO :: Anything that needs to be done. Mostly without a schedule or a deadline, but must be picked up on priority
-- SCHEDULED :: Things move from TODO to SCHEDULED, when a schedule or a deadline is attached to them.
+- TODO :: Anything that needs to be done. Mostly without a schedule or a deadline or with an arbitrary future schedule, but must be picked up on priority
+- PLANNED :: Things move from TODO to PLANNED, when a schedule or a deadline is attached to them and it has been slotted to be picked up.
 - QUEUED :: Things which need to be picked up next before focusing on the things in the TODO item list.
 - INPROGRESS :: Currently in play
 - DONE :: Finished, and ready to be archived.
@@ -526,13 +528,13 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 
 #+begin_src emacs-lisp
 (setq org-todo-keywords
-(quote ((sequence "TODO(t)" "SCHEDULED(s)" "QUEUED(q)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
-(sequence "POSTPONED(p)" "|" "RE-VISIT(v)")
+(quote ((sequence "TODO(t)" "PLANNED(p)" "QUEUED(q)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
+(sequence "POSTPONED(P)" "|" "RE-VISIT(v)")
 )))
 
 (setq org-todo-keyword-faces '(
 ("TODO" . (:foreground "#ff39a3" :weight bold))
-("SCHEDULED" . (:foreground "#6666ff"  :weight bold))
+("PLANNED" . (:foreground "#81D8D1"  :weight bold))
 ("QUEUED" . (:foreground "#ff9a00" :weight bold))
 ("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
 ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
@@ -592,6 +594,9 @@ Org-super-agenda
              (:name "Books"
                     :tag "@book"
                     :order 8)
+             (:name "Birthdays & Anniversaries"
+                    :tag ("@anniversary" "@birthday")
+                    :order 98)
              (:name "Papers"
                     :tag "@article"
                     :order 8)
