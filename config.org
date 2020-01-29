@@ -519,7 +519,9 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 
 - TODO :: Anything that needs to be done. Mostly without a schedule or a deadline or with an arbitrary future schedule, but must be picked up on priority
 - PLANNED :: Things move from TODO to PLANNED, when a schedule or a deadline is attached to them and it has been slotted to be picked up.
-- QUEUED :: Things which need to be picked up next before focusing on the things in the TODO item list.
+- QUEUED :: Things which had been picked up but have been put on hold due to
+  1. Further updates or conflicting requirement with some other task
+  2. Is waiting on a feedback from a second person
 - INPROGRESS :: Currently in play
 - DONE :: Finished, and ready to be archived.
 - CANCELLED :: No more important. Ready to be archived.
