@@ -8,14 +8,18 @@ A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configu
 One require to rule them all
 #+begin_src emacs-lisp
   (require 'org)
+  (require 'auto-complete)
   (require 'projectile)
   (require 'neotree)
   (require 'all-the-icons)
   (require 'multiple-cursors)
   (require 'virtualenvwrapper)
+  (require 'helm)
   (require 'helm-projectile)
+  (require 'helm-swoop)
   (require 'json-mode)
   (require 'emms-setup)
+  (require 'scroll-bar)
   (require 'async nil :noerror)
   (require 'org-ref)
   (require 'org-ref-pdf)
@@ -31,9 +35,16 @@ One require to rule them all
   (require 'org-super-agenda)
   (require 'emacs-totp)
   (require 'image+)
+  (require 'dashboard)
 #+end_src
 
+
 ** Emacs startup, theme, and others
+*** Path setting
+#+begin_src emacs-lisp
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
+#+end_src
+
 *** Global
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t) ;; outline-hide the startup messag
@@ -41,7 +52,7 @@ One require to rule them all
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (elpy-enable)
+  (elpy-enable)				
   (epa-file-enable)
 
   (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin/"))
@@ -63,7 +74,7 @@ Make life a little bit more easier
 Full screen, and server
 #+begin_src emacs-lisp
 (toggle-frame-fullscreen)
-(server-mode t)
+ (unless (daemonp) (server-mode t))
 #+end_src
 
 Garbage Collection
@@ -80,6 +91,19 @@ Danger Scripts
 Make shell not to repeat commands
 #+begin_src emacs-lisp
 (setq comint-process-echoes t)
+#+end_src
+
+*** Dashboard
+#+begin_src emacs-lisp
+(dashboard-setup-startup-hook)
+;; Set the title
+(setq dashboard-banner-logo-title "Dashboard")
+
+;; Set the banner
+(setq dashboard-startup-banner 'logo)
+(setq dashboard-items '((recents  . 5)
+                        (agenda . 10)
+                        (projects . 5)))
 #+end_src
 
 *** Date and Time 
@@ -118,7 +142,6 @@ Setup python venv with conda
 
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode t)
-(global-auto-complete-mode t)
 (auto-save-visited-mode t)
 (global-visual-line-mode t)
 (sml-modeline-mode t)
@@ -132,7 +155,6 @@ Setup python venv with conda
 (wrap-region-global-mode 1)
 (delete-selection-mode 1)
 (org-super-agenda-mode 1)
-
 (customize-set-variable 'helm-ff-lynx-style-map t)
 
 (setq-default display-line-numbers-width 2
@@ -210,27 +232,23 @@ Python Specific Setups
 #+begin_src emacs-lisp
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+(add-hook 'python-mode-hook (lambda () (auto-complete-mode -1)))
 #+end_src
 
 Setting iPython as the default REPL for python
 #+begin_src emacs-lisp
-(when (executable-find "ipython")
-  (setq
-   python-shell-interpreter "ipython"
-   python-shell-interpreter-args "--simple-prompt -i"
-   python-shell-prompt-regexp "In \\[[0-9]+\\]: "
-   python-shell-prompt-output-regexp "Out\\[[0-9]+\\]: "
-   python-shell-completion-setup-code
-   "from IPython.core.completerlib import module_completion"
-   python-shell-completion-module-string-code
-   "';'.join(module_completion('''%s'''))\n"
-   python-shell-completion-string-code
-   "';'.join(get_ipython().Completer.all_completions('''%s'''))\n"))
+(setq python-shell-interpreter "~/.miniconda/bin/ipython"
+python-shell-interpreter-args "--simple-prompt -i")
 
 (add-hook 'inferior-python-mode-hook 'no-trailing-whitespace)
 (add-hook 'inferior-python-mode-hook
           '(lambda ()
              (setq-local ml-interactive? t)))
+#+end_src
+
+**** LISP
+#+begin_src emacs-lisp
+(setq inferior-lisp-program "clisp")
 #+end_src
 
 *** Projectile
@@ -244,8 +262,9 @@ Enable Projectile Globally
 Projectile default search path and indexing
 #+begin_src emacs-lisp
 (setq projectile-project-search-path '("~/Documents/Projects/"))
-(setq projectile-indexing-method 'native)
+(setq projectile-indexing-method 'alien)
 #+end_src
+
 
 Bind switch project to =helm-projectile=
 #+begin_src emacs-lisp
@@ -263,11 +282,16 @@ Setup shell setting to work with zsh
 
 #+end_src
 
+#+begin_src emacs-lisp
+(setq ac-modes (delq 'python-mode ac-modes))
+#+end_src
+
+
 *** Flycheck
 #+begin_src emacs-lisp
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+ (when (require 'flycheck nil t)
+   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+   (add-hook 'elpy-mode-hook 'flycheck-mode))
 #+end_src
 
 Use aspell to fix my mistakes
@@ -310,6 +334,21 @@ Dumb jump lets me goto definitions easily using a dumb =ag= search
 #+begin_src emacs-lisp
 (dumb-jump-mode 1)
 (setq dumb-jump-selector 'helm)
+#+end_src
+
+*** Ontology
+**** Turtle Format
+Enable bindings for turtle format
+#+begin_src emacs-lisp
+(autoload 'ttl-mode "ttl-mode" "Major mode for OWL or Turtle files" t)
+(add-hook 'ttl-mode-hook    ; Turn on font lock when in ttl mode
+          'turn-on-font-lock)
+(setq auto-mode-alist
+      (append
+       (list
+        '("\\.n3" . ttl-mode)
+        '("\\.ttl" . ttl-mode))
+       auto-mode-alist))
 #+end_src
 
 ** Hydra
@@ -374,6 +413,8 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 _q_ quit            _a_ Arxiv Search
 _r_ resume          _g_ google
 ^^                  _i_ imenu
+^^                  _s_ swoop
+^^                  _S_ swoop all
 ^^                  _k_ kill-ring
 ^^                  ^^
 "
@@ -381,6 +422,8 @@ _r_ resume          _g_ google
   ("g" helm-google-suggest)
   ("a" arxiv-lookup)
   ("i" helm-imenu)
+  ("s" helm-swoop)
+  ("S" helm-multi-swoop-all)
   ("k" helm-show-kill-ring)
   ("r" helm-resume))
 
@@ -671,11 +714,6 @@ List of global org files
                            ("~/Documents/org-notes/exocortex/capture.org" :maxlevel . 1)))
 
 
-#+end_src
-
-*** Path setting
-#+begin_src emacs-lisp
-(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
 #+end_src
 
 *** Org Babel
