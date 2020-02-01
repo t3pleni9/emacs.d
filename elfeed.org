@@ -1,16 +1,6 @@
 * blogs                                                        :elfeed:
-** daily                                                        :daily:
-*** https://www.hindustantimes.com/rss/topnews/rssfeed.xml
-** AI-ML                                                             :ai_ml:
-*** https://www.reddit.com/r/MachinesLearn/.rss                 
-*** https://www.reddit.com/r/singularity/.rss                   
-*** [[https://www.datasciencecentral.com/profiles/blog/feed?promoted=1&xn_auth=no][DataScienceCentral]]                                                :dcs:
 ** reddit                                                           :reddit:
-*** https://www.reddit.com/r/psychology/.rss                    
-*** https://www.reddit.com/r/science/.rss                        
-*** https://www.reddit.com/r/Futurology/.rss                       :future:
-** Astro                                                             :astro:
-*** https://www.reddit.com/r/Mars/.rss                          
+*** https://www.reddit.com/r/emacs/.rss
 ** Podcasts                                                        :podcast:
 *** [[https://www.omnycontent.com/d/playlist/a7b0bd27-d748-4fbe-ab3b-a6fa0049bcf6/73426c85-cccd-4622-a1c8-a86c015752ca/94407f99-a848-4865-80c9-a86c015752d8/podcast.rss][Curiosity]]
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
