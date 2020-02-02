@@ -639,6 +639,9 @@ Org-super-agenda
              (:name "Books"
                     :tag "@book"
                     :order 8)
+             (:name "Courses"
+                    :tag "@course"
+                    :order 8)
              (:name "Birthdays & Anniversaries"
                     :tag ("@anniversary" "@birthday")
                     :order 98)
@@ -720,10 +723,10 @@ List of global org files
 #+begin_src emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((python . t)))
+ '((python . t)(prolog . t)))
 
 (defun my-org-confirm-babel-evaluate (lang body)
-  (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "sh"))))
+  (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh"))))
 
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
