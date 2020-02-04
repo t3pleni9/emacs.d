@@ -35,9 +35,10 @@ One require to rule them all
   (require 'org-super-agenda)
   (require 'emacs-totp)
   (require 'image+)
+  (require 'zone)
   (require 'dashboard)
+  (require 'org-trello)
 #+end_src
-
 
 ** Emacs startup, theme, and others
 *** Path setting
@@ -320,6 +321,14 @@ Use aspell to fix my mistakes
 #+begin_src emacs-lisp
   (add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+  (add-to-list 'auto-mode-alist '("\\.trello$" . org-mode))
+
+  (add-hook 'org-mode-hook
+          (lambda ()
+            (let ((filename (buffer-file-name (current-buffer))))
+              (when (and filename (string= "trello" (file-name-extension filename)))
+              (org-trello-mode)))))
+
 
   (add-hook 'org-mode-hook 'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
@@ -408,47 +417,84 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 (defhydra hydra-helm (:color blue)
   "
 ^
-^Helm^              ^Browse^
-^────^──────────────^──────^────────────
-_q_ quit            _a_ Arxiv Search
-_r_ resume          _g_ google
-^^                  _i_ imenu
-^^                  _s_ swoop
+^Helm^              ^Browse^                ^Anaconda^
+^────^──────────────^──────^────────────────^────────^─────────────
+_q_ quit            _i_ imenu               _c_ Conda Activate
+_r_ resume          _s_ swoop               _d_ Conda Deactivate
 ^^                  _S_ swoop all
 ^^                  _k_ kill-ring
+^^                  _b_ org brain
+^^                  _m_ Mark Rings
 ^^                  ^^
 "
   ("q" nil)
-  ("g" helm-google-suggest)
-  ("a" arxiv-lookup)
   ("i" helm-imenu)
+  ("b" org-brain-visualize)
+  ("m" helm-all-mark-rings)
   ("s" helm-swoop)
   ("S" helm-multi-swoop-all)
   ("k" helm-show-kill-ring)
-  ("r" helm-resume))
+  ("r" helm-resume)
+  ("c" pyvenv-workon)
+  ("d" pyvenv-deactivate))
 
 #+end_src
 
 *** Org
+**** org-ref
 Org-ref Sugars
 #+begin_src emacs-lisp
 (defhydra hydra-org-ref (:color blue)
   "
   ^
-  ^Org-ref  ^             ^Do^
+  ^Org-ref  ^          ^Do^
   ^─────^─────────────-^──^─────────────
   _l_ Create label     _i_ Insert Reference
   _b_ Add doi bibtex   _y_ Bibtex Yank          
-  _a_ Add arxiv bibtex ^^
+  _A_ Add arxiv bibtex _a_ Arxiv Search
   _q_ Quit            
   "
   ("q" nil)
   ("l" org-ref-helm-insert-label-link) 
   ("i" org-ref-helm-insert-ref-link)
   ("b" doi-add-bibtex-entry)
-  ("a" arxiv-add-bibtex-entry)
+  ("A" arxiv-add-bibtex-entry)
+  ("a" arxiv-lookup)
   ("y" org-bibtex-yank))
 #+end_src
+
+
+
+**** org-trello
+Hydra bindings for org-trello
+#+begin_src emacs-lisp
+(defhydra hydra-org-trello (:color blue)
+  "
+  ^Metadata ^                   ^Board^                        ^Card^
+  ^─────────^───────────────────^────^────────────────────────-^────^─────────────
+  _i_ Install Board Metadata    _s_ Sync Buffer                _c_ Sync Card
+  _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Ope card in browser
+  _q_ Quit                      _l_ Show board labels          _a_ Signup on Card
+  ^^                            ^^                             _C_ Add Comment on Card
+  ^^                            ^^                             _D_ Delete Comment on Card
+
+  "
+  ("q" nil)
+;; Board Metadata
+  ("i" org-trello-install-board-metadata) 
+  ("u" org-trello-update-board-metadata) 
+;; Board
+  ("s" org-trello-sync-buffer) 
+  ("J" org-trello-jump-to-trello-board) 
+  ("l" org-trello-show-board-labels) 
+;; Card
+  ("c" org-trello-sync-card) 
+  ("j" org-trello-jump-to-trello-card) 
+  ("a" org-trello-assign-me) 
+  ("C" org-trello-add-card-comments) 
+  ("D" org-trello-delete-card-commen))
+#+end_src
+
 *** Spotify
 Spotify sugars
 #+begin_src emacs-lisp
@@ -918,25 +964,10 @@ All the bookmark loaders
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-all"))
 
-(defun my/elfeed-outline-show-AI-ML ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-ai_ml"))
-
-(defun my/elfeed-outline-show-daily ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-daily"))
-
 (defun my/elfeed-outline-show-reddit ()
   (interactive)
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-reddit"))
-
-(defun my/elfeed-outline-show-astro ()
-  (interactive)
-  (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-astro"))
 
 (defun my/elfeed-outline-show-podcast ()
   (interactive)
@@ -1207,6 +1238,11 @@ Org-brain
  (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
 #+end_src
 
+Org-trello
+#+begin_src emacs-lisp
+(define-key org-mode-map (kbd "C-c t") 'hydra-org-trello/body)
+#+end_src
+
 PDF View
 #+begin_src emacs-lisp
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
@@ -1217,11 +1253,6 @@ PDF View
 Spotify hydra sugar
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c s") 'hydra-spotify/body)
-#+end_src
-
-*** Elfeed
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-c w") 'elfeed)
 #+end_src
 
 Elfeed bookmarks and custom keymaps
@@ -1263,4 +1294,3 @@ Pytest keybinding in python mode
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
 (define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin)
 #+end_src
-

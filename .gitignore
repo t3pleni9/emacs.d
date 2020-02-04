@@ -25,3 +25,4 @@ config.tex
 games/
 notes
 org-clock-save.el
+/.trello
