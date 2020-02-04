@@ -614,13 +614,13 @@ All the above mentioned files just form a part of the bigger agenda.
 ))
 #+end_src
 
-**** QUEUED Org TODO cycles
+**** Org TODO cycles
 
 After multiple iterations of the TODO cycles, finally decided on using a simple list of TODOS, and to rely more on tags to mark the kind of TODO
 
 - TODO :: Anything that needs to be done. Mostly without a schedule or a deadline or with an arbitrary future schedule, but must be picked up on priority
 - PLANNED :: Things move from TODO to PLANNED, when a schedule or a deadline is attached to them and it has been slotted to be picked up.
-- QUEUED :: Things which had been picked up but have been put on hold due to
+- HOLD :: Things which had been picked up but have been put on hold due to
   1. Further updates or conflicting requirement with some other task
   2. Is waiting on a feedback from a second person
 - INPROGRESS :: Currently in play
@@ -631,19 +631,22 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 
 #+begin_src emacs-lisp
 (setq org-todo-keywords
-(quote ((sequence "TODO(t)" "PLANNED(p)" "QUEUED(q)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
+(quote ((sequence "TODO(t)" "PLANNED(p)" "HOLD(h)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
 (sequence "POSTPONED(P)" "|" "RE-VISIT(v)")
 )))
 
 (setq org-todo-keyword-faces '(
 ("TODO" . (:foreground "#ff39a3" :weight bold))
 ("PLANNED" . (:foreground "#81D8D1"  :weight bold))
-("QUEUED" . (:foreground "#ff9a00" :weight bold))
+("HOLD" . (:foreground "#ff9a00" :weight bold))
 ("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
 ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
 ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
 ("POSTPONED" . "#008080")))
 #+end_src
+
+#+RESULTS:
+: ((TODO :foreground #ff39a3 :weight bold) (PLANNED :foreground #81D8D1 :weight bold) (HOLD :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
 
 *** PDF view
 Install PDF tools 
@@ -690,7 +693,7 @@ Org-super-agenda
            '((:log t)
              (:name "Schedule"
                     :time-grid t)
-             (:name "Today"
+             (:name "Today "
                     :scheduled today)
              (:name "Due Today"
                     :deadline today)
@@ -717,8 +720,8 @@ Org-super-agenda
              (:name "Inprogress"
                     :todo "INPROGRESS"
                     :order 6)
-             (:name "Queued"
-                    :todo "QUEUED"
+             (:name "On Hold"
+                    :todo "HOLD"
                     :order 7)
              (:name "Shopping List"
                     :tag "@shopping_list")
