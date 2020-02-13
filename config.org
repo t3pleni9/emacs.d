@@ -28,7 +28,6 @@ One require to rule them all
   (require 'org-bullets)
   (require 'smart-mode-line)
   (require 'dumb-jump)
-  (require 'outline)
   (require 'calfw-org)
   (require 'iedit)
   (require 'rust-mode)
@@ -99,6 +98,11 @@ Set the font to a comfortable level
 (set-face-attribute 'default nil :height 120)
 (setq-default line-spacing 1)
 (set-frame-font "Hack 12" nil t)
+#+end_src
+
+Don't kill emacs without confirming
+#+begin_src emacs-lisp
+(setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
 
 *** Dashboard
@@ -226,8 +230,7 @@ Programming Mode Hooks
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook #'yafolding-mode)
 (add-hook 'json-mode-hook #'yafolding-mode)
-(add-hook 'prog-mode-hook #'outline-minor-mode)
-(add-hook 'nxml-mode-hook #'outline-minor-mode)
+(add-hook 'nxml-mode-hook #'yafolding-mode)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
 #+end_src
@@ -298,7 +301,6 @@ Setup shell setting to work with zsh
 #+begin_src emacs-lisp
 (setq ac-modes (delq 'python-mode ac-modes))
 #+end_src
-
 
 *** Flycheck
 #+begin_src emacs-lisp
@@ -525,42 +527,23 @@ Spotify sugars
   ("P" spotify-previous)
   ("s" spotify-quit))
 #+end_src
-
-*** Outline
-Outline and Code folding
+*** Window Move
+Quickly move around windows
 #+begin_src emacs-lisp
-  (defhydra hydra-outline (:color blue)
-    "
-    ^
-    ^Outline  ^           ^Hide ^                ^Show ^               ^Move ^
-    ^─────────^───────────^─────^────────────────^─────^───────────────^─────^─────────────────────
-    _q_ Quit              _g_ Hide Sublevels     _a_ Show All          _u_ Up Heading                
-                        _t_ Hide Body          _e_ Show Entry        _n_ Next Visible Heading     
-                        _o_ Hide Other         _i_ Show Children     _p_ Previous Visible Heading 
-                        _c_ Hide Entry         _k_ Show Branches     _f_ Forward Same Level       
-                        _l_ Hide Leaves        _s_ Show Subtree      _b_ Backward Same Level       
-                        _d_ Hide Subtree      
-    "
+(defhydra hydra-window-move (:color blue)
+  "
+  ^
+  ^Window  ^              
+  ^────────^───────────^─────^─────────────
+  _p_ Move Up          _n_ Move Down
+  _b_ Move Left        _f_ Move Right
+  _q_ Quit            
+  "
   ("q" nil)
-  ;; HIDE
-  ("g" outline-hide-sublevels)   
-  ("t" outline-hide-body)        
-  ("o" outline-hide-other)       
-  ("c" outline-hide-entry)       
-  ("l" outline-hide-leaves)      
-  ("d" outline-hide-subtree)     
-  ;; SHOW
-  ("a" outline-show-all)         
-  ("e" outline-show-entry)       
-  ("i" outline-show-children)    
-  ("k" outline-show-branches)    
-  ("s" outline-show-subtree)     
-  ;; MOVE
-  ("u" outline-up-heading)               
-  ("n" outline-next-visible-heading)     
-  ("p" outline-previous-visible-heading) 
-  ("f" outline-forward-same-level)       
-  ("b" outline-backward-same-level))      
+  ("p" windmove-up)
+  ("n" windmove-down)
+  ("b" windmove-left)
+  ("f" windmove-right))
 #+end_src
 
 ** Org
@@ -600,6 +583,9 @@ A place to store and remember everything that I can't burden my brain with think
 #+end_src
 
 - Projects :: This makes sure that everything I start gets done. Things move from capture into projects, gets scheduled and mostly has notes and sub items - scheduled or unscheduled. Nothing gets added to projects without having lived in capture
+#+begin_src emacs-lisp
+(setq projects-file-path "~/Documents/org-notes/exocortex/projects.org")
+#+end_src
 
 ***** ORG-Agenda: 
 All the above mentioned files just form a part of the bigger agenda.
@@ -768,6 +754,7 @@ List of global org files
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
 (set-register ?r (cons 'file references-file-path))
+(set-register ?p (cons 'file projects-file-path))
 (set-register ?b (cons 'file bookmarks-file-path))
 (set-register ?j (cons 'file journal-file-path))
 
@@ -1182,6 +1169,9 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 (global-set-key (kbd "s-<") #'prev-window)
 #+end_src
 
+#+RESULTS:
+: prev-window
+
 **** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
@@ -1199,6 +1189,11 @@ Mark occurrences ( Rudimentary version of iedit)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-s-<mouse-1>") 'mc/add-cursor-on-click)
+#+end_src
+
+Expand Region
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-=") 'er/expand-region)
 #+end_src
 
 *** GIT
@@ -1297,15 +1292,14 @@ Pretty print JSON buffer
 #+begin_src emacs-lisp
 (define-key json-mode-map (kbd "C-M-/") 'json-pretty-print-buffer)
 #+end_src
-*** Outline
-Rebind outline minor mode key bindings
-#+begin_src emacs-lisp
- (define-key outline-minor-mode-map (kbd "C-c o") 'hydra-outline/body)
-#+end_src
 *** Python
 Pytest keybinding in python mode
 #+begin_src emacs-lisp
 (define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
+#+end_src
+**** Anaconda Key rebinding
+#+begin_src emacs-lisp
+  ;; (define-key )
 #+end_src
 
 *** Password Manager
