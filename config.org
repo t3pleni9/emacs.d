@@ -34,9 +34,9 @@ One require to rule them all
   (require 'org-super-agenda)
   (require 'emacs-totp)
   (require 'image+)
-  (require 'zone)
   (require 'dashboard)
   (require 'org-trello)
+  (require 'twittering-mode)
 #+end_src
 
 ** Emacs startup, theme, and others
@@ -119,10 +119,6 @@ Don't kill emacs without confirming
                         (bookmarks . 5)))
 #+end_src
 
-Zone mode. Dashboard seams a good place of the zone
-#+begin_src emacs-lisp
-(zone-when-idle 180)
-#+end_src
 *** Date and Time 
 Have time displayed in status bar
 #+begin_src emacs-lisp
@@ -222,6 +218,46 @@ NeoTree with display icons
 Image view mode
 #+begin_src emacs-lisp
 (eval-after-load 'image+ '(imagex-global-sticky-mode 1))
+#+end_src
+
+*** EPUB mode setting
+Basic setting
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(setq nov-text-width t)
+(add-hook 'nov-mode-hook 'visual-line-mode)
+(add-hook 'nov-mode-hook 'visual-fill-column-mode)
+#+end_src
+
+
+#+begin_src emacs-lisp
+(require 'justify-kp)
+(setq nov-text-width t)
+
+(defun my-nov-window-configuration-change-hook ()
+  (my-nov-post-html-render-hook)
+  (remove-hook 'window-configuration-change-hook
+               'my-nov-window-configuration-change-hook
+               t))
+
+(defun my-nov-post-html-render-hook ()
+  (if (get-buffer-window)
+      (let ((max-width (pj-line-width))
+            buffer-read-only)
+        (save-excursion
+          (goto-char (point-min))
+          (while (not (eobp))
+            (when (not (looking-at "^[[:space:]]*$"))
+              (goto-char (line-end-position))
+              (when (> (shr-pixel-column) max-width)
+                (goto-char (line-beginning-position))
+                (pj-justify)))
+            (forward-line 1))))
+    (add-hook 'window-configuration-change-hook
+              'my-nov-window-configuration-change-hook
+              nil t)))
+
+(add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
 #+end_src
 
 *** Prog-Mode hooks
@@ -373,6 +409,17 @@ Enable bindings for turtle format
         '("\\.ttl" . ttl-mode))
        auto-mode-alist))
 #+end_src
+*** Twitter Mode
+Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
+#+begin_src emacs-lisp
+(setq twittering-use-master-password t)
+(setq twittering-icon-mode t)               
+(setq twittering-timer-interval 300)        
+(setq twittering-url-show-status nil)       
+(add-hook 'twittering-edit-mode-hook (lambda () (ispell-minor-mode) (flyspell-mode)))
+#+end_src
+
+
 
 ** Hydra
 *** GIT
@@ -505,7 +552,7 @@ Hydra bindings for org-trello
   ("c" org-trello-sync-card) 
   ("j" org-trello-jump-to-trello-card) 
   ("a" org-trello-assign-me) 
-  ("C" org-trello-add-card-comments) 
+  ("C" org-trello-add-card-comment) 
   ("D" org-trello-delete-card-commen))
 #+end_src
 
@@ -775,7 +822,7 @@ List of global org files
 #+begin_src emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((python . t)(prolog . t)))
+ '((python . t)(prolog . t)(lisp . t)(shell . t)))
 
 (defun my-org-confirm-babel-evaluate (lang body)
   (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh"))))
@@ -783,6 +830,9 @@ List of global org files
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 #+end_src
+
+#+RESULTS:
+: my-org-confirm-babel-evaluate
 
 *** Org latex
 #+begin_src emacs-lisp
@@ -1167,10 +1217,9 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "s->") #'other-window)
 (global-set-key (kbd "s-<") #'prev-window)
+(global-set-key (kbd "M-f") 'forward-to-word)
 #+end_src
 
-#+RESULTS:
-: prev-window
 
 **** Shell
 Have a Doom styled console launch binding
@@ -1297,11 +1346,6 @@ Pytest keybinding in python mode
 #+begin_src emacs-lisp
 (define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
 #+end_src
-**** Anaconda Key rebinding
-#+begin_src emacs-lisp
-  ;; (define-key )
-#+end_src
-
 *** Password Manager
 #+begin_src emacs-lisp
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
