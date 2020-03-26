@@ -1,5 +1,16 @@
 * blogs                                                        :elfeed:
-** reddit                                                           :reddit:
+** Technology                                                       :tech:
 *** https://www.reddit.com/r/emacs/.rss
+*** https://www.reddit.com/r/Futurology/.rss
+*** [[http://feeds.feedburner.com/FeaturedBlogPosts-DataScienceCentral?format=xml][Data Science Central]]
+
+** General                                                         :general:
+*** https://www.reddit.com/r/todayilearned/.rss
+** Art and Music                                             :artNmusic:
+*** https://www.reddit.com/r/ArtFundamentals/.rss           
+*** https://www.reddit.com/r/listentothis/.rss
 ** Podcasts                                                        :podcast:
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
+** Daily                                                             :daily:
+*** [[https://www.hindustantimes.com/rss/topnews/rssfeed.xml][HT]]
+

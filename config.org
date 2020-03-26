@@ -95,10 +95,12 @@ Make shell not to repeat commands
 
 Set the font to a comfortable level
 #+begin_src emacs-lisp
-(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 160)
 (setq-default line-spacing 1)
-(set-frame-font "Hack 12" nil t)
+(set-frame-font "Hack 16" nil t)
 #+end_src
+
+#+RESULTS:
 
 Don't kill emacs without confirming
 #+begin_src emacs-lisp
@@ -409,18 +411,6 @@ Enable bindings for turtle format
         '("\\.ttl" . ttl-mode))
        auto-mode-alist))
 #+end_src
-*** Twitter Mode
-Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
-#+begin_src emacs-lisp
-(setq twittering-use-master-password t)
-(setq twittering-icon-mode t)               
-(setq twittering-timer-interval 300)        
-(setq twittering-url-show-status nil)       
-(add-hook 'twittering-edit-mode-hook (lambda () (ispell-minor-mode) (flyspell-mode)))
-#+end_src
-
-
-
 ** Hydra
 *** GIT
 #+begin_src emacs-lisp
@@ -508,12 +498,12 @@ Org-ref Sugars
 (defhydra hydra-org-ref (:color blue)
   "
   ^
-  ^Org-ref  ^          ^Do^
-  ^─────^─────────────-^──^─────────────
-  _l_ Create label     _i_ Insert Reference
-  _b_ Add doi bibtex   _y_ Bibtex Yank          
-  _A_ Add arxiv bibtex _a_ Arxiv Search
-  _q_ Quit            
+  ^Org-ref  ^               ^Do^
+  ^─────^───────────────────^──^──────────────────
+  _l_ Create label          _i_ Insert Reference
+  _b_ Add doi bibtex        _y_ Bibtex Yank          
+  _A_ Add arxiv bibtex      _a_ Arxiv Search
+  _q_ Quit                 
   "
   ("q" nil)
   ("l" org-ref-helm-insert-label-link) 
@@ -523,8 +513,6 @@ Org-ref Sugars
   ("a" arxiv-lookup)
   ("y" org-bibtex-yank))
 #+end_src
-
-
 
 **** org-trello
 Hydra bindings for org-trello
@@ -574,6 +562,27 @@ Spotify sugars
   ("P" spotify-previous)
   ("s" spotify-quit))
 #+end_src
+*** Internet, Social, Feed Manager
+Hydra Menu for elfeed and twitter
+#+begin_src emacs-lisp
+(defhydra hydra-social-feed (:color blue)
+  "
+  ^
+  ^Social  ^              
+  ^────────^───────────────────
+  _e_ El Feed       _t_ Twitter      
+  _b_ Browse Web
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("e" elfeed)
+  ("b" browse-web)
+  ("t" twit))
+#+end_src
+
+#+RESULTS:
+: hydra-social-feed/body
+
 *** Window Move
 Quickly move around windows
 #+begin_src emacs-lisp
@@ -605,6 +614,12 @@ Image Scaling
 #+begin_src emacs-lisp
 (setq org-image-actual-width nil)
 #+end_src
+
+Allow alphabets ‘a.’, ‘A.’, ‘a)’ and ‘A) as list elements:
+#+begin_src emacs-lisp
+(setq org-list-allow-alphabetical t)
+#+end_src
+
 *** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
 **** File Organization
@@ -1020,16 +1035,31 @@ All the bookmark loaders
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-all"))
 
+(defun my/elfeed-outline-show-daily ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-daily"))
+
+
 (defun my/elfeed-outline-show-reddit ()
   (interactive)
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-reddit"))
+
+(defun my/elfeed-outline-art-and-music ()
+  (interactive)
+  (bookmark-maybe-load-default-file)
+  (bookmark-jump "elfeed-artNmusic"))
 
 (defun my/elfeed-outline-show-podcast ()
   (interactive)
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-podcast"))
 #+end_src
+
+#+RESULTS:
+: my/elfeed-outline-show-podcast
+
 *** EMMS
 Should have its own header, but as of now just lives inside the elfeed section
 #+begin_src emacs-lisp
@@ -1103,15 +1133,16 @@ Custom functions to make life a little easier
 
 (push '(podcast elfeed-audio) elfeed-search-face-alist)
 #+end_src
-***** Reddit
+***** Technology
 #+begin_src emacs-lisp
 (defface elfeed-reddit
-  '((t :foreground "#0FA"))
+  '((t :foreground "#0AA"))
   "Marks podcasts in Elfeed."
   :group 'elfeed)
 
-(push '(reddit elfeed-reddit) elfeed-search-face-alist)
+(push '(tech elfeed-reddit) elfeed-search-face-alist)
 #+end_src
+
 ***** Stars
 #+begin_src emacs-lisp
   ;; face for starred articles
@@ -1139,6 +1170,32 @@ Custom functions to make life a little easier
   (let ((entry (elfeed-search-selected :single)))
     (say (elfeed-entry-title entry))))
 
+#+end_src
+
+**** In browser open URL
+#+begin_src emacs-lisp
+(defun my/elfeed-show-visit (&optional use-generic-p)
+  "Visit the current entry in your browser using `browse-url'.
+If there is a prefix argument, visit the current entry in the
+browser defined by `browse-url-generic-program'."
+  (interactive "P")
+  (let ((link (elfeed-entry-link elfeed-show-entry)))
+    (when link
+      (message "Sent to browser: %s" link)
+      (if use-generic-p
+          (browse-url-generic link)
+        (browse-web link)))))
+
+#+end_src
+
+*** Twitter Mode
+Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
+#+begin_src emacs-lisp
+(setq twittering-use-master-password t)
+(setq twittering-icon-mode t)               
+(setq twittering-timer-interval 300)        
+(setq twittering-url-show-status nil)       
+(add-hook 'twittering-edit-mode-hook (lambda () (ispell-minor-mode) (flyspell-mode)))
 #+end_src
 
 ** Custom Configurations and Functions
@@ -1204,6 +1261,22 @@ Duplicate an entire line
   (move-beginning-of-line 1)
   )
 #+end_src
+*** View Mode
+Open Read-only files in view-mode by default
+#+begin_src emacs-lisp
+(setq view-read-only t)
+#+end_src
+
+View mode can be toggled by ~C-x C-q~.
+
+Give Visual Cue using cursor while in view mode
+#+begin_src emacs-lisp
+(add-hook 'view-mode-hook
+          (defun view-mode-hookee+ ()
+            (setq cursor-type (if view-mode 'bar 'box))))
+
+#+end_src
+
 ** Key Bindings
 Define custom key bindings.
 *** Windows and Frames
@@ -1244,6 +1317,16 @@ Expand Region
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-=") 'er/expand-region)
 #+end_src
+
+Track the last edited location
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-s-<left>") 'goto-last-change)
+(global-set-key (kbd "M-s-<right>") 'goto-last-change-reverse)
+#+end_src
+
+#+RESULTS:
+: goto-last-change-reverse
+
 
 *** GIT
 Git key bindings, with added sugar of hydra
@@ -1318,24 +1401,6 @@ Spotify hydra sugar
 (global-set-key (kbd "C-c s") 'hydra-spotify/body)
 #+end_src
 
-Elfeed bookmarks and custom keymaps
-
-#+begin_src emacs-lisp
-(use-package elfeed
-  :ensure t
-  :bind (:map elfeed-search-mode-map
-              ("A" . my/elfeed-outline-show-all)
-              ("M" . my/elfeed-outline-show-AI-ML)
-              ("D" . my/elfeed-outline-show-daily)
-              ("R" . my/elfeed-outline-show-reddit)
-              ("P" . my/elfeed-outline-show-podcast)
-              (">" . my/elfeed-outline-show-play-enclosure)
-              (";" . emms-stop)
-              (":" . my/replay-previous)
-              ("x" . my/elfeed-say)
-              ("*" . elfeed-toggle-star)
-              ("<SPC>" . my/outline-show-full-title)))
-#+end_src
 *** Json
 Pretty print JSON buffer
 #+begin_src emacs-lisp
@@ -1350,4 +1415,64 @@ Pytest keybinding in python mode
 #+begin_src emacs-lisp
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
 (define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin)
+#+end_src
+*** Social Feed
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-c f") 'hydra-social-feed/body)
+#+end_src
+
+Open elfeed links inline browser
+#+begin_src emacs-lisp
+(define-key elfeed-show-mode-map (kbd "o") 'my/elfeed-show-visit)
+#+end_src
+
+#+RESULTS:
+: my/elfeed-show-visit
+
+**** Elfeed bookmarks and custom keymaps
+
+#+begin_src emacs-lisp
+(use-package elfeed
+  :ensure t
+  :bind (:map elfeed-search-mode-map
+              ("A" . my/elfeed-outline-show-all)
+              ("M" . my/elfeed-outline-art-and-music)
+              ("D" . my/elfeed-outline-show-daily)
+              ("R" . my/elfeed-outline-show-reddit)
+              ("P" . my/elfeed-outline-show-podcast)
+              (">" . my/elfeed-outline-show-play-enclosure)
+              (";" . emms-stop)
+              (":" . my/replay-previous)
+              ("x" . my/elfeed-say)
+              ("*" . elfeed-toggle-star)
+              ("<SPC>" . my/outline-show-full-title)))
+#+end_src
+
+#+RESULTS:
+: my/outline-show-full-title
+
+*** View Mode
+Disable view-mode instead of closing buffer on pressing ~C-q~
+
+#+begin_src emacs-lisp
+(define-key view-mode-map (kbd "C-q") 'read-only-mode)
+#+end_src
+
+Remap movement keys to ~b~, ~f~, ~n~ and ~p~
+#+begin_src emacs-lisp
+(define-key view-mode-map (kbd "b") 'backward-char)
+(define-key view-mode-map (kbd "f") 'forward-char)
+(define-key view-mode-map (kbd "n") 'next-line)
+(define-key view-mode-map (kbd "p") 'previous-line)
+#+end_src
+
+Remap scroll screen and previous screen to ~v~ and ~V~
+#+begin_src emacs-lisp
+(define-key view-mode-map (kbd "v") 'scroll-up-command)
+(define-key view-mode-map (kbd "V") 'scroll-down-command)
+#+end_src
+
+Remap recenter-top-bottom ~l~
+#+begin_src emacs-lisp
+(define-key view-mode-map (kbd "l") 'recenter-top-bottom)
 #+end_src
