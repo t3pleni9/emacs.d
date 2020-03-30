@@ -10,7 +10,6 @@ One require to rule them all
   (require 'org)
   (require 'auto-complete)
   (require 'projectile)
-  (require 'neotree)
   (require 'all-the-icons)
   (require 'multiple-cursors)
   (require 'virtualenvwrapper)
@@ -37,6 +36,7 @@ One require to rule them all
   (require 'dashboard)
   (require 'org-trello)
   (require 'twittering-mode)
+  (require 'view)
 #+end_src
 
 ** Emacs startup, theme, and others
@@ -411,197 +411,6 @@ Enable bindings for turtle format
         '("\\.ttl" . ttl-mode))
        auto-mode-alist))
 #+end_src
-** Hydra
-*** GIT
-#+begin_src emacs-lisp
-(defhydra hydra-magit (:color blue)
-  "
-  ^
-  ^Git  ^             ^Do^
-  ^─────^─────────────^──^─────────────
-  _n_ Next Hunk       _p_ Previous Hunk
-  _w_ Show Hunk       _t_ Stage Hunk
-  _q_ Quit            _b_ Blame
-  _c_ Clone           _s_ Status
-  _i_ Init            ^^
-  "
-  ("q" nil)
-  ("n" git-gutter+-next-hunk)
-  ("p" git-gutter+-previous-hunk)
-  ("w" git-gutter+-show-hunk)
-  ("t" git-gutter+-stage-hunks)
-  ("b" magit-blame)
-  ("c" magit-clone)
-  ("i" magit-init)
-  ("s" magit-status))
-#+end_src
-
-*** Projectile
-#+begin_src emacs-lisp
-(defhydra hydra-projectile (:color blue)
-  "
-^
-^Projectile^        ^Buffers^           ^Find^              ^Search^
-^──────────^────────^───────^───────────^────^──────────────^──────^────────────
-_q_ quit            _b_ list            _d_ directory       _r_ replace
-_i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
-^^                  _S_ save all        _f_ file            _s_ ag
-^^                  ^^                  _p_ project         ^^
-^^                  ^^                  ^^                  ^^
-"
-  ("q" nil)
-  ("b" helm-projectile-switch-to-buffer)
-  ("d" helm-projectile-find-dir)
-  ("D" projectile-dired)
-  ("f" helm-projectile)
-  ("i" projectile-invalidate-cache :color red)
-  ("K" projectile-kill-buffers)
-  ("p" helm-projectile-switch-project)
-  ("r" projectile-replace)
-  ("R" projectile-replace-regexp)
-  ("s" helm-projectile-ag)
-  ("S" projectile-save-project-buffers))
-#+end_src
-
-*** Helm
-#+begin_src emacs-lisp
-(defhydra hydra-helm (:color blue)
-  "
-^
-^Helm^              ^Browse^                ^Anaconda^
-^────^──────────────^──────^────────────────^────────^─────────────
-_q_ quit            _i_ imenu               _c_ Conda Activate
-_r_ resume          _s_ swoop               _d_ Conda Deactivate
-^^                  _S_ swoop all
-^^                  _k_ kill-ring
-^^                  _b_ org brain
-^^                  _m_ Mark Rings
-^^                  ^^
-"
-  ("q" nil)
-  ("i" helm-imenu)
-  ("b" org-brain-visualize)
-  ("m" helm-all-mark-rings)
-  ("s" helm-swoop)
-  ("S" helm-multi-swoop-all)
-  ("k" helm-show-kill-ring)
-  ("r" helm-resume)
-  ("c" pyvenv-workon)
-  ("d" pyvenv-deactivate))
-
-#+end_src
-
-*** Org
-**** org-ref
-Org-ref Sugars
-#+begin_src emacs-lisp
-(defhydra hydra-org-ref (:color blue)
-  "
-  ^
-  ^Org-ref  ^               ^Do^
-  ^─────^───────────────────^──^──────────────────
-  _l_ Create label          _i_ Insert Reference
-  _b_ Add doi bibtex        _y_ Bibtex Yank          
-  _A_ Add arxiv bibtex      _a_ Arxiv Search
-  _q_ Quit                 
-  "
-  ("q" nil)
-  ("l" org-ref-helm-insert-label-link) 
-  ("i" org-ref-helm-insert-ref-link)
-  ("b" doi-add-bibtex-entry)
-  ("A" arxiv-add-bibtex-entry)
-  ("a" arxiv-lookup)
-  ("y" org-bibtex-yank))
-#+end_src
-
-**** org-trello
-Hydra bindings for org-trello
-#+begin_src emacs-lisp
-(defhydra hydra-org-trello (:color blue)
-  "
-  ^Metadata ^                   ^Board^                        ^Card^
-  ^─────────^───────────────────^────^────────────────────────-^────^─────────────
-  _i_ Install Board Metadata    _s_ Sync Buffer                _c_ Sync Card
-  _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Ope card in browser
-  _q_ Quit                      _l_ Show board labels          _a_ Signup on Card
-  ^^                            ^^                             _C_ Add Comment on Card
-  ^^                            ^^                             _D_ Delete Comment on Card
-
-  "
-  ("q" nil)
-;; Board Metadata
-  ("i" org-trello-install-board-metadata) 
-  ("u" org-trello-update-board-metadata) 
-;; Board
-  ("s" org-trello-sync-buffer) 
-  ("J" org-trello-jump-to-trello-board) 
-  ("l" org-trello-show-board-labels) 
-;; Card
-  ("c" org-trello-sync-card) 
-  ("j" org-trello-jump-to-trello-card) 
-  ("a" org-trello-assign-me) 
-  ("C" org-trello-add-card-comment) 
-  ("D" org-trello-delete-card-commen))
-#+end_src
-
-*** Spotify
-Spotify sugars
-#+begin_src emacs-lisp
-(defhydra hydra-spotify (:color blue)
-  "
-  ^
-  ^Spotify  ^             ^Do^
-  ^────────^──────────────^──^─────────────
-  _p_ Play/Pause          _N_ Next
-  _s_ Stop                _P_ Previous
-  _q_ Quit            
-  "
-  ("q" nil)
-  ("p" spotify-playpause)
-  ("N" spotify-next)
-  ("P" spotify-previous)
-  ("s" spotify-quit))
-#+end_src
-*** Internet, Social, Feed Manager
-Hydra Menu for elfeed and twitter
-#+begin_src emacs-lisp
-(defhydra hydra-social-feed (:color blue)
-  "
-  ^
-  ^Social  ^              
-  ^────────^───────────────────
-  _e_ El Feed       _t_ Twitter      
-  _b_ Browse Web
-  _q_ Quit            
-  "
-  ("q" nil)
-  ("e" elfeed)
-  ("b" browse-web)
-  ("t" twit))
-#+end_src
-
-#+RESULTS:
-: hydra-social-feed/body
-
-*** Window Move
-Quickly move around windows
-#+begin_src emacs-lisp
-(defhydra hydra-window-move (:color blue)
-  "
-  ^
-  ^Window  ^              
-  ^────────^───────────^─────^─────────────
-  _p_ Move Up          _n_ Move Down
-  _b_ Move Left        _f_ Move Right
-  _q_ Quit            
-  "
-  ("q" nil)
-  ("p" windmove-up)
-  ("n" windmove-down)
-  ("b" windmove-left)
-  ("f" windmove-right))
-#+end_src
-
 ** Org
 *** Global
 Time tracking on tasks
@@ -1016,9 +825,10 @@ Capture reference papers with a small help of =C-r y=
 ")))
 #+end_src
 
-** Elfeed
+** Internet, Social, Feed Manager
+*** Elfeed
 Feed reader setups
-*** Configuration 
+**** Configuration 
 [[file:elfeed.org][Configuration Org]]
 #+begin_src emacs-lisp
 (use-package elfeed-org
@@ -1027,7 +837,7 @@ Feed reader setups
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")))
 #+end_src
-*** Bookmarks
+**** Bookmarks
 All the bookmark loaders
 #+begin_src emacs-lisp
 (defun my/elfeed-outline-show-all ()
@@ -1060,7 +870,7 @@ All the bookmark loaders
 #+RESULTS:
 : my/elfeed-outline-show-podcast
 
-*** EMMS
+**** EMMS
 Should have its own header, but as of now just lives inside the elfeed section
 #+begin_src emacs-lisp
 (emms-all)
@@ -1098,9 +908,9 @@ Prompts for ENCLOSURE-INDEX when called interactively."
 
 #+end_src
 
-*** Customization
+**** Customization
 Custom functions to make life a little easier
-**** Save state before Quit
+***** Save state before Quit
 #+begin_src emacs-lisp
 ;;write to disk when quiting
 (defun my/elfeed-save-db-and-bury ()
@@ -1109,13 +919,13 @@ Custom functions to make life a little easier
   (elfeed-db-save)
   (quit-window))
 #+end_src
-**** Mark the favourites
+***** Mark the favourites
 #+begin_src emacs-lisp
 (defalias 'elfeed-toggle-star
   (elfeed-expose #'elfeed-search-toggle-all 'star))
 #+end_src
-**** Custom Colors
-***** News
+***** Custom Colors
+****** News
 #+begin_src emacs-lisp
 (defface daily-news
   '((t :foreground "#AFF"))
@@ -1124,7 +934,7 @@ Custom functions to make life a little easier
 
 (push '(daily daily-news) elfeed-search-face-alist)
 #+end_src
-***** Podcasts
+****** Podcasts
 #+begin_src emacs-lisp
 (defface elfeed-audio
   '((t :foreground "#FA0"))
@@ -1133,7 +943,7 @@ Custom functions to make life a little easier
 
 (push '(podcast elfeed-audio) elfeed-search-face-alist)
 #+end_src
-***** Technology
+****** Technology
 #+begin_src emacs-lisp
 (defface elfeed-reddit
   '((t :foreground "#0AA"))
@@ -1143,7 +953,7 @@ Custom functions to make life a little easier
 (push '(tech elfeed-reddit) elfeed-search-face-alist)
 #+end_src
 
-***** Stars
+****** Stars
 #+begin_src emacs-lisp
   ;; face for starred articles
   (defface elfeed-search-starred-title-face
@@ -1154,7 +964,7 @@ Custom functions to make life a little easier
   (push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
     #+end_src
     
-**** Titles, See more titles and Let the computer read out the title ( Mac only)
+***** Titles, See more titles and Let the computer read out the title ( Mac only)
 #+begin_src emacs-lisp
 (defun my/outline-show-full-title ()
   (interactive)
@@ -1172,7 +982,7 @@ Custom functions to make life a little easier
 
 #+end_src
 
-**** In browser open URL
+***** In browser open URL
 #+begin_src emacs-lisp
 (defun my/elfeed-show-visit (&optional use-generic-p)
   "Visit the current entry in your browser using `browse-url'.
@@ -1198,30 +1008,39 @@ Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
 (add-hook 'twittering-edit-mode-hook (lambda () (ispell-minor-mode) (flyspell-mode)))
 #+end_src
 
+*** IRC
+Setup for managing IRC 
+#+begin_src emacs-lisp
+(setq erc-prompt-for-nickserv-password nil)
+(defun my/connect-erc () 
+(interactive)
+(erc 
+:server "irc.gotham.chat" :port "6667" :nick "translucentInk" :password nil ))
+#+end_src
+
+#+RESULTS:
+: my/connect-erc
+
+*** Tor
+#+begin_src emacs-lisp
+(defun my/launch-process (name buffer-name process &rest args) 
+(apply #'start-process name buffer-name process args)
+(with-current-buffer buffer-name
+        (local-set-key (kbd "C-c C-c") (lambda () (interactive) (kill-process))))
+)
+#+end_src
+
+#+begin_src emacs-lisp
+(defun my/launch-tor()
+(interactive)
+(my/launch-process "tor-process" "*tor*" "tor")
+(my/launch-process "tor-process" "*tor*" "/Applications/Firefox.app/Contents/MacOS/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/")
+)
+
+#+end_src
+
 ** Custom Configurations and Functions
-*** Projectile/NeoTree
-Open NeoTree using the git root.
-#+begin_src emacs-lisp
-(defun neotree-project-dir ()
-
-    (interactive)
-    (let ((project-dir (projectile-project-root))
-          (file-name (buffer-file-name)))
-      (neotree-toggle)
-      (if project-dir
-          (if (neo-global--window-exists-p)
-              (progn
-                (neotree-dir project-dir)
-                (neotree-find file-name)))
-        (message "Could not find git project root."))))
-
-#+end_src
-
-NeoTree copy full path at cursor
-#+begin_src emacs-lisp
-(defun my/neo-copy-path () (interactive) (kill-new (neo-buffer--get-filename-current-line)))
-#+end_src
-*** Git
+*** GIT
 Magit and git-gutter configurations
 #+begin_src emacs-lisp
 (global-git-gutter+-mode t)
@@ -1276,6 +1095,199 @@ Give Visual Cue using cursor while in view mode
             (setq cursor-type (if view-mode 'bar 'box))))
 
 #+end_src
+** Hydra
+*** GIT
+#+begin_src emacs-lisp
+(defhydra hydra-magit (:color blue)
+  "
+  ^
+  ^Git  ^             ^Do^
+  ^─────^─────────────^──^─────────────
+  _n_ Next Hunk       _p_ Previous Hunk
+  _w_ Show Hunk       _t_ Stage Hunk
+  _q_ Quit            _b_ Blame
+  _c_ Clone           _s_ Status
+  _i_ Init            ^^
+  "
+  ("q" nil)
+  ("n" git-gutter+-next-hunk)
+  ("p" git-gutter+-previous-hunk)
+  ("w" git-gutter+-show-hunk)
+  ("t" git-gutter+-stage-hunks)
+  ("b" magit-blame)
+  ("c" magit-clone)
+  ("i" magit-init)
+  ("s" magit-status))
+#+end_src
+
+*** Projectile
+#+begin_src emacs-lisp
+(defhydra hydra-projectile (:color blue)
+  "
+^
+^Projectile^        ^Buffers^           ^Find^              ^Search^
+^──────────^────────^───────^───────────^────^──────────────^──────^────────────
+_q_ quit            _b_ list            _d_ directory       _r_ replace
+_i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
+^^                  _S_ save all        _f_ file            _s_ ag
+^^                  ^^                  _p_ project         ^^
+^^                  ^^                  ^^                  ^^
+"
+  ("q" nil)
+  ("b" helm-projectile-switch-to-buffer)
+  ("d" helm-projectile-find-dir)
+  ("D" projectile-dired)
+  ("f" helm-projectile)
+  ("i" projectile-invalidate-cache :color red)
+  ("K" projectile-kill-buffers)
+  ("p" helm-projectile-switch-project)
+  ("r" projectile-replace)
+  ("R" projectile-replace-regexp)
+  ("s" helm-projectile-ag)
+  ("S" projectile-save-project-buffers))
+#+end_src
+
+*** Helm
+#+begin_src emacs-lisp
+(defhydra hydra-helm (:color blue)
+  "
+^
+^Helm^              ^Browse^                ^Anaconda^
+^────^──────────────^──────^────────────────^────────^─────────────
+_q_ quit            _i_ imenu               _c_ Conda Activate
+_r_ resume          _s_ swoop               _d_ Conda Deactivate
+^^                  _S_ swoop all
+^^                  _k_ kill-ring
+^^                  _b_ org brain
+^^                  _m_ Mark Rings
+^^                  ^^
+"
+  ("q" nil)
+  ("i" helm-imenu)
+  ("b" org-brain-visualize)
+  ("m" helm-all-mark-rings)
+  ("s" helm-swoop)
+  ("S" helm-multi-swoop-all)
+  ("k" helm-show-kill-ring)
+  ("r" helm-resume)
+  ("c" pyvenv-workon)
+  ("d" pyvenv-deactivate))
+
+#+end_src
+
+*** Org
+**** org-ref
+Org-ref Sugars
+#+begin_src emacs-lisp
+(defhydra hydra-org-ref (:color blue)
+  "
+  ^
+  ^Org-ref  ^               ^Do^
+  ^─────^───────────────────^──^──────────────────
+  _l_ Create label          _i_ Insert Reference
+  _b_ Add doi bibtex        _y_ Bibtex Yank          
+  _A_ Add arxiv bibtex      _a_ Arxiv Search
+  _q_ Quit                 
+  "
+  ("q" nil)
+  ("l" org-ref-helm-insert-label-link) 
+  ("i" org-ref-helm-insert-ref-link)
+  ("b" doi-add-bibtex-entry)
+  ("A" arxiv-add-bibtex-entry)
+  ("a" arxiv-lookup)
+  ("y" org-bibtex-yank))
+#+end_src
+
+**** org-trello
+Hydra bindings for org-trello
+#+begin_src emacs-lisp
+(defhydra hydra-org-trello (:color blue)
+  "
+  ^Metadata ^                   ^Board^                        ^Card^
+  ^─────────^───────────────────^────^────────────────────────-^────^─────────────
+  _i_ Install Board Metadata    _s_ Sync Buffer                _c_ Sync Card
+  _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Ope card in browser
+  _q_ Quit                      _l_ Show board labels          _a_ Signup on Card
+  ^^                            ^^                             _C_ Add Comment on Card
+  ^^                            ^^                             _D_ Delete Comment on Card
+
+  "
+  ("q" nil)
+;; Board Metadata
+  ("i" org-trello-install-board-metadata) 
+  ("u" org-trello-update-board-metadata) 
+;; Board
+  ("s" org-trello-sync-buffer) 
+  ("J" org-trello-jump-to-trello-board) 
+  ("l" org-trello-show-board-labels) 
+;; Card
+  ("c" org-trello-sync-card) 
+  ("j" org-trello-jump-to-trello-card) 
+  ("a" org-trello-assign-me) 
+  ("C" org-trello-add-card-comment) 
+  ("D" org-trello-delete-card-commen))
+#+end_src
+
+*** Spotify
+Spotify sugars
+#+begin_src emacs-lisp
+(defhydra hydra-spotify (:color blue)
+  "
+  ^
+  ^Spotify  ^             ^Do^
+  ^────────^──────────────^──^─────────────
+  _p_ Play/Pause          _N_ Next
+  _s_ Stop                _P_ Previous
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("p" spotify-playpause)
+  ("N" spotify-next)
+  ("P" spotify-previous)
+  ("s" spotify-quit))
+#+end_src
+*** Internet, Social, Feed Manager
+Hydra Menu for elfeed and twitter
+#+begin_src emacs-lisp
+(defhydra hydra-social-feed (:color blue)
+  "
+  ^
+  ^Social  ^              
+  ^────────^───────────────────
+  _e_ El Feed       _t_ Twitter      
+  _b_ Browse Web    _i_ IRC
+  _p_ Tor
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("e" elfeed)
+  ("b" browse-web)
+  ("i" my/connect-erc)
+  ("p" my/launch-tor)
+  ("t" twit))
+#+end_src
+
+#+RESULTS:
+: hydra-social-feed/body
+
+*** Window Move
+Quickly move around windows
+#+begin_src emacs-lisp
+(defhydra hydra-window-move (:color blue)
+  "
+  ^
+  ^Window  ^              
+  ^────────^───────────^─────^─────────────
+  _p_ Move Up          _n_ Move Down
+  _b_ Move Left        _f_ Move Right
+  _q_ Quit            
+  "
+  ("q" nil)
+  ("p" windmove-up)
+  ("n" windmove-down)
+  ("b" windmove-left)
+  ("f" windmove-right))
+#+end_src
 
 ** Key Bindings
 Define custom key bindings.
@@ -1290,7 +1302,6 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "s->") #'other-window)
 (global-set-key (kbd "s-<") #'prev-window)
-(global-set-key (kbd "M-f") 'forward-to-word)
 #+end_src
 
 
@@ -1326,7 +1337,6 @@ Track the last edited location
 
 #+RESULTS:
 : goto-last-change-reverse
-
 
 *** GIT
 Git key bindings, with added sugar of hydra
@@ -1425,9 +1435,6 @@ Open elfeed links inline browser
 #+begin_src emacs-lisp
 (define-key elfeed-show-mode-map (kbd "o") 'my/elfeed-show-visit)
 #+end_src
-
-#+RESULTS:
-: my/elfeed-show-visit
 
 **** Elfeed bookmarks and custom keymaps
 

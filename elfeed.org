@@ -3,6 +3,7 @@
 *** https://www.reddit.com/r/emacs/.rss
 *** https://www.reddit.com/r/Futurology/.rss
 *** [[http://feeds.feedburner.com/FeaturedBlogPosts-DataScienceCentral?format=xml][Data Science Central]]
+*** [[https://hnrss.org/frontpage][HackerNews]]
 
 ** General                                                         :general:
 *** https://www.reddit.com/r/todayilearned/.rss
@@ -13,4 +14,6 @@
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
 ** Daily                                                             :daily:
 *** [[https://www.hindustantimes.com/rss/topnews/rssfeed.xml][HT]]
+*** [[https://www.thehindu.com/opinion/editorial/feeder/default.rss][Hindu - Editorial]]
+*** [[https://www.thehindu.com/news/national/feeder/default.rss][Hindu - National]]
 
