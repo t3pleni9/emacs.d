@@ -1,10 +1,9 @@
 #+TITLE: Emacs Configurations
 #+AUTHOR: Justin Jose
 
-* Config
 A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration.
 
-** Require
+* Require
 One require to rule them all
 #+begin_src emacs-lisp
   (require 'org)
@@ -39,13 +38,13 @@ One require to rule them all
   (require 'view)
 #+end_src
 
-** Emacs startup, theme, and others
-*** Path setting
+* Emacs startup, theme, and others
+** Path setting
 #+begin_src emacs-lisp
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
 #+end_src
 
-*** Global
+** Global
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t) ;; outline-hide the startup messag
   (load-theme 'darktooth t)
@@ -107,7 +106,7 @@ Don't kill emacs without confirming
 (setq confirm-kill-emacs 'y-or-n-p)
 #+end_src
 
-*** Dashboard
+** Dashboard
 #+begin_src emacs-lisp
 (dashboard-setup-startup-hook)
 ;; Set the title
@@ -121,7 +120,7 @@ Don't kill emacs without confirming
                         (bookmarks . 5)))
 #+end_src
 
-*** Date and Time 
+** Date and Time 
 Have time displayed in status bar
 #+begin_src emacs-lisp
 (setq display-time-string-forms
@@ -130,7 +129,7 @@ Have time displayed in status bar
 
 #+end_src
 
-*** Display battery
+** Display battery
 #+begin_src emacs-lisp
     (require 'battery)
     (defun my/battery-mode-line () (let* ((bat (read (cdr (assoc 112 (funcall battery-status-function)))))
@@ -141,7 +140,7 @@ Have time displayed in status bar
       (propertize (concat symbol charging " " (number-to-string bat) "%% ") 'face (list :foreground color :weight 'bold))))
 #+end_src
 
-*** Python
+** Python
 Setup python venv with conda
 #+begin_src emacs-lisp
 
@@ -152,8 +151,8 @@ Setup python venv with conda
 
 #+end_src
 
-** Global Modes
-*** Global 
+* Global Modes
+** Global 
 
 #+begin_src emacs-lisp
 (global-display-line-numbers-mode t)
@@ -215,7 +214,7 @@ Image view mode
 (eval-after-load 'image+ '(imagex-global-sticky-mode 1))
 #+end_src
 
-*** EPUB mode setting
+** EPUB mode setting
 Basic setting
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
@@ -255,7 +254,7 @@ Basic setting
 (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
 #+end_src
 
-*** Prog-Mode hooks
+** Prog-Mode hooks
 Programming Mode Hooks
 #+begin_src emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -266,7 +265,7 @@ Programming Mode Hooks
 
 #+end_src
 
-**** JavaScript
+*** JavaScript
 JavaScript specific setups
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
@@ -274,7 +273,7 @@ JavaScript specific setups
 (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 #+end_src
 
-**** Python
+*** Python
 Python Specific Setups
 #+begin_src emacs-lisp
 (add-hook 'python-mode-hook 'anaconda-mode)
@@ -293,12 +292,12 @@ python-shell-interpreter-args "--simple-prompt -i")
              (setq-local ml-interactive? t)))
 #+end_src
 
-**** LISP
+*** LISP
 #+begin_src emacs-lisp
 (setq inferior-lisp-program "clisp")
 #+end_src
 
-*** Projectile
+** Projectile
 Enable Projectile Globally
 #+begin_src emacs-lisp
 (projectile-global-mode)
@@ -318,7 +317,7 @@ Bind switch project to =helm-projectile=
 (setq projectile-switch-project-action 'helm-projectile)
 #+end_src
 
-*** Shell
+** Shell
 Setup shell setting to work with zsh
 #+begin_src emacs-lisp
 (setq explicit-shell-file-name "/bin/zsh")
@@ -333,7 +332,7 @@ Setup shell setting to work with zsh
 (setq ac-modes (delq 'python-mode ac-modes))
 #+end_src
 
-*** Flycheck
+** Flycheck
 #+begin_src emacs-lisp
  (when (require 'flycheck nil t)
    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
@@ -350,7 +349,7 @@ Use aspell to fix my mistakes
 
 #+end_src
 
-*** Markdown
+** Markdown
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.mdown$" . markdown-mode))
@@ -362,7 +361,7 @@ Use aspell to fix my mistakes
 
 #+end_src
 
-*** Org
+** Org
 #+begin_src emacs-lisp
   (add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
@@ -383,15 +382,15 @@ Use aspell to fix my mistakes
   (add-hook 'org-mode-hook 'org-beamer-mode)
 #+end_src
 
-*** Dumb Jump
+** Dumb Jump
 Dumb jump lets me goto definitions easily using a dumb =ag= search
 #+begin_src emacs-lisp
 (dumb-jump-mode 1)
 (setq dumb-jump-selector 'helm)
 #+end_src
 
-*** Ontology
-**** Turtle Format
+** Ontology
+*** Turtle Format
 Enable bindings for turtle format
 #+begin_src emacs-lisp
 (autoload 'ttl-mode "ttl-mode" "Major mode for OWL or Turtle files" t)
@@ -404,8 +403,8 @@ Enable bindings for turtle format
         '("\\.ttl" . ttl-mode))
        auto-mode-alist))
 #+end_src
-** Org
-*** Global
+* Org
+** Global
 Time tracking on tasks
 #+begin_src emacs-lisp
 (setq org-clock-persist 'history)
@@ -422,9 +421,9 @@ Allow alphabets ‘a.’, ‘A.’, ‘a)’ and ‘A) as list elements:
 (setq org-list-allow-alphabetical t)
 #+end_src
 
-*** Exo-cortex
+** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
-**** File Organization
+*** File Organization
 - Capture :: All unscheduled sudden surges of things which I remember get captured into this file. Mostly things here are without a schedule or deadline, which need to refiling and revisiting sometime in the future. Also serves as the Bookmark collection of websites, videos, books, courses and podcasts. 
 #+begin_src emacs-lisp
 (setq bookmarks-file-path "~/Documents/org-notes/exocortex/capture.org")
@@ -451,7 +450,7 @@ A place to store and remember everything that I can't burden my brain with think
 (setq projects-file-path "~/Documents/org-notes/exocortex/projects.org")
 #+end_src
 
-***** ORG-Agenda: 
+**** ORG-Agenda: 
 All the above mentioned files just form a part of the bigger agenda.
 #+begin_src emacs-lisp
 (setq org-agenda-files '("~/Documents/org-notes/exocortex/inbox.org"
@@ -464,7 +463,7 @@ All the above mentioned files just form a part of the bigger agenda.
 ))
 #+end_src
 
-**** Org TODO cycles
+*** Org TODO cycles
 
 After multiple iterations of the TODO cycles, finally decided on using a simple list of TODOS, and to rely more on tags to mark the kind of TODO
 
@@ -498,7 +497,7 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 #+RESULTS:
 : ((TODO :foreground #ff39a3 :weight bold) (PLANNED :foreground #81D8D1 :weight bold) (HOLD :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
 
-*** PDF view
+** PDF view
 Install PDF tools 
 #+begin_src emacs-lisp
 (pdf-tools-install)
@@ -524,7 +523,7 @@ Dark Mode always
 (setq-default pdf-view-display-size 'fit-page)
 #+end_src
 
-*** Org-agenda
+** Org-agenda
 Org-super-agenda
 #+begin_src emacs-lisp
 (setq org-agenda-time-grid '((daily today require-timed)
@@ -609,7 +608,7 @@ Display agenda in a full window view instead of a frame view
 #+RESULTS:
 : ((agenda .  %-12c%?-12t% s) (timeline .  % s) (todo .  %?-12:c) (tags .  %i %-12:c) (search .  %i %-12:c))
 
-*** Files
+** Files
 List of global org files
 #+begin_src emacs-lisp
 (setq org-directory "~/Documents/org-notes")
@@ -635,7 +634,7 @@ List of global org files
 
 #+end_src
 
-*** Org Babel
+** Org Babel
 #+begin_src emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -651,7 +650,7 @@ List of global org files
 #+RESULTS:
 : my-org-confirm-babel-evaluate
 
-*** Org latex
+** Org latex
 #+begin_src emacs-lisp
 (setq org-latex-pdf-process
     '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
@@ -667,7 +666,7 @@ citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
 (setq org-latex-prefer-user-labels t)
 #+end_src
 
-*** Org ref
+** Org ref
 Search through bibtex reference using helm reference
 #+begin_src emacs-lisp
 (defun my/helm-bibtex-publications (&optional arg)
@@ -697,7 +696,7 @@ Org-ref Files
 
 #+end_src
 
-**** Bibtex
+*** Bibtex
 #+begin_src emacs-lisp
 (setq bibtex-completion-bibliography "~/Documents/org-notes/bibliography/references.bib"
       bibtex-completion-library-path "~/Documents/org-notes/bibliography/bibtex-pdfs"
@@ -709,7 +708,7 @@ Org-ref Files
 (setq bibtex-completion-display-formats
       '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
 #+end_src
-*** Org-journal
+** Org-journal
 Org-Journal settings
 #+begin_src emacs-lisp
   (setq org-journal-dir "~/Documents/Personal/.journal/")
@@ -720,13 +719,13 @@ Org-Journal settings
   (org-reload)
 #+end_src
 
-*** Capture Templates                                      :non_exec_block:
+** Capture Templates                                        :non_exec_block:
 #+begin_src emacs-lisp
 (setq org-capture-templates
       '(
 #+end_src
 
-**** Secrets
+*** Secrets
 #+begin_src emacs-lisp
 	("s" "Secrets" entry
 	 (file+headline secrets-file-path "Secrets")
@@ -738,7 +737,7 @@ Org-Journal settings
 ")
 #+end_src
 
-**** Inbox Tasks
+*** Inbox Tasks
 #+begin_src emacs-lisp
 
 ("t" "Todos")
@@ -758,7 +757,7 @@ Also the home tasks
 	 "* TODO %i%?")
 #+end_src
 
-**** Reference Papers
+*** Reference Papers
 Capture reference papers with a small help of =C-r y=
 #+begin_src emacs-lisp
 ("r" "Paper" entry
@@ -770,7 +769,7 @@ Capture reference papers with a small help of =C-r y=
 ")
 #+end_src
 
-**** Journal
+*** Journal
 #+begin_src emacs-lisp
 
 ("j" "Journal" entry
@@ -778,7 +777,7 @@ Capture reference papers with a small help of =C-r y=
    "* %?")
 #+end_src
 
-**** Capture
+*** Capture
 #+begin_src emacs-lisp
 ("c" "Capture")
 ("cb" "Book" entry
@@ -818,10 +817,10 @@ Capture reference papers with a small help of =C-r y=
 ")))
 #+end_src
 
-** Internet, Social, Feed Manager
-*** Elfeed
+* Internet, Social, Feed Manager
+** Elfeed
 Feed reader setups
-**** Configuration 
+*** Configuration 
 [[file:elfeed.org][Configuration Org]]
 #+begin_src emacs-lisp
 (use-package elfeed-org
@@ -830,7 +829,7 @@ Feed reader setups
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/.emacs.d/elfeed.org")))
 #+end_src
-**** Bookmarks
+*** Bookmarks
 All the bookmark loaders
 #+begin_src emacs-lisp
 (defun my/elfeed-outline-show-all ()
@@ -863,7 +862,7 @@ All the bookmark loaders
 #+RESULTS:
 : my/elfeed-outline-show-podcast
 
-**** EMMS
+*** EMMS
 Should have its own header, but as of now just lives inside the elfeed section
 #+begin_src emacs-lisp
 (emms-all)
@@ -901,9 +900,9 @@ Prompts for ENCLOSURE-INDEX when called interactively."
 
 #+end_src
 
-**** Customization
+*** Customization
 Custom functions to make life a little easier
-***** Save state before Quit
+**** Save state before Quit
 #+begin_src emacs-lisp
 ;;write to disk when quiting
 (defun my/elfeed-save-db-and-bury ()
@@ -912,13 +911,13 @@ Custom functions to make life a little easier
   (elfeed-db-save)
   (quit-window))
 #+end_src
-***** Mark the favourites
+**** Mark the favourites
 #+begin_src emacs-lisp
 (defalias 'elfeed-toggle-star
   (elfeed-expose #'elfeed-search-toggle-all 'star))
 #+end_src
-***** Custom Colors
-****** News
+**** Custom Colors
+***** News
 #+begin_src emacs-lisp
 (defface daily-news
   '((t :foreground "#AFF"))
@@ -927,7 +926,7 @@ Custom functions to make life a little easier
 
 (push '(daily daily-news) elfeed-search-face-alist)
 #+end_src
-****** Podcasts
+***** Podcasts
 #+begin_src emacs-lisp
 (defface elfeed-audio
   '((t :foreground "#FA0"))
@@ -936,7 +935,7 @@ Custom functions to make life a little easier
 
 (push '(podcast elfeed-audio) elfeed-search-face-alist)
 #+end_src
-****** Technology
+***** Technology
 #+begin_src emacs-lisp
 (defface elfeed-reddit
   '((t :foreground "#0AA"))
@@ -946,7 +945,7 @@ Custom functions to make life a little easier
 (push '(tech elfeed-reddit) elfeed-search-face-alist)
 #+end_src
 
-****** Stars
+***** Stars
 #+begin_src emacs-lisp
   ;; face for starred articles
   (defface elfeed-search-starred-title-face
@@ -957,7 +956,7 @@ Custom functions to make life a little easier
   (push '(star elfeed-search-starred-title-face) elfeed-search-face-alist)
     #+end_src
     
-***** Titles, See more titles and Let the computer read out the title ( Mac only)
+**** Titles, See more titles and Let the computer read out the title ( Mac only)
 #+begin_src emacs-lisp
 (defun my/outline-show-full-title ()
   (interactive)
@@ -975,7 +974,7 @@ Custom functions to make life a little easier
 
 #+end_src
 
-***** In browser open URL
+**** In browser open URL
 #+begin_src emacs-lisp
 (defun my/elfeed-show-visit (&optional use-generic-p)
   "Visit the current entry in your browser using `browse-url'.
@@ -991,7 +990,7 @@ browser defined by `browse-url-generic-program'."
 
 #+end_src
 
-*** Twitter Mode
+** Twitter Mode
 Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
 #+begin_src emacs-lisp
 (setq twittering-use-master-password t)
@@ -1001,7 +1000,7 @@ Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
 (add-hook 'twittering-edit-mode-hook (lambda () (ispell-minor-mode) (flyspell-mode)))
 #+end_src
 
-*** IRC
+** IRC
 Setup for managing IRC 
 #+begin_src emacs-lisp
 (setq erc-prompt-for-nickserv-password nil)
@@ -1014,7 +1013,7 @@ Setup for managing IRC
 #+RESULTS:
 : my/connect-erc
 
-*** Tor
+** Tor
 #+begin_src emacs-lisp
 (defun my/launch-process (name buffer-name process &rest args) 
 (apply #'start-process name buffer-name process args)
@@ -1034,11 +1033,11 @@ Setup for managing IRC
 )
 #+end_src
 
-*** TODO EWW
+** TODO EWW
 Set the default browser as EWW
-**** TODO Setup firefox
-** Custom Configurations and Functions
-*** GIT
+*** TODO Setup firefox
+* Custom Configurations and Functions
+** GIT
 Magit and git-gutter configurations
 #+begin_src emacs-lisp
 (global-git-gutter+-mode t)
@@ -1048,7 +1047,7 @@ Magit and git-gutter configurations
 (set-face-foreground 'git-gutter+-deleted "red")
 #+end_src
 
-*** Kill buffer
+** Kill buffer
 Kill buffer asks way too many questions on what to kill, and since I would want to kill what I am on 
 #+begin_src emacs-lisp
 (defun my/kill-this-buffer ()
@@ -1056,14 +1055,14 @@ Kill buffer asks way too many questions on what to kill, and since I would want 
   (interactive)
   (kill-buffer (current-buffer)))
 #+end_src
-*** Windows and Frames
+** Windows and Frames
 Have a easier navigation around open windows
 #+begin_src emacs-lisp
 (defun prev-window ()
   (interactive)
   (other-window -1))
 #+end_src
-*** Basic Text editing
+** Basic Text editing
 Duplicate an entire line
 #+begin_src emacs-lisp
 (defun duplicate-line()
@@ -1078,7 +1077,7 @@ Duplicate an entire line
   (move-beginning-of-line 1)
   )
 #+end_src
-*** View Mode
+** View Mode
 Open Read-only files in view-mode by default
 #+begin_src emacs-lisp
 (setq view-read-only t)
@@ -1093,8 +1092,8 @@ Give Visual Cue using cursor while in view mode
             (setq cursor-type (if view-mode 'bar 'box))))
 
 #+end_src
-** Hydra
-*** GIT
+* Hydra
+** GIT
 #+begin_src emacs-lisp
 (defhydra hydra-magit (:color blue)
   "
@@ -1118,7 +1117,7 @@ Give Visual Cue using cursor while in view mode
   ("s" magit-status))
 #+end_src
 
-*** Projectile
+** Projectile
 #+begin_src emacs-lisp
 (defhydra hydra-projectile (:color blue)
   "
@@ -1145,7 +1144,7 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   ("S" projectile-save-project-buffers))
 #+end_src
 
-*** Helm
+** Helm
 #+begin_src emacs-lisp
 (defhydra hydra-helm (:color blue)
   "
@@ -1173,8 +1172,8 @@ _r_ resume          _s_ swoop               _d_ Conda Deactivate
 
 #+end_src
 
-*** Org
-**** org-ref
+** Org
+*** org-ref
 Org-ref Sugars
 #+begin_src emacs-lisp
 (defhydra hydra-org-ref (:color blue)
@@ -1196,7 +1195,7 @@ Org-ref Sugars
   ("y" org-bibtex-yank))
 #+end_src
 
-**** org-trello
+*** org-trello
 Hydra bindings for org-trello
 #+begin_src emacs-lisp
 (defhydra hydra-org-trello (:color blue)
@@ -1226,7 +1225,7 @@ Hydra bindings for org-trello
   ("D" org-trello-delete-card-commen))
 #+end_src
 
-*** Spotify
+** Spotify
 Spotify sugars
 #+begin_src emacs-lisp
 (defhydra hydra-spotify (:color blue)
@@ -1244,7 +1243,7 @@ Spotify sugars
   ("P" spotify-previous)
   ("s" spotify-quit))
 #+end_src
-*** Internet, Social, Feed Manager
+** Internet, Social, Feed Manager
 Hydra Menu for elfeed and twitter
 #+begin_src emacs-lisp
 (defhydra hydra-social-feed (:color blue)
@@ -1267,7 +1266,7 @@ Hydra Menu for elfeed and twitter
 #+RESULTS:
 : hydra-social-feed/body
 
-*** Window Move
+** Window Move
 Quickly move around windows
 #+begin_src emacs-lisp
 (defhydra hydra-window-move (:color blue)
@@ -1286,9 +1285,9 @@ Quickly move around windows
   ("f" windmove-right))
 #+end_src
 
-** Key Bindings
+* Key Bindings
 Define custom key bindings.
-*** Windows and Frames
+** Windows and Frames
 Basic key bindings to play around with frames and window. Binding Delete frame defaulted at  =C-x 5 0= to =C-x w=
 
 #+begin_src emacs-lisp
@@ -1302,13 +1301,13 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 #+end_src
 
 
-**** Shell
+*** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
 (global-set-key (kbd "s-`") 'vterm)
 #+end_src
 
-*** Basic Text editing
+** Basic Text editing
 Duplicate a line
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c d") 'duplicate-line)
@@ -1335,25 +1334,25 @@ Track the last edited location
 #+RESULTS:
 : goto-last-change-reverse
 
-*** GIT
+** GIT
 Git key bindings, with added sugar of hydra
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c g") 'magit-status)
 (global-set-key (kbd "C-c m") 'hydra-magit/body)
 #+end_src
 
-*** Projectile
+** Projectile
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c p") 'hydra-projectile/body)
 #+end_src
 
-*** Kill buffer
+** Kill buffer
 Just kill the current buffer without asking too many questions
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x k") 'my/kill-this-buffer)
 #+end_src
 
-*** Helm
+** Helm
 Have helm handle most of the things around
 
 #+begin_src emacs-lisp
@@ -1365,7 +1364,7 @@ Have helm handle most of the things around
 (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
 #+end_src
 
-*** Org
+** Org
 References, Publications and Citations
 #+begin_src emacs-lisp
 (setq org-ref-insert-cite-key "C-c M-]")
@@ -1400,28 +1399,28 @@ PDF View
 (define-key org-mode-map (kbd "C-c i") 'interleave-mode)
 #+end_src
 
-*** Spotify
+** Spotify
 Spotify hydra sugar
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c s") 'hydra-spotify/body)
 #+end_src
 
-*** Json
+** Json
 Pretty print JSON buffer
 #+begin_src emacs-lisp
 (define-key json-mode-map (kbd "C-M-/") 'json-pretty-print-buffer)
 #+end_src
-*** Python
+** Python
 Pytest keybinding in python mode
 #+begin_src emacs-lisp
 (define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
 #+end_src
-*** Password Manager
+** Password Manager
 #+begin_src emacs-lisp
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
 (define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin)
 #+end_src
-*** Social Feed
+** Social Feed
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c f") 'hydra-social-feed/body)
 #+end_src
@@ -1431,7 +1430,7 @@ Open elfeed links inline browser
 (define-key elfeed-show-mode-map (kbd "o") 'my/elfeed-show-visit)
 #+end_src
 
-**** Elfeed bookmarks and custom keymaps
+*** Elfeed bookmarks and custom keymaps
 
 #+begin_src emacs-lisp
 (use-package elfeed
@@ -1453,7 +1452,7 @@ Open elfeed links inline browser
 #+RESULTS:
 : my/outline-show-full-title
 
-*** View Mode
+** View Mode
 Disable view-mode instead of closing buffer on pressing ~C-q~
 
 #+begin_src emacs-lisp
