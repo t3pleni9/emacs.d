@@ -187,7 +187,6 @@ Disable line numbers in some buffers
   "Disable display-line-numbers locally."
   (display-line-numbers-mode 0))
 
-(add-hook 'neotree-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'vterm-mode-hook 'display-line-numbers-disable-hook)
@@ -202,7 +201,6 @@ Disable visual line mode in some buffers
   "Disable display-line-numbers locally."
    (visual-line-mode -1))
 
-(add-hook 'neotree-mode-hook 'disable-visual-line-mode)
 (add-hook 'minibuffer-setup-hook 'disable-visual-line-mode)
 
 #+end_src
@@ -210,11 +208,6 @@ Disable visual line mode in some buffers
 Org export support
 #+begin_src emacs-lisp
 (setq doc-view-ghostscript-program "/usr/local/bin/gs")
-#+end_src
-
-NeoTree with display icons
-#+begin_src emacs-lisp
-(setq neo-theme (if (display-graphic-p) 'icons))
 #+end_src
 
 Image view mode
@@ -1033,12 +1026,17 @@ Setup for managing IRC
 #+begin_src emacs-lisp
 (defun my/launch-tor()
 (interactive)
+(message "Starting Tor sub-process.")
 (my/launch-process "tor-process" "*tor*" "tor")
+(message "Launching Firefox with proxy_profile")
 (my/launch-process "tor-process" "*tor*" "/Applications/Firefox.app/Contents/MacOS/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/")
+(message "Process launched in *tor* buffer.")
 )
-
 #+end_src
 
+*** TODO EWW
+Set the default browser as EWW
+**** TODO Setup firefox
 ** Custom Configurations and Functions
 *** GIT
 Magit and git-gutter configurations
@@ -1252,11 +1250,10 @@ Hydra Menu for elfeed and twitter
 (defhydra hydra-social-feed (:color blue)
   "
   ^
-  ^Social  ^              
-  ^────────^───────────────────
-  _e_ El Feed       _t_ Twitter      
-  _b_ Browse Web    _i_ IRC
-  _p_ Tor
+  ^Internet^       ^Social^       ^Feed^
+  ^────────^───────^──────^───────^────^───
+  _p_ Tor          _t_ Twitter   _e_ El Feed
+  _b_ EWW          _i_ IRC
   _q_ Quit            
   "
   ("q" nil)
@@ -1345,11 +1342,9 @@ Git key bindings, with added sugar of hydra
 (global-set-key (kbd "C-c m") 'hydra-magit/body)
 #+end_src
 
-*** Projectile/NeoTree
+*** Projectile
 #+begin_src emacs-lisp
-(global-set-key (kbd "s-1") 'neotree-project-dir)
 (global-set-key (kbd "C-c p") 'hydra-projectile/body)
-(define-key neotree-mode-map (kbd "C-c M-p") 'my/neo-copy-path)
 #+end_src
 
 *** Kill buffer
