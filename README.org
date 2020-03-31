@@ -36,6 +36,8 @@ One require to rule them all
   (require 'org-trello)
   (require 'twittering-mode)
   (require 'view)
+  (require 'ein)
+  (require 'ein-notebook)
 #+end_src
 
 * Emacs startup, theme, and others
@@ -94,9 +96,9 @@ Make shell not to repeat commands
 
 Set the font to a comfortable level
 #+begin_src emacs-lisp
-(set-face-attribute 'default nil :height 160)
+(set-face-attribute 'default nil :height 130)
 (setq-default line-spacing 1)
-(set-frame-font "Hack 16" nil t)
+(set-frame-font "Hack 13" nil t)
 #+end_src
 
 #+RESULTS:
@@ -149,6 +151,13 @@ Setup python venv with conda
 (setq venv-location "~/.miniconda/envs")
 (setenv "WORKON_HOME" "~/.miniconda/envs")
 
+#+end_src
+
+** Jupyter Notebooks
+Set jupyter executable path and Notebook path
+#+begin_src emacs-lisp
+(setq ein:jupyter-default-server-command "~/.local/bin/jupyter")
+(setq ein:jupyter-default-notebook-directory "~/Documents/Notebook")
 #+end_src
 
 * Global Modes
@@ -594,19 +603,23 @@ Display agenda in a full window view instead of a frame view
 
 #+begin_src emacs-lisp
   (require 'org-agenda)
-
   (setq org-agenda-prefix-format '(
-   ;;(agenda  . " %i  %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
-    (agenda  . "%-12c%?-12t% s")
+   (agenda  . " %i  %-12:c%?-12t% s") ;; file name + org-agenda-entry-type
+    ;;(agenda  . "%-12c%?-12t% s")
     (timeline . " % s")
     (todo  . " %?-12:c")
     (tags  . " %i %-12:c")
     (search . " %i %-12:c")))
 #+end_src
 
+Disable visual line mode in agenda view as it wraps the tags to new line
+#+begin_src emacs-lisp
+(add-hook 'org-agenda-mode-hook
+          (lambda ()
+            (visual-line-mode 1)
+            (toggle-truncate-lines 1)))
+#+end_src
 
-#+RESULTS:
-: ((agenda .  %-12c%?-12t% s) (timeline .  % s) (todo .  %?-12:c) (tags .  %i %-12:c) (search .  %i %-12:c))
 
 ** Files
 List of global org files
@@ -636,14 +649,19 @@ List of global org files
 
 ** Org Babel
 #+begin_src emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((python . t)(prolog . t)(lisp . t)(shell . t)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (python . t)
+     (prolog . t)
+     (lisp . t)
+     (shell . t)
+     (ein . t)))
 
-(defun my-org-confirm-babel-evaluate (lang body)
-  (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh"))))
+  (defun my-org-confirm-babel-evaluate (lang body)
+    (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh"))))
 
-(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+  (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 #+end_src
 
@@ -843,10 +861,10 @@ All the bookmark loaders
   (bookmark-jump "elfeed-daily"))
 
 
-(defun my/elfeed-outline-show-reddit ()
+(defun my/elfeed-outline-show-tech ()
   (interactive)
   (bookmark-maybe-load-default-file)
-  (bookmark-jump "elfeed-reddit"))
+  (bookmark-jump "elfeed-tech"))
 
 (defun my/elfeed-outline-art-and-music ()
   (interactive)
@@ -858,9 +876,6 @@ All the bookmark loaders
   (bookmark-maybe-load-default-file)
   (bookmark-jump "elfeed-podcast"))
 #+end_src
-
-#+RESULTS:
-: my/elfeed-outline-show-podcast
 
 *** EMMS
 Should have its own header, but as of now just lives inside the elfeed section
@@ -1149,14 +1164,14 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 (defhydra hydra-helm (:color blue)
   "
 ^
-^Helm^              ^Browse^                ^Anaconda^
-^────^──────────────^──────^────────────────^────────^─────────────
+^Helm^              ^Browse^                ^Python^
+^────^──────────────^──────^────────────────^──────^───────────────
 _q_ quit            _i_ imenu               _c_ Conda Activate
 _r_ resume          _s_ swoop               _d_ Conda Deactivate
-^^                  _S_ swoop all
-^^                  _k_ kill-ring
-^^                  _b_ org brain
-^^                  _m_ Mark Rings
+^^                  _S_ swoop all           _n_ Jupyter Notebooks
+^^                  _k_ kill-ring           ^^
+^^                  _b_ org brain           ^^
+^^                  _m_ Mark Rings          ^^
 ^^                  ^^
 "
   ("q" nil)
@@ -1167,9 +1182,9 @@ _r_ resume          _s_ swoop               _d_ Conda Deactivate
   ("S" helm-multi-swoop-all)
   ("k" helm-show-kill-ring)
   ("r" helm-resume)
+  ("n" ein:notebook-open)
   ("c" pyvenv-workon)
   ("d" pyvenv-deactivate))
-
 #+end_src
 
 ** Org
@@ -1441,7 +1456,7 @@ Open elfeed links inline browser
               ("A" . my/elfeed-outline-show-all)
               ("M" . my/elfeed-outline-art-and-music)
               ("D" . my/elfeed-outline-show-daily)
-              ("R" . my/elfeed-outline-show-reddit)
+              ("T" . my/elfeed-outline-show-tech)
               ("P" . my/elfeed-outline-show-podcast)
               (">" . my/elfeed-outline-show-play-enclosure)
               (";" . emms-stop)
@@ -1450,9 +1465,6 @@ Open elfeed links inline browser
               ("*" . elfeed-toggle-star)
               ("<SPC>" . my/outline-show-full-title)))
 #+end_src
-
-#+RESULTS:
-: my/outline-show-full-title
 
 ** View Mode
 Disable view-mode instead of closing buffer on pressing ~C-q~
@@ -1487,4 +1499,11 @@ Remap scroll screen and previous screen to ~v~ and ~V~
 Remap recenter-top-bottom ~l~
 #+begin_src emacs-lisp
 (define-key view-mode-map (kbd "l") 'recenter-top-bottom)
+#+end_src
+
+** Jupyter Notebooks
+
+Execute all cells
+#+begin_src emacs-lisp
+(define-key ein:notebook-mode-map (kbd "C-c C-e") 'ein:worksheet-execute-all-cell)
 #+end_src

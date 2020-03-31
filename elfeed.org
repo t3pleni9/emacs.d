@@ -1,6 +1,6 @@
 * blogs                                                        :elfeed:
 ** Technology                                                       :tech:
-*** https://www.reddit.com/r/emacs/.rss
+*** https://www.reddit.com/r/emacs/.rss                             :emacs:
 *** https://www.reddit.com/r/Futurology/.rss
 *** [[http://feeds.feedburner.com/FeaturedBlogPosts-DataScienceCentral?format=xml][Data Science Central]]
 *** [[https://hnrss.org/frontpage][HackerNews]]
