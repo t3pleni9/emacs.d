@@ -1300,7 +1300,7 @@ Quickly move around windows
   ("f" windmove-right))
 #+end_src
 
-* Key Bindings
+** Key Bindings
 Define custom key bindings.
 ** Windows and Frames
 Basic key bindings to play around with frames and window. Binding Delete frame defaulted at  =C-x 5 0= to =C-x w=
@@ -1412,9 +1412,14 @@ PDF View
 #+begin_src emacs-lisp
 (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
 (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
+(define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
+(define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
 (define-key org-mode-map (kbd "C-c i") 'interleave-mode)
 #+end_src
+
+#+RESULTS:
+: interleave-mode
 
 ** Spotify
 Spotify hydra sugar
@@ -1502,6 +1507,10 @@ Remap recenter-top-bottom ~l~
 #+end_src
 
 ** Jupyter Notebooks
+Create a new Notebook
+#+begin_src emacs-lisp
+(define-key ein:notebooklist-mode-map (kbd "C-c C-n") 'ein:notebooklist-new-notebook)
+#+end_src
 
 Execute all cells
 #+begin_src emacs-lisp
