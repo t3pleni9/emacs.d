@@ -13,7 +13,6 @@
 ** Podcasts                                                        :podcast:
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
 ** Daily                                                             :daily:
-*** [[https://www.hindustantimes.com/rss/topnews/rssfeed.xml][HT]]
 *** [[https://www.thehindu.com/opinion/editorial/feeder/default.rss][Hindu - Editorial]]
 *** [[https://www.thehindu.com/news/national/feeder/default.rss][Hindu - National]]
 

@@ -38,6 +38,8 @@ One require to rule them all
   (require 'view)
   (require 'ein)
   (require 'ein-notebook)
+  (require 'org-alert)
+  (require 'alert)
 #+end_src
 
 * Emacs startup, theme, and others
@@ -101,11 +103,14 @@ Set the font to a comfortable level
 (set-frame-font "Hack 13" nil t)
 #+end_src
 
-#+RESULTS:
-
 Don't kill emacs without confirming
 #+begin_src emacs-lisp
 (setq confirm-kill-emacs 'y-or-n-p)
+#+end_src
+
+Show alerts in notifier
+#+begin_src emacs-lisp
+(setq alert-default-style 'osx-notifier)
 #+end_src
 
 ** Dashboard
@@ -156,8 +161,13 @@ Setup python venv with conda
 ** Jupyter Notebooks
 Set jupyter executable path and Notebook path
 #+begin_src emacs-lisp
-(setq ein:jupyter-default-server-command "~/.local/bin/jupyter")
-(setq ein:jupyter-default-notebook-directory "~/Documents/Notebook")
+(setq ein:jupyter-default-server-command "~/.local/bin/jupyter"
+ein:jupyter-default-notebook-directory "~/Documents/Notebook")
+#+end_src
+
+Enable in-lined images in EIN
+#+begin_src emacs-lisp
+(setq ein:output-area-inlined-images t)
 #+end_src
 
 * Global Modes
@@ -503,9 +513,6 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 ("POSTPONED" . "#008080")))
 #+end_src
 
-#+RESULTS:
-: ((TODO :foreground #ff39a3 :weight bold) (PLANNED :foreground #81D8D1 :weight bold) (HOLD :foreground #ff9a00 :weight bold) (INPROGRESS :foreground #ffdd00 :weight bold) (CANCELLED :foreground white :background #4d4d4d :weight bold) (RE-VISIT :foreground #88ddee :background #454545 :weight bold) (POSTPONED . #008080))
-
 ** PDF view
 Install PDF tools 
 #+begin_src emacs-lisp
@@ -664,9 +671,6 @@ List of global org files
   (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 #+end_src
-
-#+RESULTS:
-: my-org-confirm-babel-evaluate
 
 ** Org latex
 #+begin_src emacs-lisp
@@ -1025,9 +1029,6 @@ Setup for managing IRC
 :server "irc.gotham.chat" :port "6667" :nick "translucentInk" :password nil ))
 #+end_src
 
-#+RESULTS:
-: my/connect-erc
-
 ** Tor
 #+begin_src emacs-lisp
 (defun my/launch-process (name buffer-name process &rest args) 
@@ -1278,9 +1279,6 @@ Hydra Menu for elfeed and twitter
   ("t" twit))
 #+end_src
 
-#+RESULTS:
-: hydra-social-feed/body
-
 ** Window Move
 Quickly move around windows
 #+begin_src emacs-lisp
@@ -1345,9 +1343,6 @@ Track the last edited location
 (global-set-key (kbd "M-s-<left>") 'goto-last-change)
 (global-set-key (kbd "M-s-<right>") 'goto-last-change-reverse)
 #+end_src
-
-#+RESULTS:
-: goto-last-change-reverse
 
 ** GIT
 Git key bindings, with added sugar of hydra
@@ -1417,9 +1412,6 @@ PDF View
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
 (define-key org-mode-map (kbd "C-c i") 'interleave-mode)
 #+end_src
-
-#+RESULTS:
-: interleave-mode
 
 ** Spotify
 Spotify hydra sugar
