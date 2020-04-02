@@ -40,6 +40,7 @@ One require to rule them all
   (require 'ein-notebook)
   (require 'org-alert)
   (require 'alert)
+  (require 'volume)
 #+end_src
 
 * Emacs startup, theme, and others
@@ -1108,6 +1109,35 @@ Give Visual Cue using cursor while in view mode
             (setq cursor-type (if view-mode 'bar 'box))))
 
 #+end_src
+** Volume Control
+Current Volume value 
+#+begin_src emacs-lisp
+(setq my/current-volume (volume-osascript-get))
+#+end_src
+
+Mute/UnMute and store current volume
+#+begin_src emacs-lisp
+  (defun my/volume-mute () 
+    (setq my/current-volume (volume-osascript-get))
+    (volume-osascript-set 0))
+
+  (defun my/volume-unmute () 
+    (volume-osascript-set  my/current-volume))
+#+end_src
+
+Increase/Decrease Volume
+#+begin_src emacs-lisp
+  (defun my/increase-volume (&optional arg) 
+    (interactive "p")
+    (if current-prefix-arg 
+        (my/volume-unmute) (volume-osascript-nudge 1)))
+
+  (defun my/decrease-volume (&optional arg) 
+    (interactive "p")
+    (if current-prefix-arg 
+        (my/volume-mute) (volume-osascript-nudge -1)))
+#+end_src
+
 * Hydra
 ** GIT
 #+begin_src emacs-lisp
@@ -1298,21 +1328,32 @@ Quickly move around windows
   ("f" windmove-right))
 #+end_src
 
-** Key Bindings
+* Key Bindings
 Define custom key bindings.
 ** Windows and Frames
 Basic key bindings to play around with frames and window. Binding Delete frame defaulted at  =C-x 5 0= to =C-x w=
+
+|----------------+--------------|
+| Action         | Key Binding  |
+|----------------+--------------|
+| Delete Frame   | =C-x w=      |
+| Increase Font  | =s-+=, =s-== |
+| Decrease Font  | =s--=        |
+| Forward Window | =s->=        |
+| Prev Window    | =s-<=        |
+|----------------+--------------|
+
 
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w") 'delete-frame)
 (global-set-key (kbd "C-x C-b") 'switch-to-buffer)
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "s-+") 'text-scale-increase)
+(global-set-key (kbd "s-=") 'text-scale-increase)
+(global-set-key (kbd "s--") 'text-scale-decrease)
 (global-set-key (kbd "s->") #'other-window)
 (global-set-key (kbd "s-<") #'prev-window)
 #+end_src
-
 
 *** Shell
 Have a Doom styled console launch binding
@@ -1413,11 +1454,26 @@ PDF View
 (define-key org-mode-map (kbd "C-c i") 'interleave-mode)
 #+end_src
 
-** Spotify
+** Audio / Multimedia
 Spotify hydra sugar
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c s") 'hydra-spotify/body)
 #+end_src
+
+|-----------------+-------------|
+| Volume Control  | Key Binding |
+|-----------------+-------------|
+| Increase volume | =C-+=       |
+| Decrease Volume | =C--=       |
+| Mute Volume     | =C-u C--=   |
+| Un Mute Volume  | =C-u C-+=   |
+|-----------------+-------------|
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-+") 'my/increase-volume)
+(global-set-key (kbd "C--") 'my/decrease-volume)
+#+end_src
+
 
 ** Json
 Pretty print JSON buffer
