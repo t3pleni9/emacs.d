@@ -1213,7 +1213,7 @@ _r_ resume          _s_ swoop               _d_ Conda Deactivate
   ("S" helm-multi-swoop-all)
   ("k" helm-show-kill-ring)
   ("r" helm-resume)
-  ("n" ein:notebook-open)
+  ("n" ein:notebooklist-open)
   ("c" pyvenv-workon)
   ("d" pyvenv-deactivate))
 #+end_src
@@ -1473,7 +1473,6 @@ Spotify hydra sugar
 (global-set-key (kbd "C-+") 'my/increase-volume)
 (global-set-key (kbd "C--") 'my/decrease-volume)
 #+end_src
-
 
 ** Json
 Pretty print JSON buffer
