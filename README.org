@@ -805,26 +805,23 @@ Capture reference papers with a small help of =C-c r y=
 ("c" "Capture")
 ("cb" "Book" entry
 (file+headline bookmarks-file-path "Books")
-"* %^{title}  %^g
+"* [[%^{url}][%^{title}]]  %^g
        :PROPERTIES:
        :TYPE: Book
-       :URL: [[%^{url}][source]]
        :END:
 ")
 ("cw" "Web URL" entry
 (file+headline bookmarks-file-path "Web")
-"* %^{title}  %^g
+"* [[%^{url}][%^{title}]]  %^g
        :PROPERTIES:
        :TYPE: Web
-       :URL: [[%^{url}][source]]
        :END:
 ")
 ("cv" "Videos" entry
 (file+headline bookmarks-file-path "Videos")
-"* %^{title}  %^g
+"* [[%^{url}][%^{title}]]  %^g
        :PROPERTIES:
        :TYPE: Video
-       :URL: [[%^{url}][source]]
        :END:
 ")
 ("cm" "Miscelleneous" entry
@@ -832,10 +829,9 @@ Capture reference papers with a small help of =C-c r y=
 "* TODO %i%?")
 ("cc" "Courses" entry
 (file+headline bookmarks-file-path "Courses")
-"* TODO %^{title} %^g
+"* TODO [[%^{url}][%^{title}]] %^g
        :PROPERTIES:
        :TYPE: Course
-       :URL: [[%^{url}][source]]
        :END:
 ")))
 #+end_src

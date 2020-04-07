@@ -28,3 +28,4 @@ org-clock-save.el
 /.trello
 /nov-places
 /srecode-map.el
+/README.el
