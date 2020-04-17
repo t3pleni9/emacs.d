@@ -12,6 +12,7 @@
 *** https://www.reddit.com/r/listentothis/.rss
 ** Podcasts                                                        :podcast:
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
+*** [[https://feeds.megaphone.fm/lore][Lore]]                                                             :lore:
 ** Daily                                                             :daily:
 *** [[https://www.thehindu.com/opinion/editorial/feeder/default.rss][Hindu - Editorial]]
 *** [[https://www.thehindu.com/news/national/feeder/default.rss][Hindu - National]]

@@ -17,6 +17,8 @@ One require to rule them all
   (require 'helm-swoop)
   (require 'json-mode)
   (require 'emms-setup)
+  (require 'emms-mode-line)
+  (require 'emms-player-mpv)
   (require 'scroll-bar)
   (require 'async nil :noerror)
   (require 'org-ref)
@@ -41,12 +43,14 @@ One require to rule them all
   (require 'org-alert)
   (require 'alert)
   (require 'volume)
+  (require 'define-word)
 #+end_src
 
 * Emacs startup, theme, and others
 ** Path setting
 #+begin_src emacs-lisp
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
+(setq exec-path (append exec-path '("/usr/local/bin")))
 #+end_src
 
 ** Global
@@ -171,6 +175,49 @@ Enable in-lined images in EIN
 (setq ein:output-area-inlined-images t)
 #+end_src
 
+** EMMS
+
+Constants and File Paths
+#+begin_src emacs-lisp
+(setq default-playlist "~/Documents/Work.m3u")
+(setq emms-playlist-buffer-name "*EMMS*")
+#+end_src
+
+Basic Setup
+#+begin_src emacs-lisp
+  (emms-standard)
+  (emms-default-players)
+  (add-to-list 'emms-player-list 'emms-player-mpv)
+
+  (emms-mode-line 1)
+
+  (emms-add-playlist default-playlist)
+  (emms-shuffle)
+#+end_src
+#+begin_src emacs-lisp
+  (defun my/reload-playlist ()
+    (interactive)
+    (emms-play-playlist default-playlist)
+    (emms-shuffle))
+#+end_src
+
+Fix the mode-line to just the Track name
+#+begin_src emacs-lisp
+  (setq emms-mode-line-mode-line-function
+        (lambda nil
+          (propertize " [♫]" 'face (list :foreground "#8080f0" :weight 'bold))))
+#+end_src
+
+** Functions
+Launch Process with custom buffer name
+#+begin_src emacs-lisp
+(defun my/launch-process (name buffer-name process &rest args) 
+(apply #'start-process name buffer-name process args)
+(with-current-buffer buffer-name
+        (local-set-key (kbd "C-c C-c") (lambda () (interactive) (kill-process))))
+)
+#+end_src
+
 * Global Modes
 ** Global 
 
@@ -281,6 +328,7 @@ Programming Mode Hooks
 (add-hook 'prog-mode-hook #'yafolding-mode)
 (add-hook 'json-mode-hook #'yafolding-mode)
 (add-hook 'nxml-mode-hook #'yafolding-mode)
+(add-hook 'bibtex-mode-hook #'yafolding-mode)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
 
 #+end_src
@@ -369,6 +417,45 @@ Use aspell to fix my mistakes
 
 #+end_src
 
+*** Dictionary Definitions: 
+Get the definition of the word at point from wiktionary
+#+begin_src emacs-lisp
+  (autoload 'ispell-get-word "ispell")
+
+  (defun lookup-word (word)
+    (interactive (list (save-excursion (car (ispell-get-word nil)))))
+    (message "Looking up meaning of %s" word)
+    (my/define-word word)
+    )
+#+end_src
+
+If the underlying api stops working Use =(browse-web (format "https://api.dictionaryapi.dev/api/v1/entries/en/%s" word))= instead
+
+#+begin_src emacs-lisp
+  (defun my/define-word (word) 
+    (kill-buffer (get-buffer-create "*define-word*"))
+    (with-current-buffer (get-buffer-create "*define-word*")
+      (erase-buffer)
+      (insert (concat "Word: " word "\n\n")))
+    (request
+      (format "http://wordnik.com/words/%s" word)
+      :parser  'define-word--parse-wordnik
+      :success
+      (cl-function (lambda (&key data &allow-other-keys)
+                     (when data
+                       (with-current-buffer (get-buffer-create "*define-word*")
+                         (insert data)
+                         (local-set-key (kbd "q") 'my/kill-this-buffer)
+                         (read-only-mode 1)
+                         (pop-to-buffer (current-buffer))))))
+      :error
+      (cl-function (lambda (&key error-thrown &allow-other-keys&rest _)
+                     (message "Got error: %S" error-thrown)))
+      :complete (lambda (&rest _) (message "Finished!"))
+      :status-code '((400 . (lambda (&rest _) (message "Got 400.")))
+                     (418 . (lambda (&rest _) (message "Got 418."))))))
+#+end_src
+
 ** Markdown
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
@@ -444,6 +531,11 @@ Allow alphabets ‘a.’, ‘A.’, ‘a)’ and ‘A) as list elements:
 ** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
 *** File Organization
+- Journal/Micro plan :: Used to plan the day. Journal captures the day's schedule, meetings and work task
+#+begin_src emacs-lisp
+(setq journal-file-path "~/Documents/org-notes/exocortex/today.org")
+#+end_src
+
 - Capture :: All unscheduled sudden surges of things which I remember get captured into this file. Mostly things here are without a schedule or deadline, which need to refiling and revisiting sometime in the future. Also serves as the Bookmark collection of websites, videos, books, courses and podcasts. 
 #+begin_src emacs-lisp
 (setq bookmarks-file-path "~/Documents/org-notes/exocortex/capture.org")
@@ -476,7 +568,7 @@ All the above mentioned files just form a part of the bigger agenda.
 (setq org-agenda-files '("~/Documents/org-notes/exocortex/inbox.org"
 "~/Documents/org-notes/exocortex/projects.org"
 "~/Documents/org-notes/exocortex/capture.org"
-"~/Documents/org-notes/exocortex/journal.org"
+"~/Documents/org-notes/exocortex/today.org"
 "~/Documents/org-notes/bibliography/references.org"
 "~/Documents/org-notes/exocortex/daily.org"
 "~/Dropbox/org-notes/home/tasks.org"
@@ -628,29 +720,28 @@ Disable visual line mode in agenda view as it wraps the tags to new line
             (toggle-truncate-lines 1)))
 #+end_src
 
-
 ** Files
 List of global org files
 #+begin_src emacs-lisp
 (setq org-directory "~/Documents/org-notes")
 (setq secrets-file-path "~/Documents/Personal/secrets.org.gpg")
-(setq journal-file-path "~/Documents/org-notes/exocortex/journal.org")
 (setq secrets-file (cons 'file secrets-file-path))
 (set-register ?s secrets-file)
 (set-register ?r (cons 'file references-file-path))
 (set-register ?p (cons 'file projects-file-path))
 (set-register ?b (cons 'file bookmarks-file-path))
-(set-register ?j (cons 'file journal-file-path))
+(set-register ?h (cons 'file home-tasks-file-path))
+(set-register ?t (cons 'file journal-file-path))
 
 
 
 (setq org-agenda-file-regexp "\\`[^.].*\\.org'\\|[0-9]+$")
 (add-hook 'diary-display-hook 'diary-fancy-display)
 
-(setq org-refile-targets '(("~/Documents/org-notes/exocortex/projects.org" :maxlevel . 3)
-                           ("~/Dropbox/org-notes/home/tasks.org" :maxlevel . 2)
-                           ("~/Documents/org-notes/exocortex/inbox.org" :level . 1)
-                           ("~/Documents/org-notes/exocortex/capture.org" :maxlevel . 1)))
+(setq org-refile-targets '((projects-file-path :maxlevel . 3)
+                           (home-tasks-file-path :maxlevel . 2)
+                           (tasks-file-path :level . 1)
+                           (bookmarks-file-path :maxlevel . 1)))
 
 
 #+end_src
@@ -674,20 +765,39 @@ List of global org files
 #+end_src
 
 ** Org latex
+Add LATEX to path
+
+#+begin_src emacs-lisp
+(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
+#+end_src
+#+begin_src emacs-lisp
+  (setq org-latex-pdf-process
+        '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
+  (add-to-list 'org-latex-default-packages-alist '("" "natbib" "") t)
+  (add-to-list 'org-latex-default-packages-alist
+               '("linktocpage,pdfstartview=FitH,colorlinks,
+  linkcolor=blue,anchorcolor=blue,
+  citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
+                 "hyperref" nil)
+               t)
+
+  (setq org-latex-prefer-user-labels t)
+#+end_src
+
+#+RESULTS:
+: t
+
 #+begin_src emacs-lisp
 (setq org-latex-pdf-process
-    '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
-(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
-
-(add-to-list 'org-latex-default-packages-alist '("" "natbib" "") t)
-(add-to-list 'org-latex-default-packages-alist
-	     '("linktocpage,pdfstartview=FitH,colorlinks,
-linkcolor=blue,anchorcolor=blue,
-citecolor=blue,filecolor=blue,menucolor=blue,urlcolor=blue"
-	       "hyperref" nil)
-	     t)
-(setq org-latex-prefer-user-labels t)
+      '("pdflatex -interaction nonstopmode -output-directory %o %f"
+	"bibtex %b"
+	"pdflatex -interaction nonstopmode -output-directory %o %f"
+	"pdflatex -interaction nonstopmode -output-directory %o %f"))
+(setq bibtex-dialect 'biblatex)
 #+end_src
+
+#+RESULTS:
+: biblatex
 
 ** Org ref
 Search through bibtex reference using helm reference
@@ -731,17 +841,6 @@ Org-ref Files
 (setq bibtex-completion-display-formats
       '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
 #+end_src
-** Org-journal
-Org-Journal settings
-#+begin_src emacs-lisp
-  (setq org-journal-dir "~/Documents/Personal/.journal/")
-  (setq org-journal-file-format "%Y%m%d")
-  (setq org-journal-file-type 'yearly)
-  (setq org-journal-carryover-items "nil")
-  (require 'org-journal)
-  (org-reload)
-#+end_src
-
 ** Capture Templates                                        :non_exec_block:
 #+begin_src emacs-lisp
 (setq org-capture-templates
@@ -878,44 +977,6 @@ All the bookmark loaders
   (bookmark-jump "elfeed-podcast"))
 #+end_src
 
-*** EMMS
-Should have its own header, but as of now just lives inside the elfeed section
-#+begin_src emacs-lisp
-(emms-all)
-(emms-default-players)
-(define-emms-simple-player afplay '(file)
-      (regexp-opt '(".mp3" ".m4a" ".aac" ".ogg" ".wav" ".pls"))
-      "afplay")
-    (setq emms-player-list `(,emms-player-afplay))
-#+end_src
-
-Download an enclosure and play
-#+begin_src emacs-lisp
-(defun my/download-enclosure-and-play (url)
-  "Download asynchronously the enclosure from URL to PATH."
-  (emms-stop)
-  (let  ((url-enclosure url))
-        (async-start
-         `(lambda ()
-           ,(url-copy-file url-enclosure "/tmp/audio.mp3" t))
-         `(lambda (_)
-	   ,(emms-play-file "/tmp/audio.mp3")))))
-
-(defun my/replay-previous ()
-  (interactive)
-  (emms-play-file "/tmp/audio.mp3"))
-
-(defun my/elfeed-outline-show-play-enclosure ()
-  "Play enclosure number ENCLOSURE-INDEX from current entry using EMMS.
-Prompts for ENCLOSURE-INDEX when called interactively."
-  (interactive)
-  (elfeed-search-untag-all-unread)
-  (let ((entry (elfeed-search-selected :single)))
-  (setq url-enclosure (car (elt (elfeed-entry-enclosures entry) 0))))
-  (my/download-enclosure-and-play url-enclosure))
-
-#+end_src
-
 *** Customization
 Custom functions to make life a little easier
 **** Save state before Quit
@@ -1006,6 +1067,29 @@ browser defined by `browse-url-generic-program'."
 
 #+end_src
 
+*** EMMS Play enclosure
+Play an enclosure
+#+begin_src emacs-lisp
+(defun my/elfeed-outline-show-play-enclosure ()
+  "Add enclosure number ENCLOSURE-INDEX from current entry using EMMS."
+  (interactive)
+  (elfeed-search-untag-all-unread)
+  (let ((entry (elfeed-search-selected :single)))
+  (setq url-enclosure (car (elt (elfeed-entry-enclosures entry) 0))))
+  (emms-add-url url-enclosure))
+#+end_src
+
+Play a url at point using mpv
+#+begin_src emacs-lisp
+(defun my/play-with-mpv ()
+  "Visit the current entry in mpv."
+  (interactive)
+  (let ((link (elfeed-get-link-at-point)))
+    (when link
+      (message "Sent to mpv: %s" link)
+      (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))))
+#+end_src
+
 ** Twitter Mode
 Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
 #+begin_src emacs-lisp
@@ -1027,14 +1111,6 @@ Setup for managing IRC
 #+end_src
 
 ** Tor
-#+begin_src emacs-lisp
-(defun my/launch-process (name buffer-name process &rest args) 
-(apply #'start-process name buffer-name process args)
-(with-current-buffer buffer-name
-        (local-set-key (kbd "C-c C-c") (lambda () (interactive) (kill-process))))
-)
-#+end_src
-
 #+begin_src emacs-lisp
 (defun my/launch-tor()
 (interactive)
@@ -1245,7 +1321,7 @@ Hydra bindings for org-trello
   ^Metadata ^                   ^Board^                        ^Card^
   ^─────────^───────────────────^────^────────────────────────-^────^─────────────
   _i_ Install Board Metadata    _s_ Sync Buffer                _c_ Sync Card
-  _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Ope card in browser
+  _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Open card in browser
   _q_ Quit                      _l_ Show board labels          _a_ Signup on Card
   ^^                            ^^                             _C_ Add Comment on Card
   ^^                            ^^                             _D_ Delete Comment on Card
@@ -1267,7 +1343,7 @@ Hydra bindings for org-trello
   ("D" org-trello-delete-card-commen))
 #+end_src
 
-** Spotify
+** Music Player
 Spotify sugars
 #+begin_src emacs-lisp
 (defhydra hydra-spotify (:color blue)
@@ -1285,6 +1361,26 @@ Spotify sugars
   ("P" spotify-previous)
   ("s" spotify-quit))
 #+end_src
+
+EMMS
+#+begin_src emacs-lisp
+(defhydra hydra-emms (:color blue)
+  "
+  ^
+  ^  EMMS  ^              ^Do^
+  ^────────^──────────────^──^─────────────
+  _p_ Play/Pause          _N_ Next
+  _s_ Stop                _P_ Previous
+  _q_ Quit                _R_ Reload Playlist
+  "
+  ("q" nil)
+  ("R" my/reload-playlist)
+  ("p" emms-pause)
+  ("N" emms-next)
+  ("P" emms-previous)
+  ("s" emms-stop))
+#+end_src
+
 ** Internet, Social, Feed Manager
 Hydra Menu for elfeed and twitter
 #+begin_src emacs-lisp
@@ -1304,6 +1400,9 @@ Hydra Menu for elfeed and twitter
   ("p" my/launch-tor)
   ("t" twit))
 #+end_src
+
+#+RESULTS:
+: hydra-social-feed/body
 
 ** Window Move
 Quickly move around windows
@@ -1381,6 +1480,11 @@ Track the last edited location
 (global-set-key (kbd "M-s-<right>") 'goto-last-change-reverse)
 #+end_src
 
+Define word at point 
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-#") 'lookup-word)
+#+end_src
+
 ** GIT
 Git key bindings, with added sugar of hydra
 #+begin_src emacs-lisp
@@ -1451,10 +1555,14 @@ PDF View
 #+end_src
 
 ** Audio / Multimedia
-Spotify hydra sugar
+Music Player
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c s") 'hydra-spotify/body)
+(global-set-key (kbd "C-c s") 'hydra-emms/body)
+(global-set-key (kbd "C-c S") 'hydra-spotify/body)
 #+end_src
+
+#+RESULTS:
+: hydra-spotify/body
 
 |-----------------+-------------|
 | Volume Control  | Key Binding |
@@ -1490,9 +1598,10 @@ Pytest keybinding in python mode
 (global-set-key (kbd "C-c f") 'hydra-social-feed/body)
 #+end_src
 
-Open elfeed links inline browser
+Custom open links at point
 #+begin_src emacs-lisp
 (define-key elfeed-show-mode-map (kbd "o") 'my/elfeed-show-visit)
+(define-key elfeed-show-mode-map (kbd "C-c O") 'my/play-with-mpv)
 #+end_src
 
 *** Elfeed bookmarks and custom keymaps
@@ -1507,8 +1616,6 @@ Open elfeed links inline browser
               ("T" . my/elfeed-outline-show-tech)
               ("P" . my/elfeed-outline-show-podcast)
               (">" . my/elfeed-outline-show-play-enclosure)
-              (";" . emms-stop)
-              (":" . my/replay-previous)
               ("x" . my/elfeed-say)
               ("*" . elfeed-toggle-star)
               ("<SPC>" . my/outline-show-full-title)))
@@ -1546,7 +1653,7 @@ Remap scroll screen and previous screen to ~v~ and ~V~
 
 Remap recenter-top-bottom ~l~
 #+begin_src emacs-lisp
-(define-key view-mode-map (kbd "l") 'recenter-top-bottom)
+; (define-key view-mode-map (kbd "l") 'recenter-top-bottom)
 #+end_src
 
 ** Jupyter Notebooks
