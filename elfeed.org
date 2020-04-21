@@ -16,4 +16,7 @@
 ** Daily                                                             :daily:
 *** [[https://www.thehindu.com/opinion/editorial/feeder/default.rss][Hindu - Editorial]]
 *** [[https://www.thehindu.com/news/national/feeder/default.rss][Hindu - National]]
+** Youtube                                                         :youtube:
+*** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC-9mlH6az1Q_XUP3fw1N4Fg][Steven Wilson]]                                               :artNmusic:
+*** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCzgEwnFJfHHnp05iyX_rbng][Family Guy]]                                                  :cartoon:
 
