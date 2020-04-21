@@ -593,7 +593,7 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 #+begin_src emacs-lisp
 (setq org-todo-keywords
 (quote ((sequence "TODO(t)" "PLANNED(p)" "HOLD(h)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
-(sequence "POSTPONED(P)" "|" "RE-VISIT(v)")
+(sequence "|" "POSTPONED(P)" "RE-VISIT(v)")
 )))
 
 (setq org-todo-keyword-faces '(
@@ -1428,24 +1428,23 @@ Define custom key bindings.
 ** Windows and Frames
 Basic key bindings to play around with frames and window. Binding Delete frame defaulted at  =C-x 5 0= to =C-x w=
 
-|----------------+--------------|
-| Action         | Key Binding  |
-|----------------+--------------|
-| Delete Frame   | =C-x w=      |
-| Increase Font  | =s-+=, =s-== |
-| Decrease Font  | =s--=        |
-| Forward Window | =s->=        |
-| Prev Window    | =s-<=        |
-|----------------+--------------|
+|----------------+------------------|
+| Action         | Key Binding      |
+|----------------+------------------|
+| Delete Frame   | =C-x w=          |
+| Increase Font  | =C-+=, =C-x C-== |
+| Decrease Font  | =C--=            |
+| Forward Window | =s->=            |
+| Prev Window    | =s-<=            |
+|----------------+------------------|
 
 
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w") 'delete-frame)
 (global-set-key (kbd "C-x C-b") 'switch-to-buffer)
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
-(global-set-key (kbd "s-+") 'text-scale-increase)
-(global-set-key (kbd "s-=") 'text-scale-increase)
-(global-set-key (kbd "s--") 'text-scale-decrease)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "s->") #'other-window)
 (global-set-key (kbd "s-<") #'prev-window)
 #+end_src
@@ -1567,15 +1566,16 @@ Music Player
 |-----------------+-------------|
 | Volume Control  | Key Binding |
 |-----------------+-------------|
-| Increase volume | =C-+=       |
-| Decrease Volume | =C--=       |
-| Mute Volume     | =C-u C--=   |
-| Un Mute Volume  | =C-u C-+=   |
+| Increase volume | =s-+=       |
+| Decrease Volume | =s--=       |
+| Mute Volume     | =C-u s--=   |
+| Un Mute Volume  | =C-u s-+=   |
 |-----------------+-------------|
 
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-+") 'my/increase-volume)
-(global-set-key (kbd "C--") 'my/decrease-volume)
+(global-set-key (kbd "s-+") 'my/increase-volume)
+(global-set-key (kbd "s-=") 'my/increase-volume)
+(global-set-key (kbd "s--") 'my/decrease-volume)
 #+end_src
 
 ** Json
