@@ -44,19 +44,26 @@ One require to rule them all
   (require 'alert)
   (require 'volume)
   (require 'define-word)
+  (require 'swiper)
 #+end_src
 
-* Emacs startup, theme, and others
+* Emacs startup, and others
 ** Path setting
 #+begin_src emacs-lisp
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
 (setq exec-path (append exec-path '("/usr/local/bin")))
 #+end_src
 
+** Themes
+Loading Theme post every operation
+#+begin_src emacs-lisp
+  (load-theme 'darktooth t)
+  (load-theme 'smart-mode-line-dark t)
+#+end_src
+
 ** Global
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t) ;; outline-hide the startup messag
-  (load-theme 'darktooth t)
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -82,7 +89,7 @@ Make life a little bit more easier
 Full screen, and server
 #+begin_src emacs-lisp
 (toggle-frame-fullscreen)
- (unless (daemonp) (server-mode t))
+(unless (daemonp) (server-mode t))
 #+end_src
 
 Garbage Collection
@@ -116,6 +123,11 @@ Don't kill emacs without confirming
 Show alerts in notifier
 #+begin_src emacs-lisp
 (setq alert-default-style 'osx-notifier)
+#+end_src
+
+Swiper ivy-display
+#+begin_src emacs-lisp
+(setq ivy-display-style 'fancy)
 #+end_src
 
 ** Dashboard
@@ -225,7 +237,7 @@ Launch Process with custom buffer name
 (global-display-line-numbers-mode t)
 (auto-save-visited-mode t)
 (global-visual-line-mode t)
-(sml-modeline-mode t)
+
 (helm-mode 1)
 (pyvenv-mode 1)
 (global-undo-tree-mode)
@@ -255,6 +267,8 @@ Disable line numbers in some buffers
 
 (add-hook 'maggit-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'dashboard-mode-hook 'display-line-numbers-disable-hook)
+(add-hook 'pdf-tools-enabled-hook 'display-line-numbers-disable-hook)
 (add-hook 'vterm-mode-hook 'display-line-numbers-disable-hook)
 
 #+end_src
@@ -351,7 +365,7 @@ Python Specific Setups
 
 Setting iPython as the default REPL for python
 #+begin_src emacs-lisp
-(setq python-shell-interpreter "~/.miniconda/bin/ipython"
+(setq python-shell-interpreter "ipython"
 python-shell-interpreter-args "--simple-prompt -i")
 
 (add-hook 'inferior-python-mode-hook 'no-trailing-whitespace)
@@ -360,9 +374,15 @@ python-shell-interpreter-args "--simple-prompt -i")
              (setq-local ml-interactive? t)))
 #+end_src
 
+Ensure that each project has its own python shell and Change the virtual environment according to the project
+#+begin_src emacs-lisp
+(add-hook 'elpy-mode-hook (lambda () (elpy-shell-set-local-shell (elpy-project-root))))
+(pyvenv-tracking-mode)
+#+end_src
 *** LISP
 #+begin_src emacs-lisp
-(setq inferior-lisp-program "clisp")
+(load (expand-file-name "~/.quicklisp/slime-helper.el"))
+(setq inferior-lisp-program "sbcl")
 #+end_src
 
 ** Projectile
@@ -393,7 +413,9 @@ Setup shell setting to work with zsh
 (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
 (setenv "SHELL" shell-file-name)
 (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
-
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -629,6 +651,7 @@ Fine grained zoom with + and - to 10%
 Dark Mode always
 #+begin_src emacs-lisp
 (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+(setq pdf-view-midnight-colors '("#FDF4C1" . "#282828"))
 (setq-default pdf-view-display-size 'fit-page)
 #+end_src
 
@@ -770,7 +793,7 @@ Add LATEX to path
 #+begin_src emacs-lisp
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
 #+end_src
-#+begin_src emacs-lisp
+#+begin_example emacs-lisp
   (setq org-latex-pdf-process
         '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
   (add-to-list 'org-latex-default-packages-alist '("" "natbib" "") t)
@@ -782,7 +805,7 @@ Add LATEX to path
                t)
 
   (setq org-latex-prefer-user-labels t)
-#+end_src
+#+end_example
 
 #+RESULTS:
 : t
@@ -1151,6 +1174,16 @@ Have a easier navigation around open windows
   (interactive)
   (other-window -1))
 #+end_src
+
+Move line up and down
+#+begin_src emacs-lisp
+(defun my/move-line (dir)
+  (interactive)
+  (next-line)
+  (transpose-lines dir)
+  (previous-line))
+#+end_src
+
 ** Basic Text editing
 Duplicate an entire line
 #+begin_src emacs-lisp
@@ -1434,7 +1467,7 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 | Delete Frame   | =C-x w=          |
 | Increase Font  | =C-+=, =C-x C-== |
 | Decrease Font  | =C--=            |
-| Forward Window | =s->=            |
+| Forward Window | =s->=, =s-'=     |
 | Prev Window    | =s-<=            |
 |----------------+------------------|
 
@@ -1446,7 +1479,21 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "s->") #'other-window)
+(global-set-key (kbd "s-'") #'other-window)
 (global-set-key (kbd "s-<") #'prev-window)
+#+end_src
+
+Scroll Without moving point
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up 4)))
+(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down 4)))
+#+end_src
+
+Move line up and down
+#+begin_src emacs-lisp
+(global-set-key (kbd "M-<up>") (lambda () (interactive) (my/move-line -1)))
+(global-set-key (kbd "M-<down>") (lambda () (interactive) (my/move-line 1)))
 #+end_src
 
 *** Shell
@@ -1456,6 +1503,11 @@ Have a Doom styled console launch binding
 #+end_src
 
 ** Basic Text editing
+Search using swiper
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-s") 'swiper-isearch)
+#+end_src
+
 Duplicate a line
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c d") 'duplicate-line)
@@ -1549,6 +1601,7 @@ PDF View
 (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
 (define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
 (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
+(define-key pdf-view-mode-map (kbd "C-c C-d") 'pdf-view-midnight-minor-mode)
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
 (define-key org-mode-map (kbd "C-c i") 'interleave-mode)
 #+end_src
