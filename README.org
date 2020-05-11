@@ -33,6 +33,7 @@ One require to rule them all
   (require 'rust-mode)
   (require 'org-super-agenda)
   (require 'emacs-totp)
+  (require 'pyb)
   (require 'image+)
   (require 'dashboard)
   (require 'org-trello)
@@ -125,10 +126,6 @@ Show alerts in notifier
 (setq alert-default-style 'osx-notifier)
 #+end_src
 
-Swiper ivy-display
-#+begin_src emacs-lisp
-(setq ivy-display-style 'fancy)
-#+end_src
 
 ** Dashboard
 #+begin_src emacs-lisp
@@ -269,8 +266,8 @@ Disable line numbers in some buffers
 (add-hook 'org-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'dashboard-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'pdf-tools-enabled-hook 'display-line-numbers-disable-hook)
+(add-hook 'doc-view-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'vterm-mode-hook 'display-line-numbers-disable-hook)
-
 #+end_src
 
 
@@ -641,6 +638,7 @@ Always open PDF inside EMACS itself
 (add-to-list 'org-file-apps 
              '("\\.pdf\\'" . (lambda (file link)
                                      (org-pdfview-open link))))
+(add-to-list 'auto-mode-alist '("\\.ps\\'" . doc-view-mode))
 #+end_src
 
 Fine grained zoom with + and - to 10% 
@@ -836,13 +834,16 @@ With a prefix ARG, the cache is invalidated and the bibliography reread."
 
 Manage notes using helm bibtex
 #+begin_src emacs-lisp
-;; Tell org-ref to let helm-bibtex find notes for it
-(setq org-ref-notes-function
-      (lambda (thekey)
-	(let ((bibtex-completion-bibliography (org-ref-find-bibliography)))
-	  (bibtex-completion-edit-notes
-	   (list (car (org-ref-get-bibtex-key-and-file thekey)))))))
+  ;; Tell org-ref to let helm-bibtex find notes for it
+  (setq org-ref-notes-function 'org-ref-notes-function-many-files)
+
+        ;; (lambda (thekey)
+        ;; 	(let ((bibtex-completion-bibliography (org-ref-find-bibliography)))
+        ;; 	  (bibtex-completion-edit-notes
+        ;; 	   (list (car (org-ref-get-bibtex-key-and-file thekey)))))))
 #+end_src
+
+
 
 Org-ref Files
 #+begin_src emacs-lisp
@@ -850,6 +851,15 @@ Org-ref Files
       org-ref-default-bibliography '("~/Documents/org-notes/bibliography/references.bib")
       org-ref-pdf-directory "~/Documents/org-notes/bibliography/bibtex-pdfs/")
 
+#+end_src
+
+Org-ref header format to support PDF interleaving
+
+#+begin_src emacs-lisp
+  (setq bibtex-completion-notes-template-multiple-files 
+        (concat "#+INTERLEAVE_PDF: "
+                org-ref-pdf-directory
+                "${=key=}.pdf\n#+TITLE: Notes on ${author-or-editor} (${year}): ${title}\n"))
 #+end_src
 
 *** Bibtex
