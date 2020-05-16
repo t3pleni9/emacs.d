@@ -868,8 +868,8 @@ Manage notes using helm bibtex
 
 Org-ref Files
 #+begin_src emacs-lisp
-(setq reftex-default-bibliography '("~/Documents/org-notes/bibliography/references.bib")
-      org-ref-default-bibliography '("~/Documents/org-notes/bibliography/references.bib")
+(setq reftex-default-bibliography '("~/Documents/org-notes/bibliography/references.bib" "~/Documents/org-notes/bibliography/references_2.bib" "~/Documents/org-notes/bibliography/references_3.bib")
+      org-ref-default-bibliography '("~/Documents/org-notes/bibliography/references.bib" "~/Documents/org-notes/bibliography/references_2.bib" "~/Documents/org-notes/bibliography/references_3.bib")
       org-ref-pdf-directory "~/Documents/org-notes/bibliography/bibtex-pdfs/")
 
 #+end_src
@@ -885,7 +885,7 @@ Org-ref header format to support PDF interleaving
 
 *** Bibtex
 #+begin_src emacs-lisp
-(setq bibtex-completion-bibliography "~/Documents/org-notes/bibliography/references.bib"
+(setq bibtex-completion-bibliography '("~/Documents/org-notes/bibliography/references.bib" "~/Documents/org-notes/bibliography/references_2.bib" "~/Documents/org-notes/bibliography/references_3.bib")
       bibtex-completion-library-path "~/Documents/org-notes/bibliography/bibtex-pdfs"
       bibtex-completion-notes-path "~/Documents/org-notes/bibliography/helm-bibtex-notes"
       bibtex-completion-pdf-field "File"
