@@ -1,7 +1,7 @@
 #+TITLE: Emacs Configurations
 #+AUTHOR: Justin Jose
 
-#+HTML:<div align=center><a href="https://gitlab.com/t3pleni9/emacs-d"><img alt="Emacs Logo" width="60" height="60" src="https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg"></a>
+#+HTML:<div align=center><a href="https://gitlab.com/t3pleni9/emacs-d"><img alt="Emacs Logo" width="60" height="60" src="https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg"></a></div>
 
 A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration.
 
