@@ -5,7 +5,7 @@
 
 A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration.
 
-#+HTML</div>
+#+HTML:</div>
 
 * Require
 One require to rule them all
