@@ -1,16 +1,14 @@
 
 * blogs                                                        :elfeed:
-** Technology                                                       :tech:
+** Technology                                                         :tech:
 *** https://www.reddit.com/r/emacs/.rss                             :emacs:
-*** https://www.reddit.com/r/Futurology/.rss
 *** [[http://feeds.feedburner.com/FeaturedBlogPosts-DataScienceCentral?format=xml][Data Science Central]]
 *** [[https://hnrss.org/frontpage][HackerNews]]
 *** [[https://stackoverflow.blog/feed/][StackOverflow]]
 ** General                                                         :general:
 *** https://www.reddit.com/r/todayilearned/.rss
-** Art and Music                                             :artNmusic:
+** Art and Music                                                 :artNmusic:
 *** https://www.reddit.com/r/ArtFundamentals/.rss           
-*** https://www.reddit.com/r/listentothis/.rss
 ** Podcasts                                                        :podcast:
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
 *** [[https://feeds.megaphone.fm/lore][Lore]]                                                             :lore:
@@ -20,5 +18,4 @@
 *** [[https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en][Google News]]
 ** Youtube                                                         :youtube:
 *** [[https://www.youtube.com/feeds/videos.xml?channel_id=UC-9mlH6az1Q_XUP3fw1N4Fg][Steven Wilson]]                                               :artNmusic:
-*** [[https://www.youtube.com/feeds/videos.xml?channel_id=UCzgEwnFJfHHnp05iyX_rbng][Family Guy]]                                                  :cartoon:
 

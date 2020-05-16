@@ -1,6 +1,8 @@
 #+TITLE: Emacs Configurations
 #+AUTHOR: Justin Jose
 
+#+HTML:<div align=center><a href="https://gitlab.com/t3pleni9/emacs-d"><img alt="Emacs Logo" width="60" height="60" src="https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg"></a>
+
 A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration.
 
 * Require
@@ -45,7 +47,6 @@ One require to rule them all
   (require 'alert)
   (require 'volume)
   (require 'define-word)
-  (require 'swiper)
 #+end_src
 
 * Emacs startup, and others
@@ -231,29 +232,28 @@ Launch Process with custom buffer name
 ** Global 
 
 #+begin_src emacs-lisp
-(global-display-line-numbers-mode t)
-(auto-save-visited-mode t)
-(global-visual-line-mode t)
+  (global-display-line-numbers-mode t)
+  (auto-save-visited-mode t)
+  (global-visual-line-mode t)
 
-(helm-mode 1)
-(pyvenv-mode 1)
-(global-undo-tree-mode)
-(electric-pair-mode t)
-(rainbow-delimiters-mode 1)
-(show-paren-mode 1)
-(setq show-paren-delay 0)
-(wrap-region-global-mode 1)
-(delete-selection-mode 1)
-(org-super-agenda-mode 1)
-(customize-set-variable 'helm-ff-lynx-style-map t)
+  (helm-mode 1)
+  (pyvenv-mode 1)
+  (global-undo-tree-mode)
+  (electric-pair-mode t)
+  (rainbow-delimiters-mode 1)
+  (show-paren-mode 1)
+  (setq show-paren-delay 0)
+  (wrap-region-global-mode 1)
+  (delete-selection-mode 1)
+  (org-super-agenda-mode 1)
+  (customize-set-variable 'helm-ff-lynx-style-map t)
 
-(setq-default display-line-numbers-width 2
-              display-line-numbers-widen t)
-
-(setq tab-width 2
-      indent-tabs-mode nil)
+  (setq-default display-line-numbers-width 2
+                display-line-numbers-widen t
+                tab-width 2
+                indent-tabs-mode nil)
    
-(display-time-mode 1)
+  (display-time-mode 1)
 #+end_src
 
 Disable line numbers in some buffers
@@ -269,7 +269,6 @@ Disable line numbers in some buffers
 (add-hook 'doc-view-mode-hook 'display-line-numbers-disable-hook)
 (add-hook 'vterm-mode-hook 'display-line-numbers-disable-hook)
 #+end_src
-
 
 Disable visual line mode in some buffers
 #+begin_src emacs-lisp
@@ -290,6 +289,14 @@ Org export support
 Image view mode
 #+begin_src emacs-lisp
 (eval-after-load 'image+ '(imagex-global-sticky-mode 1))
+#+end_src
+
+Disable new line mode for csv files as it defeats the purpose of align items
+#+begin_src emacs-lisp
+(add-hook 'csv-mode-hook
+          (lambda ()
+            (visual-line-mode 1)
+            (toggle-truncate-lines 1)))
 #+end_src
 
 ** EPUB mode setting
@@ -547,6 +554,18 @@ Allow alphabets ‘a.’, ‘A.’, ‘a)’ and ‘A) as list elements:
 (setq org-list-allow-alphabetical t)
 #+end_src
 
+Allow helm completion for tags
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook
+            (lambda () (add-to-list 'helm-completing-read-handlers-alist '(org-set-tags-command))))
+
+#+end_src
+
+Org-bullet customization
+#+begin_src emacs-lisp
+(setq org-bullets-bullet-list '("◉" "◎" "○" "►" "*"))
+#+end_src
+
 ** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
 *** File Organization
@@ -611,8 +630,8 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 
 #+begin_src emacs-lisp
 (setq org-todo-keywords
-(quote ((sequence "TODO(t)" "PLANNED(p)" "HOLD(h)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c)" )
-(sequence "|" "POSTPONED(P)" "RE-VISIT(v)")
+(quote ((sequence "TODO(t)" "PLANNED(p)" "HOLD(h)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c!)" )
+(sequence "|" "POSTPONED(P!)" "RE-VISIT(v!)")
 )))
 
 (setq org-todo-keyword-faces '(
@@ -719,8 +738,10 @@ Display TODO list in a formatted manner
 
 Display agenda in a full window view instead of a frame view
 #+begin_src emacs-lisp
-(setq org-agenda-window-setup 'reorganize-frame)
+  (advice-add 'org-agenda :before #'delete-other-windows)
 #+end_src
+
+#+RESULTS:
 
 #+begin_src emacs-lisp
   (require 'org-agenda)
@@ -734,7 +755,7 @@ Display agenda in a full window view instead of a frame view
 #+end_src
 
 Disable visual line mode in agenda view as it wraps the tags to new line
-#+begin_src emacs-lisp
+#+begin_src example
 (add-hook 'org-agenda-mode-hook
           (lambda ()
             (visual-line-mode 1)
@@ -929,7 +950,7 @@ Capture reference papers with a small help of =C-c r y=
 
 ("j" "Journal" entry
 (file+datetree journal-file-path)
-   "* %?")
+   "* TODO %?")
 #+end_src
 
 *** Capture
@@ -1123,16 +1144,6 @@ Play a url at point using mpv
       (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))))
 #+end_src
 
-** Twitter Mode
-Setup for [[https://www.emacswiki.org/emacs/TwitteringMode][twitter mode]]
-#+begin_src emacs-lisp
-(setq twittering-use-master-password t)
-(setq twittering-icon-mode t)               
-(setq twittering-timer-interval 300)        
-(setq twittering-url-show-status nil)       
-(add-hook 'twittering-edit-mode-hook (lambda () (ispell-minor-mode) (flyspell-mode)))
-#+end_src
-
 ** IRC
 Setup for managing IRC 
 #+begin_src emacs-lisp
@@ -1145,14 +1156,13 @@ Setup for managing IRC
 
 ** Tor
 #+begin_src emacs-lisp
-(defun my/launch-tor()
-(interactive)
-(message "Starting Tor sub-process.")
-(my/launch-process "tor-process" "*tor*" "tor")
-(message "Launching Firefox with proxy_profile")
-(my/launch-process "tor-process" "*tor*" "/Applications/Firefox.app/Contents/MacOS/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/")
-(message "Process launched in *tor* buffer.")
-)
+  (defun my/launch-tor()
+    (interactive)
+    (message "Starting Tor sub-process.")
+    (my/launch-process "tor-process" "*tor*" "tor")
+    (message "Launching Firefox with proxy_profile")
+    (my/launch-process "tor-process" "*tor*" "/Applications/Firefox.app/Contents/MacOS/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/")
+    (message "Process launched in *tor* buffer."))
 #+end_src
 
 ** TODO EWW
@@ -1430,9 +1440,9 @@ Hydra Menu for elfeed and twitter
 (defhydra hydra-social-feed (:color blue)
   "
   ^
-  ^Internet^       ^Social^       ^Feed^
-  ^────────^───────^──────^───────^────^───
-  _p_ Tor          _t_ Twitter   _e_ El Feed
+  ^Internet^       ^Social^     
+  ^────────^───────^──────^─────
+  _p_ Tor          _e_ El Feed
   _b_ EWW          _i_ IRC
   _q_ Quit            
   "
@@ -1440,12 +1450,8 @@ Hydra Menu for elfeed and twitter
   ("e" elfeed)
   ("b" browse-web)
   ("i" my/connect-erc)
-  ("p" my/launch-tor)
-  ("t" twit))
+  ("p" my/launch-tor))
 #+end_src
-
-#+RESULTS:
-: hydra-social-feed/body
 
 ** Window Move
 Quickly move around windows
@@ -1513,10 +1519,6 @@ Have a Doom styled console launch binding
 #+end_src
 
 ** Basic Text editing
-Search using swiper
-#+begin_src emacs-lisp
-(global-set-key (kbd "C-s") 'swiper-isearch)
-#+end_src
 
 Duplicate a line
 #+begin_src emacs-lisp
