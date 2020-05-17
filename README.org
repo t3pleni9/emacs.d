@@ -738,13 +738,6 @@ Display TODO list in a formatted manner
 
 #+end_src
 
-Display agenda in a full window view instead of a frame view
-#+begin_src emacs-lisp
-  (advice-add 'org-agenda :before #'delete-other-windows)
-#+end_src
-
-#+RESULTS:
-
 #+begin_src emacs-lisp
   (require 'org-agenda)
   (setq org-agenda-prefix-format '(
@@ -757,11 +750,16 @@ Display agenda in a full window view instead of a frame view
 #+end_src
 
 Disable visual line mode in agenda view as it wraps the tags to new line
-#+begin_src example
+#+begin_src emacs-lisp
 (add-hook 'org-agenda-mode-hook
           (lambda ()
             (visual-line-mode 1)
             (toggle-truncate-lines 1)))
+#+end_src
+
+Display agenda in a full window view instead of a frame view
+#+begin_src emacs-lisp
+(setq-default org-agenda-window-setup 'only-window)
 #+end_src
 
 ** Files
