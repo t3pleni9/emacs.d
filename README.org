@@ -568,6 +568,11 @@ Org-bullet customization
 (setq org-bullets-bullet-list '("◉" "◎" "○" "►" "*"))
 #+end_src
 
+Org ordered dependencies 
+#+begin_src emacs-lisp
+(setq-default org-enforce-todo-dependencies t)
+#+end_src
+
 ** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
 *** File Organization
@@ -578,8 +583,8 @@ A place to store and remember everything that I can't burden my brain with think
 
 - Capture :: All unscheduled sudden surges of things which I remember get captured into this file. Mostly things here are without a schedule or deadline, which need to refiling and revisiting sometime in the future. Also serves as the Bookmark collection of websites, videos, books, courses and podcasts. 
 #+begin_src emacs-lisp
-(setq bookmarks-file-path "~/Documents/org-notes/exocortex/capture.org")
-(setq org-default-notes-file bookmarks-file-path)
+(setq capture-file-path "~/Documents/org-notes/exocortex/capture.org")
+(setq org-default-notes-file capture-file-path)
 #+end_src
 
 - Inbox :: All the scheduled tasks go into this file. If something gets scheduled from the capture file, they move into inbox. 
@@ -621,29 +626,31 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 
 - TODO :: Anything that needs to be done. Mostly without a schedule or a deadline or with an arbitrary future schedule, but must be picked up on priority
 - PLANNED :: Things move from TODO to PLANNED, when a schedule or a deadline is attached to them and it has been slotted to be picked up.
+- INPROGRESS :: Currently in play
 - HOLD :: Things which had been picked up but have been put on hold due to
   1. Further updates or conflicting requirement with some other task
   2. Is waiting on a feedback from a second person
-- INPROGRESS :: Currently in play
 - DONE :: Finished, and ready to be archived.
 - CANCELLED :: No more important. Ready to be archived.
 - RE-VISIT :: Things done, but need a second opinion
 - POSTPONED :: Not important at this moment. Can't be archived until DONE or CANCELLED
 
 #+begin_src emacs-lisp
-(setq org-todo-keywords
-(quote ((sequence "TODO(t)" "PLANNED(p)" "HOLD(h)" "INPROGRESS(i!)"  "|" "DONE(d!)" "CANCELLED(c!)" )
-(sequence "|" "POSTPONED(P!)" "RE-VISIT(v!)")
-)))
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "PLANNED(p!)" "HOLD(h!)"  "INPROGRESS(i!)" "|" "DONE(d!)" "CANCELLED(c!)" )
+          (sequence "|" "POSTPONED(P!)" "RE-VISIT(v)")
+          (sequence "⌛ HOLD" "⌛ INPROGRESS" "|")))
 
-(setq org-todo-keyword-faces '(
-("TODO" . (:foreground "#ff39a3" :weight bold))
-("PLANNED" . (:foreground "#81D8D1"  :weight bold))
-("HOLD" . (:foreground "#ff9a00" :weight bold))
-("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
-("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
-("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
-("POSTPONED" . "#008080")))
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "#ff39a3" :weight bold))
+          ("PLANNED" . (:foreground "#81D8D1"  :weight bold))
+          ("HOLD" . (:foreground "#ff9a00" :weight bold))
+          ("⌛ HOLD" . (:foreground "#ff9a00" :weight bold))
+          ("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
+          ("⌛ INPROGRESS" . (:foreground "#ffdd00" :weight bold))
+          ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
+          ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
+          ("POSTPONED" . "#008080")))
 #+end_src
 
 ** PDF view
@@ -733,8 +740,14 @@ Org-super-agenda
 Display TODO list in a formatted manner
 #+begin_src emacs-lisp
   (add-to-list 'org-agenda-custom-commands
-  '("t" "All TODOs groups by category" alltodo ""
-    ((org-super-agenda-groups '((:auto-category t))))))
+               '("t" "All TODOs groups by category" alltodo ""
+                 ((org-super-agenda-groups '((:auto-category t))))))
+  (add-to-list 'org-agenda-custom-commands
+               '("p" "Projects" tags-todo "@inbox|@projects"
+                 ((org-super-agenda-groups '((:auto-category t))))))
+  (add-to-list 'org-agenda-custom-commands
+               '("c" "Captured Tasks" tags-todo "@tasks|@courses|@bookmarks"
+                 ((org-super-agenda-groups '((:auto-category t))))))
 
 #+end_src
 
@@ -762,6 +775,36 @@ Display agenda in a full window view instead of a frame view
 (setq-default org-agenda-window-setup 'only-window)
 #+end_src
 
+** Org-clock
+Automatically start the clock when the task moves to =INPROGRESS=
+#+begin_src emacs-lisp
+  (defun my/org-clock-in-if-inprogress ()
+    "Pause the clock when task goes into HOLD mode."
+    (when (and (string= org-state "INPROGRESS")
+               (not (string= org-last-state org-state)))
+      (org-clock-in))
+    (when (and (string= org-state "HOLD")
+               (string= org-last-state "⌛ INPROGRESS"))
+      (org-clock-out)))
+
+  (add-hook 'org-after-todo-state-change-hook
+            'my/org-clock-in-if-inprogress)
+#+end_src
+
+Custom
+#+begin_src emacs-lisp
+  (setq-default org-clock-clocktable-default-properties
+                '(:block day :maxlevel 3 :scope agenda :link t :compact t :formula %
+                         :step day :fileskip0 t :stepskip0 t :narrow 80
+                         :properties ("CLOCKSUM" "CLOCKSUM_T" "TODO"))
+                org-clock-in-switch-to-state "⌛ INPROGRESS"
+                org-clock-out-switch-to-state "⌛ HOLD"
+                org-clock-continuously nil
+                org-clock-persist-query-resume nil
+                org-clock-out-remove-zero-time-clocks t
+                org-clock-report-include-clocking-task t)
+#+end_src
+
 ** Files
 List of global org files
 #+begin_src emacs-lisp
@@ -771,7 +814,7 @@ List of global org files
 (set-register ?s secrets-file)
 (set-register ?r (cons 'file references-file-path))
 (set-register ?p (cons 'file projects-file-path))
-(set-register ?b (cons 'file bookmarks-file-path))
+(set-register ?b (cons 'file capture-file-path))
 (set-register ?h (cons 'file home-tasks-file-path))
 (set-register ?t (cons 'file journal-file-path))
 
@@ -783,7 +826,7 @@ List of global org files
 (setq org-refile-targets '((projects-file-path :maxlevel . 3)
                            (home-tasks-file-path :maxlevel . 2)
                            (tasks-file-path :level . 1)
-                           (bookmarks-file-path :maxlevel . 1)))
+                           (capture-file-path :maxlevel . 1)))
 
 
 #+end_src
@@ -900,26 +943,13 @@ Org-ref header format to support PDF interleaving
 (setq org-capture-templates
       '(
 #+end_src
-
-*** Secrets
-#+begin_src emacs-lisp
-	("s" "Secrets" entry
-	 (file+headline secrets-file-path "Secrets")
-	 "* [[%^{Link}][%^{Description}]]
- :PROPERTIES:
- :USERNAME: %^{Username}
- :PASSWORD: %^{Password}
- :END:
-")
-#+end_src
-
-*** Inbox Tasks
+*** Tasks
 #+begin_src emacs-lisp
 
 ("t" "Todos")
-("tt" "Task [inbox]" entry
-	 (file+headline tasks-file-path "Tasks")
-	 "* TODO %i%?")
+("tt" "Task [capture]" entry
+	 (file+headline capture-file-path "Tasks")
+	 "* TODO %K - %a\n%i\n%?\n")
 #+end_src
 
 Also the home tasks
@@ -931,6 +961,53 @@ Also the home tasks
 ("tr" "Reminder [home]" entry
 	 (file+headline home-tasks-file-path "Non-Recurring")
 	 "* TODO %i%?")
+#+end_src
+
+*** Capture
+#+begin_src emacs-lisp
+("c" "Capture")
+("cb" "Book" entry
+(file+headline capture-file-path "Books")
+"* [[%^{url}][%^{title}]]  %^g
+       :PROPERTIES:
+       :TYPE: Book
+       :END:
+")
+("cc" "Courses" entry
+(file+headline capture-file-path "Courses")
+"* TODO [[%^{url}][%^{title}]] %^g
+       :PROPERTIES:
+       :TYPE: Course
+       :END:
+")
+("cm" "Miscelleneous" entry
+(file+headline capture-file-path "Misc")
+"* TODO %i%?")
+("cv" "Videos" entry
+(file+headline capture-file-path "Videos")
+"* [[%^{url}][%^{title}]]  %^g
+       :PROPERTIES:
+       :TYPE: Video
+       :END:
+")
+("cw" "Web URL" entry
+(file+headline capture-file-path "Web")
+"* [[%^{url}][%^{title}]]  %^g
+       :PROPERTIES:
+       :TYPE: Web
+       :END:
+")
+#+end_src
+
+*** Journal
+#+begin_src emacs-lisp
+("j" "Journal")
+("jt" "Today" entry
+(file+datetree journal-file-path)
+   "* TODO %?")
+("jj" "Journal" entry
+(file+datetree journal-file-path)
+   "* %U %K - %a\n%i\n%?\n")
 #+end_src
 
 *** Reference Papers
@@ -945,48 +1022,21 @@ Capture reference papers with a small help of =C-c r y=
 ")
 #+end_src
 
-*** Journal
+*** Secrets
 #+begin_src emacs-lisp
-
-("j" "Journal" entry
-(file+datetree journal-file-path)
-   "* TODO %?")
+	("s" "Secrets" entry
+	 (file+headline secrets-file-path "Secrets")
+	 "* [[%^{Link}][%^{Description}]]
+ :PROPERTIES:
+ :USERNAME: %^{Username}
+ :PASSWORD: %^{Password}
+ :END:
+")
 #+end_src
 
-*** Capture
+*** Closing remarks
 #+begin_src emacs-lisp
-("c" "Capture")
-("cb" "Book" entry
-(file+headline bookmarks-file-path "Books")
-"* [[%^{url}][%^{title}]]  %^g
-       :PROPERTIES:
-       :TYPE: Book
-       :END:
-")
-("cw" "Web URL" entry
-(file+headline bookmarks-file-path "Web")
-"* [[%^{url}][%^{title}]]  %^g
-       :PROPERTIES:
-       :TYPE: Web
-       :END:
-")
-("cv" "Videos" entry
-(file+headline bookmarks-file-path "Videos")
-"* [[%^{url}][%^{title}]]  %^g
-       :PROPERTIES:
-       :TYPE: Video
-       :END:
-")
-("cm" "Miscelleneous" entry
-(file+headline bookmarks-file-path "Misc")
-"* TODO %i%?")
-("cc" "Courses" entry
-(file+headline bookmarks-file-path "Courses")
-"* TODO [[%^{url}][%^{title}]] %^g
-       :PROPERTIES:
-       :TYPE: Course
-       :END:
-")))
+))
 #+end_src
 
 * Internet, Social, Feed Manager
