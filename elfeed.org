@@ -2,13 +2,11 @@
 * blogs                                                        :elfeed:
 ** Technology                                                         :tech:
 *** https://www.reddit.com/r/emacs/.rss                             :emacs:
+*** https://www.reddit.com/r/orgmode/.rss                                  :emacs:
 *** [[http://feeds.feedburner.com/FeaturedBlogPosts-DataScienceCentral?format=xml][Data Science Central]]
 *** [[https://hnrss.org/frontpage][HackerNews]]
-*** [[https://stackoverflow.blog/feed/][StackOverflow]]
 ** General                                                         :general:
 *** https://www.reddit.com/r/todayilearned/.rss
-** Art and Music                                                 :artNmusic:
-*** https://www.reddit.com/r/ArtFundamentals/.rss           
 ** Podcasts                                                        :podcast:
 *** [[https://feeds.megaphone.fm/sciencevs][ScienceVs]]
 *** [[https://feeds.megaphone.fm/lore][Lore]]                                                             :lore:

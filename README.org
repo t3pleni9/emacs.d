@@ -65,6 +65,28 @@ Loading Theme post every operation
   (load-theme 'smart-mode-line-dark t)
 #+end_src
 
+Flatten the wavy red underlines for error
+#+begin_src emacs-lisp
+  ;; no waves, use underlines which look better
+  (defun theme-tweaks-flatten-underline+ (face)
+    "Change underline style of FACE from wave to straight line."
+    (let ((underline (face-attribute face :underline)))
+      (when (eq (plist-get underline :style) 'wave)
+        (plist-put underline :style 'line)
+        (set-face-attribute face nil :underline underline))))
+
+  ;; initial flattening
+  (mapatoms (lambda (atom)
+              (when (facep atom)
+                (theme-tweaks-flatten-underline+ atom))))
+
+  ;; flatten on each face definition in the future
+  (define-advice custom-declare-face (:around (fun &rest args) flatten-face)
+    (let ((face (apply fun args)))
+      (theme-tweaks-flatten-underline+ face)
+      face))
+#+end_src
+
 ** Global
 #+begin_src emacs-lisp
   (setq inhibit-startup-message t) ;; outline-hide the startup messag
@@ -117,6 +139,16 @@ Set the font to a comfortable level
 (set-face-attribute 'default nil :height 130)
 (setq-default line-spacing 1)
 (set-frame-font "Hack 13" nil t)
+#+end_src
+
+Unicode character support
+#+begin_src emacs-lisp
+(require 'unicode-fonts)
+(setq unicode-fonts-block-font-mapping
+      '(("Emoticons"
+	 ("Apple Color Emoji" "Symbola" "Quivira")))
+      unicode-fonts-fontset-names '("fontset-default"))
+(unicode-fonts-setup)
 #+end_src
 
 Don't kill emacs without confirming
@@ -357,7 +389,8 @@ Programming Mode Hooks
 JavaScript specific setups
 #+begin_src emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+(setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
 (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 #+end_src
 
@@ -594,12 +627,18 @@ A place to store and remember everything that I can't burden my brain with think
 
 - Home Tasks :: Its better to keep work and home separate. So a separate home task file
 #+begin_src emacs-lisp
-(setq home-tasks-file-path "~/Dropbox/org-notes/home/tasks.org")
+(setq home-tasks-file-path "~/Documents/org-notes/Dropbox/org-notes/home/tasks.org")
 #+end_src
 
 - References :: All the papers which need to be read, are captured into references.bib, whose offshot gets captured in references. They get planned and scheduled, and at max may be a part of a project. The section in references only moves to Projects, and never to Inbox.
 #+begin_src emacs-lisp
 (setq references-file-path "~/Documents/org-notes/bibliography/references.org")
+#+end_src
+
+- Personal Library :: A collection of novels - fictional and non fictional to read. Its always good to have a habit for reading
+
+#+begin_src emacs-lisp
+(setq personal-library-file-path "~/Documents/org-notes/reading-list/library.org")
 #+end_src
 
 - Projects :: This makes sure that everything I start gets done. Things move from capture into projects, gets scheduled and mostly has notes and sub items - scheduled or unscheduled. Nothing gets added to projects without having lived in capture
@@ -615,17 +654,19 @@ All the above mentioned files just form a part of the bigger agenda.
 "~/Documents/org-notes/exocortex/capture.org"
 "~/Documents/org-notes/exocortex/today.org"
 "~/Documents/org-notes/bibliography/references.org"
+"~/Documents/org-notes/reading-list/library.org"
 "~/Documents/org-notes/exocortex/daily.org"
-"~/Dropbox/org-notes/home/tasks.org"
+"~/Documents/org-notes/Dropbox/org-notes/home/tasks.org"
 ))
 #+end_src
+
 
 *** Org TODO cycles
 
 After multiple iterations of the TODO cycles, finally decided on using a simple list of TODOS, and to rely more on tags to mark the kind of TODO
 
 - TODO :: Anything that needs to be done. Mostly without a schedule or a deadline or with an arbitrary future schedule, but must be picked up on priority
-- PLANNED :: Things move from TODO to PLANNED, when a schedule or a deadline is attached to them and it has been slotted to be picked up.
+- SCHEDULED :: Things move from TODO to SCHEDULED, when a schedule or a deadline is attached to them and it has been slotted to be picked up.
 - INPROGRESS :: Currently in play
 - HOLD :: Things which had been picked up but have been put on hold due to
   1. Further updates or conflicting requirement with some other task
@@ -637,17 +678,19 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
 
 #+begin_src emacs-lisp
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "PLANNED(p!)" "HOLD(h!)"  "INPROGRESS(i!)" "|" "DONE(d!)" "CANCELLED(c!)" )
+        '((sequence "TODO(t)" "SCHEDULED(s!)" "HOLD(h!)"  "INPROGRESS(i!)" "|" "DONE(d!)" "CANCELLED(c!)" )
           (sequence "|" "POSTPONED(P!)" "RE-VISIT(v)")
-          (sequence "⌛ HOLD" "⌛ INPROGRESS" "|")))
+          (sequence "⌛ HOLD" "⌚ INPROGRESS" "|")))
 
   (setq org-todo-keyword-faces
         '(("TODO" . (:foreground "#ff39a3" :weight bold))
-          ("PLANNED" . (:foreground "#81D8D1"  :weight bold))
+          ("SCHEDULED" . (:foreground "#81D8D1"  :weight bold))
           ("HOLD" . (:foreground "#ff9a00" :weight bold))
+          ("SHELVED" . (:foreground "#ff9a00" :weight bold))
           ("⌛ HOLD" . (:foreground "#ff9a00" :weight bold))
           ("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
-          ("⌛ INPROGRESS" . (:foreground "#ffdd00" :weight bold))
+          ("READING" . (:foreground "#ffdd00" :weight bold))
+          ("⌚ INPROGRESS" . (:foreground "#ffdd00" :weight bold))
           ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
           ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
           ("POSTPONED" . "#008080")))
@@ -746,10 +789,14 @@ Display TODO list in a formatted manner
                '("p" "Projects" tags-todo "@inbox|@projects"
                  ((org-super-agenda-groups '((:auto-category t))))))
   (add-to-list 'org-agenda-custom-commands
-               '("c" "Captured Tasks" tags-todo "@tasks|@courses|@bookmarks"
+               '("c" "Captured Tasks" tags-todo "@tasks|@second_brain"
+                 ((org-super-agenda-groups '((:auto-category t))))))
+  (add-to-list 'org-agenda-custom-commands
+               '("r" "Reading" tags-todo "@library|@reference"
                  ((org-super-agenda-groups '((:auto-category t))))))
 
 #+end_src
+
 
 #+begin_src emacs-lisp
   (require 'org-agenda)
@@ -784,7 +831,7 @@ Automatically start the clock when the task moves to =INPROGRESS=
                (not (string= org-last-state org-state)))
       (org-clock-in))
     (when (and (string= org-state "HOLD")
-               (string= org-last-state "⌛ INPROGRESS"))
+               (string= org-last-state "⌚ INPROGRESS"))
       (org-clock-out)))
 
   (add-hook 'org-after-todo-state-change-hook
@@ -797,7 +844,7 @@ Custom
                 '(:block day :maxlevel 3 :scope agenda :link t :compact t :formula %
                          :step day :fileskip0 t :stepskip0 t :narrow 80
                          :properties ("CLOCKSUM" "CLOCKSUM_T" "TODO"))
-                org-clock-in-switch-to-state "⌛ INPROGRESS"
+                org-clock-in-switch-to-state "⌚ INPROGRESS"
                 org-clock-out-switch-to-state "⌛ HOLD"
                 org-clock-continuously nil
                 org-clock-persist-query-resume nil
@@ -825,6 +872,7 @@ List of global org files
 
 (setq org-refile-targets '((projects-file-path :maxlevel . 3)
                            (home-tasks-file-path :maxlevel . 2)
+                           (references-file-path :maxlevel . 2)
                            (tasks-file-path :level . 1)
                            (capture-file-path :maxlevel . 1)))
 
@@ -869,9 +917,6 @@ Add LATEX to path
   (setq org-latex-prefer-user-labels t)
 #+end_example
 
-#+RESULTS:
-: t
-
 #+begin_src emacs-lisp
 (setq org-latex-pdf-process
       '("pdflatex -interaction nonstopmode -output-directory %o %f"
@@ -881,8 +926,6 @@ Add LATEX to path
 (setq bibtex-dialect 'biblatex)
 #+end_src
 
-#+RESULTS:
-: biblatex
 
 ** Org ref
 Search through bibtex reference using helm reference
@@ -956,7 +999,7 @@ Also the home tasks
 #+begin_src emacs-lisp
 ("ts" "Shopping list [home]" checkitem
 	 (file+headline home-tasks-file-path "Shopping")
-	 "- [ ] %i%? ")
+	 "[ ] %i%? ")
 
 ("tr" "Reminder [home]" entry
 	 (file+headline home-tasks-file-path "Non-Recurring")
@@ -1003,10 +1046,10 @@ Also the home tasks
 #+begin_src emacs-lisp
 ("j" "Journal")
 ("jt" "Today" entry
-(file+datetree journal-file-path)
-   "* TODO %?")
+(file+datetree+prompt journal-file-path)
+   "* TODO %K %a\n%i\n%?\n")
 ("jj" "Journal" entry
-(file+datetree journal-file-path)
+(file+datetree+prompt journal-file-path)
    "* %U %K - %a\n%i\n%?\n")
 #+end_src
 
@@ -1037,6 +1080,13 @@ Capture reference papers with a small help of =C-c r y=
 *** Closing remarks
 #+begin_src emacs-lisp
 ))
+
+(defun schedule-grocery-hook ()
+  (if (string= (org-capture-get :description)
+               "Shopping list [home]")
+      (org-schedule 0 (format-time-string "%Y-%m-%d"))))
+
+;; (add-hook 'org-capture-before-finalize-hook 'schedule-grocery-hook)
 #+end_src
 
 * Internet, Social, Feed Manager
@@ -1185,14 +1235,24 @@ Play an enclosure
 
 Play a url at point using mpv
 #+begin_src emacs-lisp
-(defun my/play-with-mpv ()
-  "Visit the current entry in mpv."
-  (interactive)
-  (let ((link (elfeed-get-link-at-point)))
-    (when link
-      (message "Sent to mpv: %s" link)
-      (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))))
+  (defun my/play-region (start end)
+      "Visit the current entry in mpv."
+      (interactive "r")
+      (let ((link (if (use-region-p) 
+                      (buffer-substring start end))))
+            (when link
+              (message "Sent to mpv: %s" link)
+              (my/launch-process "MPV" "*mpv-video*" "mpv" link))))
+
+  (defun my/play-with-mpv ()
+    "Visit the current entry in mpv."
+    (interactive)
+    (let ((link (elfeed-get-link-at-point)))
+          (when link
+            (message "Sent to mpv: %s" link)
+            (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))))
 #+end_src
+
 
 ** IRC
 Setup for managing IRC 
@@ -1322,20 +1382,20 @@ Increase/Decrease Volume
   ^Git  ^             ^Do^
   ^─────^─────────────^──^─────────────
   _n_ Next Hunk       _p_ Previous Hunk
-  _w_ Show Hunk       _t_ Stage Hunk
+  _w_ Show Hunk       _s_ Stage Hunk
   _q_ Quit            _b_ Blame
-  _c_ Clone           _s_ Status
+  _c_ Clone           _S_ Status
   _i_ Init            ^^
   "
   ("q" nil)
   ("n" git-gutter+-next-hunk)
   ("p" git-gutter+-previous-hunk)
   ("w" git-gutter+-show-hunk)
-  ("t" git-gutter+-stage-hunks)
+  ("s" git-gutter+-stage-hunks)
   ("b" magit-blame)
   ("c" magit-clone)
   ("i" magit-init)
-  ("s" magit-status))
+  ("S" magit-status))
 #+end_src
 
 ** Projectile
@@ -1375,7 +1435,7 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 _q_ quit            _i_ imenu               _c_ Conda Activate
 _r_ resume          _s_ swoop               _d_ Conda Deactivate
 ^^                  _S_ swoop all           _n_ Jupyter Notebooks
-^^                  _k_ kill-ring           ^^
+^^                  _k_ kill-ring           _p_ PyBuild
 ^^                  _b_ org brain           ^^
 ^^                  _m_ Mark Rings          ^^
 ^^                  ^^
@@ -1390,8 +1450,10 @@ _r_ resume          _s_ swoop               _d_ Conda Deactivate
   ("r" helm-resume)
   ("n" ein:notebooklist-open)
   ("c" pyvenv-workon)
+  ("p" py-build)
   ("d" pyvenv-deactivate))
 #+end_src
+
 
 ** Org
 *** org-ref
@@ -1674,9 +1736,6 @@ Music Player
 (global-set-key (kbd "C-c s") 'hydra-emms/body)
 (global-set-key (kbd "C-c S") 'hydra-spotify/body)
 #+end_src
-
-#+RESULTS:
-: hydra-spotify/body
 
 |-----------------+-------------|
 | Volume Control  | Key Binding |
