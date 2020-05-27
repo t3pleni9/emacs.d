@@ -49,6 +49,7 @@ One require to rule them all
   (require 'alert)
   (require 'volume)
   (require 'define-word)
+  (require 'org-roam)
 #+end_src
 
 * Emacs startup, and others
@@ -288,6 +289,7 @@ Launch Process with custom buffer name
                 indent-tabs-mode nil)
    
   (display-time-mode 1)
+  (org-roam-mode +1)
 #+end_src
 
 Disable line numbers in some buffers
@@ -571,6 +573,7 @@ Enable bindings for turtle format
         '("\\.ttl" . ttl-mode))
        auto-mode-alist))
 #+end_src
+
 * Org
 ** Global
 Time tracking on tasks
@@ -606,6 +609,16 @@ Org ordered dependencies
 (setq-default org-enforce-todo-dependencies t)
 #+end_src
 
+Themes, look and feel
+#+begin_src emacs-lisp
+(setq org-hide-emphasis-markers t)
+
+;; Font
+(custom-theme-set-faces 'user `(org-document-title ((t (:foreground "#3282b8" :height 1.5 :underline nil)))))
+#+end_src
+
+#+RESULTS:
+
 ** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
 *** File Organization
@@ -632,13 +645,13 @@ A place to store and remember everything that I can't burden my brain with think
 
 - References :: All the papers which need to be read, are captured into references.bib, whose offshot gets captured in references. They get planned and scheduled, and at max may be a part of a project. The section in references only moves to Projects, and never to Inbox.
 #+begin_src emacs-lisp
-(setq references-file-path "~/Documents/org-notes/bibliography/references.org")
+(setq references-file-path "~/Documents/org-notes/research/bibliography/references.org")
 #+end_src
 
 - Personal Library :: A collection of novels - fictional and non fictional to read. Its always good to have a habit for reading
 
 #+begin_src emacs-lisp
-(setq personal-library-file-path "~/Documents/org-notes/reading-list/library.org")
+(setq personal-library-file-path "~/Documents/org-notes/research/reading-list/library.org")
 #+end_src
 
 - Projects :: This makes sure that everything I start gets done. Things move from capture into projects, gets scheduled and mostly has notes and sub items - scheduled or unscheduled. Nothing gets added to projects without having lived in capture
@@ -653,8 +666,8 @@ All the above mentioned files just form a part of the bigger agenda.
 "~/Documents/org-notes/exocortex/projects.org"
 "~/Documents/org-notes/exocortex/capture.org"
 "~/Documents/org-notes/exocortex/today.org"
-"~/Documents/org-notes/bibliography/references.org"
-"~/Documents/org-notes/reading-list/library.org"
+"~/Documents/org-notes/research/bibliography/references.org"
+"~/Documents/org-notes/research/reading-list/library.org"
 "~/Documents/org-notes/exocortex/daily.org"
 "~/Documents/org-notes/Dropbox/org-notes/home/tasks.org"
 ))
@@ -694,6 +707,20 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
           ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
           ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
           ("POSTPONED" . "#008080")))
+#+end_src
+
+*** Org roam
+
+#+begin_src emacs-lisp
+(setq-default org-roam-directory "~/Documents/org-notes/research")
+#+end_src
+
+Have a separate Notes folder for captures. Helps in keeping the thoughts clean
+#+begin_src emacs-lisp
+(setq-default org-roam-capture-templates '(("d" "default" plain
+  (function org-roam-capture--get-point)
+  "%?" :file-name "notes/%<%Y%m%d%H%M%S>-${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
+" :unnarrowed t)))
 #+end_src
 
 ** PDF view
@@ -926,7 +953,6 @@ Add LATEX to path
 (setq bibtex-dialect 'biblatex)
 #+end_src
 
-
 ** Org ref
 Search through bibtex reference using helm reference
 #+begin_src emacs-lisp
@@ -954,9 +980,9 @@ Manage notes using helm bibtex
 
 Org-ref Files
 #+begin_src emacs-lisp
-(setq reftex-default-bibliography '("~/Documents/org-notes/bibliography/references.bib" "~/Documents/org-notes/bibliography/references_2.bib" "~/Documents/org-notes/bibliography/references_3.bib")
-      org-ref-default-bibliography '("~/Documents/org-notes/bibliography/references.bib" "~/Documents/org-notes/bibliography/references_2.bib" "~/Documents/org-notes/bibliography/references_3.bib")
-      org-ref-pdf-directory "~/Documents/org-notes/bibliography/bibtex-pdfs/")
+(setq reftex-default-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
+      org-ref-default-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
+      org-ref-pdf-directory "~/Documents/org-notes/research/bibliography/bibtex-pdfs/")
 
 #+end_src
 
@@ -964,16 +990,16 @@ Org-ref header format to support PDF interleaving
 
 #+begin_src emacs-lisp
   (setq bibtex-completion-notes-template-multiple-files 
-        (concat "#+INTERLEAVE_PDF: "
+        (concat "#+TITLE: ${title} : ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: "
                 org-ref-pdf-directory
-                "${=key=}.pdf\n#+TITLE: Notes on ${author-or-editor} (${year}): ${title}\n"))
+                "${=key=}.pdf\n"))
 #+end_src
 
 *** Bibtex
 #+begin_src emacs-lisp
-(setq bibtex-completion-bibliography '("~/Documents/org-notes/bibliography/references.bib" "~/Documents/org-notes/bibliography/references_2.bib" "~/Documents/org-notes/bibliography/references_3.bib")
-      bibtex-completion-library-path "~/Documents/org-notes/bibliography/bibtex-pdfs"
-      bibtex-completion-notes-path "~/Documents/org-notes/bibliography/helm-bibtex-notes"
+(setq bibtex-completion-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
+      bibtex-completion-library-path "~/Documents/org-notes/research/bibliography/bibtex-pdfs"
+      bibtex-completion-notes-path "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
       bibtex-completion-pdf-field "File"
       bibtex-completion-pdf-symbol "⌘"
       bibtex-completion-notes-symbol "✎"
@@ -1430,9 +1456,9 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 (defhydra hydra-helm (:color blue)
   "
 ^
-^Helm^              ^Browse^                ^Python^
-^────^──────────────^──────^────────────────^──────^───────────────
-_q_ quit            _i_ imenu               _c_ Conda Activate
+^Helm^              ^Browse^                ^Python^                    ^Others^                
+^────^──────────────^──────^────────────────^──────^────────────────────^──────^─────────────── 
+_q_ quit            _i_ imenu               _c_ Conda Activate          _t_ Trello
 _r_ resume          _s_ swoop               _d_ Conda Deactivate
 ^^                  _S_ swoop all           _n_ Jupyter Notebooks
 ^^                  _k_ kill-ring           _p_ PyBuild
@@ -1451,32 +1477,42 @@ _r_ resume          _s_ swoop               _d_ Conda Deactivate
   ("n" ein:notebooklist-open)
   ("c" pyvenv-workon)
   ("p" py-build)
+  ("t" hydra-org-trello/body)
   ("d" pyvenv-deactivate))
 #+end_src
 
+#+RESULTS:
+: hydra-helm/body
 
 ** Org
 *** org-ref
 Org-ref Sugars
 #+begin_src emacs-lisp
-(defhydra hydra-org-ref (:color blue)
-  "
-  ^
-  ^Org-ref  ^               ^Do^
-  ^─────^───────────────────^──^──────────────────
-  _l_ Create label          _i_ Insert Reference
-  _b_ Add doi bibtex        _y_ Bibtex Yank          
-  _A_ Add arxiv bibtex      _a_ Arxiv Search
-  _q_ Quit                 
-  "
-  ("q" nil)
-  ("l" org-ref-helm-insert-label-link) 
-  ("i" org-ref-helm-insert-ref-link)
-  ("b" doi-add-bibtex-entry)
-  ("A" arxiv-add-bibtex-entry)
-  ("a" arxiv-lookup)
-  ("y" org-bibtex-yank))
+  (defhydra hydra-org-ref (:color blue)
+    "
+    ^
+    ^Org-ref  ^               ^Do^                    ^Roam^                  
+    ^─────^───────────────────^──^────────────────────^────^──────────────────
+    _L_ Create label          _I_ Insert Reference    _r_ Org-Roam
+    _b_ Add doi bibtex        _y_ Bibtex Yank         _f_ Roam Find Files 
+    _A_ Add arxiv bibtex      _a_ Arxiv Search        _i_ Insert Link reference
+    _q_ Quit                  ^^                      _c_ Create New Note      
+    "
+    ("q" nil)
+    ("r" org-roam)
+    ("f" org-roam-find-file)
+    ("i" org-roam-insert)
+    ("c" org-roam-capture)
+    ("L" org-ref-helm-insert-label-link) 
+    ("I" org-ref-helm-insert-ref-link)
+    ("b" doi-add-bibtex-entry)
+    ("A" arxiv-add-bibtex-entry)
+    ("a" arxiv-lookup)
+    ("y" org-bibtex-yank))
 #+end_src
+
+#+RESULTS:
+: hydra-org-ref/body
 
 *** org-trello
 Hydra bindings for org-trello
@@ -1507,6 +1543,7 @@ Hydra bindings for org-trello
   ("C" org-trello-add-card-comment) 
   ("D" org-trello-delete-card-commen))
 #+end_src
+
 
 ** Music Player
 Spotify sugars
@@ -1712,11 +1749,6 @@ Org-ref hydra sugar
 Org-brain
 #+begin_src emacs-lisp
  (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
-#+end_src
-
-Org-trello
-#+begin_src emacs-lisp
-(define-key org-mode-map (kbd "C-c t") 'hydra-org-trello/body)
 #+end_src
 
 PDF View
