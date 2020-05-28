@@ -11,7 +11,7 @@ A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configu
 Follow the [[https://www.gnu.org/software/emacs/download.html][Download & installation]] guide to setup vanilla emacs.
  This config is based on Emacs v26.1, versions newer than this might require a modified approach for installation and configuration.
 ** Configuration
-To install, clone this repository, and replace it with the =.emacs.d= in you =$HOME= directory, for EMACS <= v26.1
+To install, clone this repository, and replace it with the =.emacs.d= in your =$HOME= directory, for EMACS <= v26.1
 #+begin_src bash
 cd ~
 mv .emacs.d .emacs.d.bkp # Always make backups
