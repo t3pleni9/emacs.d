@@ -6,6 +6,23 @@
 A nifty [[https://orgmode.org/worg/org-contrib/babel/][org-babel]] Emacs configuration.
 
 #+HTML:</div>
+* Installation
+** EMACS 
+Follow the [[https://www.gnu.org/software/emacs/download.html][Download & installation]] guide to setup vanilla emacs.
+ This config is based on Emacs v26.1, versions newer than this might require a modified approach for installation and configuration.
+** Configuration
+To install, clone this repository, and replace it with the =.emacs.d= in you =$HOME= directory, for EMACS <= v26.1
+#+begin_src bash
+cd ~
+mv .emacs.d .emacs.d.bkp # Always make backups
+git clone https://github.com/t3pleni9/emacs.d.git
+mv emacs.d .emacs.d
+#+end_src
+
+Post cloning and installation, start EMACS. The initial setup will take some time as it would download the relevant packages and install it. 
+Along with regular packages, clone the following packages into =<EMACS-config-root>/external/= to utilise their respective functionalities.
+- https://github.com/t3pleni9/emacs-totp.git :: Support of Time based OTP (TOTP) for org-password
+- https://gitlab.com/t3pleni9/py-build.git :: Integrates PyBuild with  projectile and anaconda-venv
 
 * Require
 One require to rule them all
