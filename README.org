@@ -614,10 +614,8 @@ Themes, look and feel
 (setq org-hide-emphasis-markers t)
 
 ;; Font
-(custom-theme-set-faces 'user `(org-document-title ((t (:foreground "#3282b8" :height 1.5 :underline nil)))))
+(custom-theme-set-faces 'user `(org-document-title ((t (:foreground "#3282b8" :height 1.3 :underline nil)))))
 #+end_src
-
-#+RESULTS:
 
 ** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
@@ -707,20 +705,6 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
           ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
           ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
           ("POSTPONED" . "#008080")))
-#+end_src
-
-*** Org roam
-
-#+begin_src emacs-lisp
-(setq-default org-roam-directory "~/Documents/org-notes/research")
-#+end_src
-
-Have a separate Notes folder for captures. Helps in keeping the thoughts clean
-#+begin_src emacs-lisp
-(setq-default org-roam-capture-templates '(("d" "default" plain
-  (function org-roam-capture--get-point)
-  "%?" :file-name "notes/%<%Y%m%d%H%M%S>-${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
-" :unnarrowed t)))
 #+end_src
 
 ** PDF view
@@ -969,11 +953,14 @@ Manage notes using helm bibtex
 #+begin_src emacs-lisp
   ;; Tell org-ref to let helm-bibtex find notes for it
   (setq org-ref-notes-function 'org-ref-notes-function-many-files)
+#+end_src
 
-        ;; (lambda (thekey)
-        ;; 	(let ((bibtex-completion-bibliography (org-ref-find-bibliography)))
-        ;; 	  (bibtex-completion-edit-notes
-        ;; 	   (list (car (org-ref-get-bibtex-key-and-file thekey)))))))
+Or Supply a lambda to tell it what to do
+#+begin_src emacs-lisp
+  ;; (setq org-ref-notes-function (lambda (thekey)
+  ;; 	(let ((bibtex-completion-bibliography (org-ref-find-bibliography)))
+  ;; 	  (bibtex-completion-edit-notes
+  ;; 	   (list (car (org-ref-get-bibtex-key-and-file thekey)))))))
 #+end_src
 
 
@@ -986,16 +973,8 @@ Org-ref Files
 
 #+end_src
 
-Org-ref header format to support PDF interleaving
-
-#+begin_src emacs-lisp
-  (setq bibtex-completion-notes-template-multiple-files 
-        (concat "#+TITLE: ${title} : ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: "
-                org-ref-pdf-directory
-                "${=key=}.pdf\n"))
-#+end_src
-
 *** Bibtex
+
 #+begin_src emacs-lisp
 (setq bibtex-completion-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
       bibtex-completion-library-path "~/Documents/org-notes/research/bibliography/bibtex-pdfs"
@@ -1007,6 +986,31 @@ Org-ref header format to support PDF interleaving
 (setq bibtex-completion-display-formats
       '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
 #+end_src
+
+Org-ref header format to support PDF interleaving
+
+#+begin_src emacs-lisp
+  (setq bibtex-completion-notes-template-multiple-files 
+        (concat "#+TITLE: ${title} : ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: "
+                org-ref-pdf-directory
+                "${=key=}.pdf\n"))
+#+end_src
+
+
+*** Org roam
+Org-Roam setup to facilitate note taking for the research
+#+begin_src emacs-lisp
+(setq-default org-roam-directory "~/Documents/org-notes/research")
+#+end_src
+
+Have a separate Notes folder for captures. Helps in keeping the thoughts clean
+#+begin_src emacs-lisp
+(setq-default org-roam-capture-templates '(("d" "default" plain
+  (function org-roam-capture--get-point)
+  "%?" :file-name "notes/%<%Y%m%d%H%M%S>-${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
+" :unnarrowed t)))
+#+end_src
+
 ** Capture Templates                                        :non_exec_block:
 #+begin_src emacs-lisp
 (setq org-capture-templates
