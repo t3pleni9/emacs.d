@@ -67,6 +67,8 @@ One require to rule them all
   (require 'volume)
   (require 'define-word)
   (require 'org-roam)
+  (require 'org-roam-server)
+  (require 'deft)
 #+end_src
 
 * Emacs startup, and others
@@ -347,6 +349,11 @@ Image view mode
 Disable new line mode for csv files as it defeats the purpose of align items
 #+begin_src emacs-lisp
 (add-hook 'csv-mode-hook
+          (lambda ()
+            (visual-line-mode 1)
+            (toggle-truncate-lines 1)))
+
+(add-hook 'deft-mode-hook
           (lambda ()
             (visual-line-mode 1)
             (toggle-truncate-lines 1)))
@@ -1013,25 +1020,58 @@ Org-ref Files
 Org-ref header format to support PDF interleaving
 
 #+begin_src emacs-lisp
-  (setq bibtex-completion-notes-template-multiple-files 
-        (concat "#+TITLE: ${title} : ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: "
-                org-ref-pdf-directory
-                "${=key=}.pdf\n"))
+  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} : ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n")
 #+end_src
 
-
-*** Org roam
+** Org roam
 Org-Roam setup to facilitate note taking for the research
 #+begin_src emacs-lisp
-(setq-default org-roam-directory "~/Documents/org-notes")
+(setq-default org-roam-directory (concat org-directory "/research"))
+(setq org-roam-completion-system 'helm)
+(setq org-roam-graph-exclude-matcher '("reference"))
 #+end_src
 
 Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+begin_src emacs-lisp
-(setq-default org-roam-capture-templates '(("d" "default" plain
-  (function org-roam-capture--get-point)
-  "%?" :file-name "exocortex/notes/%<%Y%m%d%H%M%S>-${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
-" :unnarrowed t)))
+  (setq-default org-roam-capture-templates '(("d" "default" plain
+    (function org-roam-capture--get-point)
+    "%?" :file-name "notes/${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
+  " :unnarrowed t)
+  ;; ("b" "bookends" plain (function org-roam-capture--get-point)
+  ;;            "- tags :: [[open-ext:bookends://sonnysoftware.com/${bid}][Bookends link]]\n- reference :: ${fcite}\n\n%?"
+  ;;            :file-name "exocortex/notes/${slug}"
+  ;;            :head "#+TITLE: ${title}\n#+DATE: %<%Y-%m-%d>\n#+ROAM_KEY: ${ref}\n\
+  ;; #+BID: ${bid}\n#+PDF_FILE: ${pdf}\n#+CATEGORY: article\n\n"
+  ;;            :unnarrowed t
+  ;;            :immediate-finish t)
+  ))
+#+end_src
+
+Roam Server
+#+begin_src emacs-lisp
+(setq org-roam-server-port 9666)
+#+end_src
+
+*** Deft
+#+begin_src emacs-lisp
+(setq deft-directory (concat org-directory "/research"))
+
+(setq deft-extensions '("org"))
+(setq deft-default-extension "org")
+
+(setq deft-text-mode 'org-mode)
+(setq deft-use-filter-string-for-filename t)
+
+(setq deft-recursive t)
+(setq deft-auto-save-interval 0)
+#+end_src
+
+Deft new file name convention
+#+begin_src emacs-lisp
+(setq deft-file-naming-rules
+      '((noslash . "-")
+        (nospace . "-")
+        (case-fn . downcase)))
 #+end_src
 
 ** Capture Templates                                        :non_exec_block:
@@ -1524,12 +1564,14 @@ Org-ref Sugars
     _b_ Add doi bibtex        _y_ Bibtex Yank         _f_ Roam Find Files 
     _A_ Add arxiv bibtex      _a_ Arxiv Search        _i_ Insert Link reference
     _q_ Quit                  ^^                      _c_ Create New Note      
+    ^^                        ^^                      _d_ Deft
     "
     ("q" nil)
     ("r" org-roam)
     ("f" org-roam-find-file)
     ("i" org-roam-insert)
     ("c" org-roam-capture)
+    ("d" deft)
     ("L" org-ref-helm-insert-label-link) 
     ("I" org-ref-helm-insert-ref-link)
     ("b" doi-add-bibtex-entry)
@@ -1537,9 +1579,6 @@ Org-ref Sugars
     ("a" arxiv-lookup)
     ("y" org-bibtex-yank))
 #+end_src
-
-#+RESULTS:
-: hydra-org-ref/body
 
 *** org-trello
 Hydra bindings for org-trello
