@@ -639,18 +639,18 @@ A place to store and remember everything that I can't burden my brain with think
 *** File Organization
 - Journal/Micro plan :: Used to plan the day. Journal captures the day's schedule, meetings and work task
 #+begin_src emacs-lisp
-(setq journal-file-path "~/Documents/org-notes/exocortex/today.org")
+(setq journal-file-path "~/Documents/org-notes/Dropbox/org-notes/today.org")
 #+end_src
 
 - Capture :: All unscheduled sudden surges of things which I remember get captured into this file. Mostly things here are without a schedule or deadline, which need to refiling and revisiting sometime in the future. Also serves as the Bookmark collection of websites, videos, books, courses and podcasts. 
 #+begin_src emacs-lisp
-(setq capture-file-path "~/Documents/org-notes/exocortex/capture.org")
+(setq capture-file-path "~/Documents/org-notes/Dropbox/org-notes/capture.org")
 (setq org-default-notes-file capture-file-path)
 #+end_src
 
 - Inbox :: All the scheduled tasks go into this file. If something gets scheduled from the capture file, they move into inbox. 
 #+begin_src emacs-lisp
-(setq tasks-file-path "~/Documents/org-notes/exocortex/inbox.org")
+(setq tasks-file-path "~/Documents/org-notes/Dropbox/org-notes/inbox.org")
 #+end_src
 
 - Home Tasks :: Its better to keep work and home separate. So a separate home task file
@@ -671,20 +671,20 @@ A place to store and remember everything that I can't burden my brain with think
 
 - Projects :: This makes sure that everything I start gets done. Things move from capture into projects, gets scheduled and mostly has notes and sub items - scheduled or unscheduled. Nothing gets added to projects without having lived in capture
 #+begin_src emacs-lisp
-(setq projects-file-path "~/Documents/org-notes/exocortex/projects.org")
+(setq projects-file-path "~/Documents/org-notes/Dropbox/org-notes/projects.org")
 #+end_src
 
 **** ORG-Agenda: 
 All the above mentioned files just form a part of the bigger agenda.
 #+begin_src emacs-lisp
-(setq org-agenda-files '("~/Documents/org-notes/exocortex/inbox.org"
-"~/Documents/org-notes/exocortex/projects.org"
-"~/Documents/org-notes/exocortex/capture.org"
-"~/Documents/org-notes/exocortex/today.org"
-"~/Documents/org-notes/research/bibliography/references.org"
-"~/Documents/org-notes/research/reading-list/library.org"
+(setq org-agenda-files (list tasks-file-path
+projects-file-path
+capture-file-path
+journal-file-path
+references-file-path
+personal-library-file-path
+home-tasks-file-path
 "~/Documents/org-notes/exocortex/daily.org"
-"~/Documents/org-notes/Dropbox/org-notes/home/tasks.org"
 ))
 #+end_src
 
@@ -851,6 +851,12 @@ Display agenda in a full window view instead of a frame view
 #+end_src
 
 ** Org-clock
+
+Idle Time
+#+begin_src emacs-lisp
+(setq org-clock-idle-time 15)
+#+end_src
+
 Automatically start the clock when the task moves to =INPROGRESS=
 #+begin_src emacs-lisp
   (defun my/org-clock-in-if-inprogress ()
@@ -1017,14 +1023,14 @@ Org-ref header format to support PDF interleaving
 *** Org roam
 Org-Roam setup to facilitate note taking for the research
 #+begin_src emacs-lisp
-(setq-default org-roam-directory "~/Documents/org-notes/research")
+(setq-default org-roam-directory "~/Documents/org-notes")
 #+end_src
 
 Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+begin_src emacs-lisp
 (setq-default org-roam-capture-templates '(("d" "default" plain
   (function org-roam-capture--get-point)
-  "%?" :file-name "notes/%<%Y%m%d%H%M%S>-${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
+  "%?" :file-name "exocortex/notes/%<%Y%m%d%H%M%S>-${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
 " :unnarrowed t)))
 #+end_src
 
@@ -1647,15 +1653,15 @@ Define custom key bindings.
 ** Windows and Frames
 Basic key bindings to play around with frames and window. Binding Delete frame defaulted at  =C-x 5 0= to =C-x w=
 
-|----------------+------------------|
-| Action         | Key Binding      |
-|----------------+------------------|
-| Delete Frame   | =C-x w=          |
+|----------------+--------------|
+| Action         | Key Binding  |
+|----------------+--------------|
+| Delete Frame   | =C-x w=        |
 | Increase Font  | =C-+=, =C-x C-== |
-| Decrease Font  | =C--=            |
+| Decrease Font  | =C--=          |
 | Forward Window | =s->=, =s-'=     |
-| Prev Window    | =s-<=            |
-|----------------+------------------|
+| Prev Window    | =s-<=          |
+|----------------+--------------|
 
 
 #+begin_src emacs-lisp
