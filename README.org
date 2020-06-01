@@ -69,6 +69,7 @@ One require to rule them all
   (require 'org-roam)
   (require 'org-roam-server)
   (require 'deft)
+  (require 'wrap-region)
 #+end_src
 
 * Emacs startup, and others
@@ -641,6 +642,18 @@ Themes, look and feel
 (custom-theme-set-faces 'user `(org-document-title ((t (:foreground "#3282b8" :height 1.3 :underline nil)))))
 #+end_src
 
+Wrap region for word formatting
+#+begin_src emacs-lisp
+(wrap-region-add-wrappers
+   '(("*" "*" nil org-mode)
+     ("~" "~" nil org-mode)
+     ("/" "/" nil org-mode)
+     ("=" "=" "+" org-mode)
+     ("_" "_" nil org-mode)
+     ("`" "`" nil prog-mode)
+     ("$" "$" nil (org-mode latex-mode))))
+#+end_src
+
 ** Exo-cortex
 A place to store and remember everything that I can't burden my brain with thinking about. 
 *** File Organization
@@ -1020,7 +1033,7 @@ Org-ref Files
 Org-ref header format to support PDF interleaving
 
 #+begin_src emacs-lisp
-  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} : ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n")
+  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} :: ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n")
 #+end_src
 
 ** Org roam
@@ -1035,7 +1048,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+begin_src emacs-lisp
   (setq-default org-roam-capture-templates '(("d" "default" plain
     (function org-roam-capture--get-point)
-    "%?" :file-name "notes/${slug}" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
+    "%?" :file-name "notes/%<%Y%m%d%H%M%S>" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
   " :unnarrowed t)
   ;; ("b" "bookends" plain (function org-roam-capture--get-point)
   ;;            "- tags :: [[open-ext:bookends://sonnysoftware.com/${bid}][Bookends link]]\n- reference :: ${fcite}\n\n%?"
