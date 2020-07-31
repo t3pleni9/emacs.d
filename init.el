@@ -34,7 +34,7 @@
                   helm-company markdown-mode+ ssh jupyter dockerfile-mode csv-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
-                  unicode-fonts deft org-roam-server))
+                  unicode-fonts deft org-roam-server zone))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)

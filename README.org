@@ -162,6 +162,11 @@ Set the font to a comfortable level
 (set-frame-font "Hack 13" nil t)
 #+end_src
 
+Zone out 
+#+begin_src emacs-lisp
+  (zone-when-idle 120)
+#+end_src
+
 Unicode character support
 #+begin_src emacs-lisp
 (require 'unicode-fonts)
@@ -287,7 +292,7 @@ Launch Process with custom buffer name
 ** Global 
 
 #+begin_src emacs-lisp
-  (global-display-line-numbers-mode t)
+  ;; (global-display-line-numbers-mode t)
   (auto-save-visited-mode t)
   (global-visual-line-mode t)
 
@@ -307,7 +312,7 @@ Launch Process with custom buffer name
                 display-line-numbers-widen t
                 tab-width 2
                 indent-tabs-mode nil)
-   
+
   (display-time-mode 1)
   (org-roam-mode +1)
 #+end_src
@@ -415,6 +420,7 @@ Programming Mode Hooks
 (add-hook 'nxml-mode-hook #'yafolding-mode)
 (add-hook 'bibtex-mode-hook #'yafolding-mode)
 (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+(add-hook 'prog-mode-hook 'linum-mode)
 
 #+end_src
 
@@ -1005,6 +1011,12 @@ Add LATEX to path
 (setq bibtex-dialect 'biblatex)
 #+end_src
 
+Add to global tex-compile commands
+#+begin_src emacs-lisp
+(require 'tex-mode) 
+(add-to-list 'tex-compile-commands '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
+#+end_src
+
 ** Org ref
 Search through bibtex reference using helm reference
 #+begin_src emacs-lisp
@@ -1035,16 +1047,21 @@ Or Supply a lambda to tell it what to do
 
 Org-ref Files
 #+begin_src emacs-lisp
-(setq reftex-default-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
-      org-ref-default-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
-      org-ref-pdf-directory "~/Documents/org-notes/research/bibliography/bibtex-pdfs/")
+  (setq bib-files 
+    (mapcar 
+      (lambda (x) (concat "~/Documents/org-notes/research/bibliography/" x )) 
+      (directory-files "~/Documents/org-notes/research/bibliography/" nil "bib$")))
+
+  (setq reftex-default-bibliography bib-files
+        org-ref-default-bibliography bib-files
+        org-ref-pdf-directory "~/Documents/org-notes/research/bibliography/bibtex-pdfs/")
 
 #+end_src
 
 *** Bibtex
 
 #+begin_src emacs-lisp
-(setq bibtex-completion-bibliography '("~/Documents/org-notes/research/bibliography/references.bib" "~/Documents/org-notes/research/bibliography/references_2.bib" "~/Documents/org-notes/research/bibliography/references_3.bib")
+(setq bibtex-completion-bibliography bib-files
       bibtex-completion-library-path "~/Documents/org-notes/research/bibliography/bibtex-pdfs"
       bibtex-completion-notes-path "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
       bibtex-completion-pdf-field "File"
@@ -1887,8 +1904,8 @@ PDF View
 ** Audio / Multimedia
 Music Player
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c S") 'hydra-emms/body)
-(global-set-key (kbd "C-c s") 'hydra-spotify/body)
+(global-set-key (kbd "C-c s") 'hydra-emms/body)
+(global-set-key (kbd "C-c S") 'hydra-spotify/body)
 #+end_src
 
 |-----------------+-------------|
@@ -1915,7 +1932,12 @@ Pretty print JSON buffer
 Pytest keybinding in python mode
 #+begin_src emacs-lisp
 (define-key python-mode-map (kbd "C-c t") 'python-pytest-popup)
+(define-key elpy-mode-map (kbd "C-c C-t") 'python-pytest-file)
 #+end_src
+
+#+RESULTS:
+: python-pytest-file
+
 ** Password Manager
 #+begin_src emacs-lisp
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
