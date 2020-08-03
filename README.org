@@ -72,6 +72,7 @@ One require to rule them all
   (require 'wrap-region)
   (require 'zone)
   (require 'org-drill)
+  (require 'eshell-prompt-extras)
 
 #+end_src
 
@@ -290,6 +291,151 @@ Fix the mode-line to just the Track name
         (lambda nil
           (propertize " [♫]" 'face (list :foreground "#8080f0" :weight 'bold))))
 #+end_src
+
+** TRAMP
+#+begin_src emacs-lisp
+(defun add-ssh-agent-to-tramp ()
+  (cl-pushnew '("-A")
+              (cadr (assoc 'tramp-login-args
+                           ; if on Windows using Putty with Pageant,
+                           ; replace "ssh" with "plink"
+                           (assoc "ssh" tramp-methods)))
+              :test #'equal))
+(add-ssh-agent-to-tramp)
+#+end_src
+
+** eShell
+
+Pager setup
+
+#+begin_src emacs-lisp
+(setenv "PAGER" "cat")
+#+end_src
+
+Basic sanity setup
+#+begin_src emacs-lisp
+(setq eshell-save-history-on-exit t)
+(add-hook 'eshell-mode-hook
+            (lambda ()
+              (add-to-list 'eshell-visual-commands "ssh")
+              (add-to-list 'eshell-visual-commands "tail")
+              (add-to-list 'eshell-visual-commands "htop")))
+#+end_src
+
+
+GIT
+#+begin_src emacs-lisp
+(defun eshell/gst (&rest args)
+    (magit-status (pop args) nil)
+    (eshell/echo))   ;; The echo command suppresses output
+
+(defun my/epe-git-staged ()
+  "Return number of staged files"
+  (if (string-match "0"
+                    (shell-command-to-string "git diff --cached --numstat | wc -l"))
+      "" epe-git-dirty-char))
+
+(defun my/epe-git-dirty ()
+  "Return number of staged files"
+  (if (string-match "0"
+                    (shell-command-to-string "git diff --numstat | wc -l"))
+      "" epe-git-dirty-char))
+
+(defun my/epe-git-untracked ()
+  (if (epe-git-untracked-p) epe-git-untracked-char ""))
+
+(defun my/git-commit-count () 
+  (let ((unpushed (epe-git-unpushed-number)))
+                 (if (= unpushed 0) ""
+                   (concat ":" (number-to-string unpushed)))))
+
+#+end_src
+
+Eshell [[https://www.masteringemacs.org/article/complete-guide-mastering-eshell#to-pseudo-devices][re-directions]]
+
+
+The usual redirection rules like overwrite (~>~) and append (~>>~) apply here.
+
+~echo $PATH > #<buffer *scratch*>~ 
+To Buffers
+
+~/dev/eshell~
+Prints the output interactively to Eshell.
+
+~/dev/null~
+Sends the output to the NULL device.
+
+~/dev/clip~
+Sends the output to the clipboard.
+
+~/dev/kill~
+Sends the output to the kill ring.
+
+
+
+Eshell theme and formating
+
+#+begin_src emacs-lisp
+(defun my/epe-theme-lambda ()
+  "A eshell-prompt lambda theme."
+  (setq eshell-prompt-regexp "^[^#\nλ]*[#λ] ")
+  (concat
+   (when (epe-remote-p)
+     (epe-colorize-with-face
+      (concat (epe-remote-user) "@" (epe-remote-host) " ")
+      'epe-remote-face))
+   (let ((env-current-name (or (get-venv-name)
+                               (bound-and-true-p conda-env-current-name))))
+     (when (and epe-show-python-info (bound-and-true-p env-current-name))
+       (epe-colorize-with-face (concat "(" env-current-name ") ") 'epe-venv-face)))
+   (let ((f 'epe-abbrev-dir-name))
+     (epe-colorize-with-face (funcall f (eshell/pwd)) 'epe-dir-face))
+   (when (epe-git-p)
+     (concat " ["
+      (epe-colorize-with-face (epe-git-branch) 'epe-git-face) " "
+      (epe-colorize-with-face (my/epe-git-staged) '(:foreground "#3C3"))
+      (epe-colorize-with-face (my/epe-git-dirty) '(:foreground "Orange"))
+      (epe-colorize-with-face (my/epe-git-untracked) '(:foreground "#C33"))
+      (epe-colorize-with-face (my/git-commit-count) 'epe-git-face) "]"))
+   (epe-colorize-with-face " λ" 'epe-symbol-face)
+   (epe-colorize-with-face (if (= (user-uid) 0) "#" "") 'epe-sudo-symbol-face)
+   " "))
+#+end_src
+
+#+begin_src emacs-lisp
+  (with-eval-after-load "esh-opt"
+    (setq eshell-highlight-prompt nil
+          eshell-prompt-function 'my/epe-theme-lambda
+          epe-git-dirty-char "●"
+          epe-git-untracked-char "●"))
+
+#+end_src
+
+
+Wrapper function to update ~venv-current-name~ whenever venv is activated or deactivate
+#+begin_src emacs-lisp
+  (defun my/pyvenv-workon () 
+    (interactive)
+    (call-interactively #'pyvenv-workon)
+    (setq venv-current-name (get-venv-name)))
+
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun my/pyvenv-deactivate () 
+    (interactive)
+    (call-interactively #'pyvenv-deactivate)
+    (setq venv-current-name (get-venv-name)))
+
+#+end_src
+
+
+#+begin_src emacs-lisp
+(defun get-venv-name ()
+  (let* ((virtual-env (split-string (car process-environment) "=")))
+	 (if (equalp (first virtual-env) "VIRTUAL_ENV") (car (last (split-string (car (last virtual-env)) "/"))))))
+#+end_src
+
 
 ** Functions
 Launch Process with custom buffer name
@@ -1816,7 +1962,8 @@ Move line up and down
 *** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
-(global-set-key (kbd "s-`") 'vterm)
+  ;; (global-set-key (kbd "s-`") 'vterm)
+  (global-set-key (kbd "s-`") (lambda () (interactive) (eshell 'N)))
 #+end_src
 
 ** Basic Text editing
