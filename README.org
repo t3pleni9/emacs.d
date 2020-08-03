@@ -70,6 +70,9 @@ One require to rule them all
   (require 'org-roam-server)
   (require 'deft)
   (require 'wrap-region)
+  (require 'zone)
+  (require 'org-drill)
+
 #+end_src
 
 * Emacs startup, and others
@@ -185,6 +188,16 @@ Don't kill emacs without confirming
 Show alerts in notifier
 #+begin_src emacs-lisp
 (setq alert-default-style 'osx-notifier)
+#+end_src
+
+Easier marking for TMM
+#+begin_src emacs-lisp
+(defun push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region
+   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
 #+end_src
 
 
@@ -1834,6 +1847,11 @@ Track the last edited location
 Define word at point 
 #+begin_src emacs-lisp
 (global-set-key (kbd "M-#") 'lookup-word)
+#+end_src
+
+Push point to mark ring
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-`") 'push-mark-no-activate)
 #+end_src
 
 ** GIT
