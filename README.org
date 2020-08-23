@@ -74,7 +74,9 @@ One require to rule them all
   (require 'org-drill)
   (require 'eshell-prompt-extras)
   (require 'smartscan)
-
+  (require 'org-notify nil :noerror)
+  (require 'org-present)
+  (require 'eww)
 #+end_src
 
 * Emacs startup, and others
@@ -478,6 +480,7 @@ Launch Process with custom buffer name
 
   (display-time-mode 1)
   (org-roam-mode +1)
+  (org-notify-start)
 #+end_src
 
 Disable line numbers in some buffers
@@ -1252,6 +1255,12 @@ Interleave notes folder
 (setq interleave-org-notes-dir-list (list bibtex-completion-notes-path "."))
 #+end_src
 
+Interleave split lines
+
+#+begin_src emacs-lisp
+(setq interleave-split-lines 60)
+#+end_src
+
 ** Org roam
 Org-Roam setup to facilitate note taking for the research
 #+begin_src emacs-lisp
@@ -1580,7 +1589,7 @@ Play a url at point using mpv
   (defun my/play-with-mpv ()
     "Visit the current entry in mpv."
     (interactive)
-    (let ((link (elfeed-get-link-at-point)))
+    (let ((link (url-get-url-at-point)))
           (when link
             (message "Sent to mpv: %s" link)
             (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))))
@@ -1608,9 +1617,51 @@ Setup for managing IRC
     (message "Process launched in *tor* buffer."))
 #+end_src
 
-** TODO EWW
-Set the default browser as EWW
-*** TODO Setup firefox
+** EWW
+Make EWW default
+#+begin_src emacs-lisp
+(setq browse-url-browser-function '((".*google.*maps.*" . browse-url-generic)
+          ;; Github goes to firefox, but not gist
+          ("http.*\/\/github.com" . browse-url-generic)
+          ("groups.google.com" . browse-url-generic)
+          ("docs.google.com" . browse-url-generic)
+          ("melpa.org" . browse-url-generic)
+          ("build.*\.elastic.co" . browse-url-generic)
+          (".*-ci\.elastic.co" . browse-url-generic)
+          ("gradle-enterprise.elastic.co" . browse-url-generic)
+          ("internal-ci\.elastic\.co" . browse-url-generic)
+          ("zendesk\.com" . browse-url-generic)
+          ("salesforce\.com" . browse-url-generic)
+          ("stackoverflow\.com" . browse-url-generic)
+          ("apache\.org\/jira" . browse-url-generic)
+          ("thepoachedegg\.net" . browse-url-generic)
+          ("zoom.us" . browse-url-generic)
+          ("t.co" . browse-url-generic)
+          ("twitter.com" . browse-url-generic)
+          ("\/\/a.co" . browse-url-generic)
+          ("youtube.com" . browse-url-generic)
+          ("amazon.com" . browse-url-generic)
+          ("slideshare.net" . browse-url-generic)
+          ("." . eww-browse-url)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (add-hook 'eww-mode-hook 'visual-line-mode)
+  (add-hook 'eww-mode-hook 'toggle-word-wrap)
+  (setq eww-header-line-format nil
+        shr-width 80
+        shr-use-fonts nil
+        shr-color-visible-distance-min 10
+        shr-color-visible-luminance-min 80)
+
+#+end_src
+
+*** Setup firefox
+#+begin_src emacs-lisp
+  (setq shr-external-browser 'browse-url-generic)
+  (setq browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+#+end_src
+
 * Custom Configurations and Functions
 ** GIT
 Magit and git-gutter configurations
@@ -2119,15 +2170,20 @@ Pytest keybinding in python mode
 (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
 (define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin)
 #+end_src
-** Social Feed
+** EWW / Social Feed
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-c f") 'hydra-social-feed/body)
+(global-set-key (kbd "C-c O") 'my/play-with-mpv)
 #+end_src
 
 Custom open links at point
 #+begin_src emacs-lisp
 (define-key elfeed-show-mode-map (kbd "o") 'my/elfeed-show-visit)
-(define-key elfeed-show-mode-map (kbd "C-c O") 'my/play-with-mpv)
+#+end_src
+
+#+begin_src emacs-lisp
+  (define-key eww-mode-map "j" 'next-line)
+  (define-key eww-mode-map "k" 'previous-line)
 #+end_src
 
 *** Elfeed bookmarks and custom keymaps
