@@ -1323,7 +1323,22 @@ Deft new file name convention
         (case-fn . downcase)))
 #+end_src
 
+** Org Present
+#+begin_src emacs-lisp
+  (add-hook 'org-present-mode-hook
+            (lambda ()
+              (org-present-big)
+              (org-display-inline-images)
+              (org-present-read-only)))
+  (add-hook 'org-present-mode-quit-hook
+            (lambda ()
+              (org-present-small)
+              (org-remove-inline-images)
+              (org-present-read-write)))
+#+end_src
+
 ** Capture Templates                                        :non_exec_block:
+
 #+begin_src emacs-lisp
 (setq org-capture-templates
       '(
@@ -1818,33 +1833,32 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 (defhydra hydra-helm (:color blue)
   "
 ^
-^Helm^              ^Browse^                ^Python^                    ^Others^                
-^────^──────────────^──────^────────────────^──────^────────────────────^──────^─────────────── 
+^Helm^              ^Browse^                ^Python^                    ^Org^                
+^────^──────────────^──────^────────────────^──────^────────────────────^───^─────────────── 
 _q_ quit            _i_ imenu               _c_ Conda Activate          _t_ Trello
-_r_ resume          _s_ swoop               _d_ Conda Deactivate
-^^                  _S_ swoop all           _n_ Jupyter Notebooks
+_r_ resume          _s_ swoop               _d_ Conda Deactivate        _I_ Clock In
+^^                  _S_ swoop all           _n_ Jupyter Notebooks       _O_ Clock Out
 ^^                  _k_ kill-ring           _p_ PyBuild
 ^^                  _b_ org brain           ^^
 ^^                  _m_ Mark Rings          ^^
 ^^                  ^^
 "
   ("q" nil)
+  ("r" helm-resume)
   ("i" helm-imenu)
   ("b" org-brain-visualize)
   ("m" helm-all-mark-rings)
   ("s" helm-swoop)
   ("S" helm-multi-swoop-all)
   ("k" helm-show-kill-ring)
-  ("r" helm-resume)
   ("n" ein:notebooklist-open)
   ("c" pyvenv-workon)
   ("p" py-build)
+  ("d" pyvenv-deactivate)
   ("t" hydra-org-trello/body)
-  ("d" pyvenv-deactivate))
+  ("I" org-clock-in)
+  ("O" org-clock-out))
 #+end_src
-
-#+RESULTS:
-: hydra-helm/body
 
 ** Org
 *** org-ref
@@ -1883,7 +1897,7 @@ Hydra bindings for org-trello
 (defhydra hydra-org-trello (:color blue)
   "
   ^Metadata ^                   ^Board^                        ^Card^
-  ^─────────^───────────────────^────^────────────────────────-^────^─────────────
+  ^─────────^───────────────────^────^─────────────────────────^────^─────────────
   _i_ Install Board Metadata    _s_ Sync Buffer                _c_ Sync Card
   _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Open card in browser
   _q_ Quit                      _l_ Show board labels          _a_ Signup on Card
@@ -2088,13 +2102,14 @@ Just kill the current buffer without asking too many questions
 Have helm handle most of the things around
 
 #+begin_src emacs-lisp
-(global-set-key (kbd "M-x") #'helm-M-x)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f") #'helm-find-files)
-(global-set-key (kbd "C-c h") 'hydra-helm/body)
-(global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
-(global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+  (global-set-key (kbd "C-c h") 'hydra-helm/body)
+  (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
+  (global-set-key (kbd "C-x b") 'helm-mini)
+  ;; (global-set-key (kbd "C-x C-q") 'view-mode)
 #+end_src
 
 ** Org
@@ -2208,11 +2223,7 @@ Custom open links at point
 #+end_src
 
 ** View Mode
-Disable view-mode instead of closing buffer on pressing ~C-q~
-
-#+begin_src emacs-lisp
-(define-key view-mode-map (kbd "C-q") 'read-only-mode)
-#+end_src
+Disable view-mode using ~e~  (=view-exit=)
 
 Remap movement keys to ~b~, ~f~, ~n~ and ~p~
 #+begin_src emacs-lisp

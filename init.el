@@ -10,10 +10,6 @@
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
-(add-to-list 'load-path "~/.emacs.d/external/")
-(add-to-list 'load-path "~/.emacs.d/external/emacs-totp")
-(add-to-list 'load-path "~/.emacs.d/external/py-build")
-
 
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -34,7 +30,8 @@
                   helm-company markdown-mode+ ssh jupyter dockerfile-mode csv-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
-                  unicode-fonts deft org-roam-server zone eshell-prompt-extras smartscan))
+                  unicode-fonts deft org-roam-server zone eshell-prompt-extras smartscan
+                  org-present))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -45,6 +42,10 @@
 
 
 ;; init.el ends here
+
+(add-to-list 'load-path "~/.emacs.d/external/")
+(add-to-list 'load-path "~/.emacs.d/external/emacs-totp")
+(add-to-list 'load-path "~/.emacs.d/external/py-build")
 (setq custom-file "~/.emacs.d/external/custom-variables.el")
 (load custom-file)
 
