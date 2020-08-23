@@ -1591,10 +1591,12 @@ Play a url at point using mpv
     (interactive)
     (let ((link (url-get-url-at-point)))
           (when link
-            (message "Sent to mpv: %s" link)
-            (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))))
-#+end_src
+            (browse-using-mpv link))))
 
+(defun browse-using-mpv (link &rest x)  
+  (message "Sent to mpv: %s" link)
+  (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))
+#+end_src
 
 ** IRC
 Setup for managing IRC 
@@ -1620,6 +1622,7 @@ Setup for managing IRC
 ** EWW
 Make EWW default
 #+begin_src emacs-lisp
+(setq browse-using-mpv "mpv")
 (setq browse-url-browser-function '((".*google.*maps.*" . browse-url-generic)
           ;; Github goes to firefox, but not gist
           ("http.*\/\/github.com" . browse-url-generic)
@@ -1639,7 +1642,8 @@ Make EWW default
           ("t.co" . browse-url-generic)
           ("twitter.com" . browse-url-generic)
           ("\/\/a.co" . browse-url-generic)
-          ("youtube.com" . browse-url-generic)
+          ("youtube.com" . browse-using-mpv)
+          ("youtu.be" . browse-using-mpv)
           ("amazon.com" . browse-url-generic)
           ("slideshare.net" . browse-url-generic)
           ("." . eww-browse-url)))
