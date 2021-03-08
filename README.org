@@ -24,7 +24,8 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
 - https://github.com/t3pleni9/emacs-totp.git :: Support of Time based OTP (TOTP) for org-password
 - https://gitlab.com/t3pleni9/py-build.git :: Integrates PyBuild with  projectile and anaconda-venv
 
-* Require
+* TODO Require
+- [ ] Need to handle personal git projects
 One require to rule them all
 #+begin_src emacs-lisp
   (require 'org)
@@ -174,10 +175,10 @@ Dired stuffs
 (setq dired-dwim-target t)
 #+end_src
 
-Zone out 
-#+begin_src emacs-lisp
-  (zone-when-idle 120)
-#+end_src
+# Zone out 
+# #+begin_src emacs-lisp
+#   (zone-when-idle 600)
+# #+end_src
 
 Unicode character support
 #+begin_src emacs-lisp
@@ -233,7 +234,8 @@ Have time displayed in status bar
 #+end_src
 
 ** Display battery
-#+begin_src emacs-lisp
+Disabled as it has started taking time to update
+#+begin_comment
     (require 'battery)
     (defun my/battery-mode-line () (let* ((bat (read (cdr (assoc 112 (funcall battery-status-function)))))
         (index (cl-position-if (lambda(e) (> bat e)) '(85 75 50 35 15 7 2 -1)))
@@ -241,7 +243,7 @@ Have time displayed in status bar
         (symbol (nth index '("[+++]" "[++-]" "[++ ]" "[+- ]" "[+  ]" "[-  ]" "[!  ]" "[.  ]")))
         (color (nth index (mapcar (lambda(c) (apply 'color-rgb-to-hex c)) (color-gradient '(0.3 1 0.2) '(1 0.2 0.1) 8)))))
       (propertize (concat symbol charging " " (number-to-string bat) "%% ") 'face (list :foreground color :weight 'bold))))
-#+end_src
+#+end_comment
 
 ** Python
 Setup python venv with conda
@@ -580,13 +582,14 @@ Standard Indent value to 2
 
 Programming Mode Hooks
 #+begin_src emacs-lisp
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'prog-mode-hook #'yafolding-mode)
-(add-hook 'json-mode-hook #'yafolding-mode)
-(add-hook 'nxml-mode-hook #'yafolding-mode)
-(add-hook 'bibtex-mode-hook #'yafolding-mode)
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-(add-hook 'prog-mode-hook 'linum-mode)
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'prog-mode-hook #'yafolding-mode)
+  (add-hook 'json-mode-hook #'yafolding-mode)
+  (add-hook 'nxml-mode-hook #'yafolding-mode)
+  (add-hook 'bibtex-mode-hook #'yafolding-mode)
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
+  ;; (add-hook 'prog-mode-hook 'linum-mode)
+
 
 #+end_src
 
@@ -920,17 +923,17 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
   (setq org-todo-keywords
         '((sequence "TODO(t)" "SCHEDULED(s!)" "HOLD(h!)"  "INPROGRESS(i!)" "|" "DONE(d!)" "CANCELLED(c!)" )
           (sequence "|" "POSTPONED(P!)" "RE-VISIT(v)")
-          (sequence "⌛ HOLD" "⌚ INPROGRESS" "|")))
+          (sequence "⌛HOLD" "⌚INPROGRESS" "|")))
 
   (setq org-todo-keyword-faces
         '(("TODO" . (:foreground "#ff39a3" :weight bold))
           ("SCHEDULED" . (:foreground "#81D8D1"  :weight bold))
           ("HOLD" . (:foreground "#ff9a00" :weight bold))
           ("SHELVED" . (:foreground "#ff9a00" :weight bold))
-          ("⌛ HOLD" . (:foreground "#ff9a00" :weight bold))
+          ("⌛HOLD" . (:foreground "#ff9a00" :weight bold))
           ("INPROGRESS" . (:foreground "#ffdd00" :weight bold))
           ("READING" . (:foreground "#ffdd00" :weight bold))
-          ("⌚ INPROGRESS" . (:foreground "#ffdd00" :weight bold))
+          ("⌚INPROGRESS" . (:foreground "#ffdd00" :weight bold))
           ("CANCELLED" . (:foreground "white" :background "#4d4d4d" :weight bold))
           ("RE-VISIT" . (:foreground "#88ddee" :background "#454545" :weight bold))
           ("POSTPONED" . "#008080")))
@@ -1077,12 +1080,12 @@ Log on close
 (setq org-log-done 'time)
 #+end_src
 Use ~C-c C-c C-i~ to clock in. This is to support an independent flow of ~INPROGRESS~ without clocking.
-Automatically pause the clock when the task moves to ~HOLD~ from ~⌚ INPROGRESS~
+Automatically pause the clock when the task moves to ~HOLD~ from ~⌚INPROGRESS~
 #+begin_src emacs-lisp
   (defun my/org-clock-in-if-inprogress ()
     "Pause the clock when task goes into HOLD mode."
     (when (and (string= org-state "HOLD")
-               (string= org-last-state "⌚ INPROGRESS"))
+               (string= org-last-state "⌚INPROGRESS"))
       (org-clock-out)))
 
   (add-hook 'org-after-todo-state-change-hook
@@ -1095,8 +1098,8 @@ Custom
                 '(:block day :maxlevel 3 :scope agenda :link t :compact t :formula %
                          :step day :fileskip0 t :stepskip0 t :narrow 80
                          :properties ("CLOCKSUM" "CLOCKSUM_T" "TODO"))
-                org-clock-in-switch-to-state "⌚ INPROGRESS"
-                org-clock-out-switch-to-state "⌛ HOLD"
+                org-clock-in-switch-to-state "⌚INPROGRESS"
+                org-clock-out-switch-to-state "⌛HOLD"
                 org-clock-continuously nil
                 org-clock-persist-query-resume nil
                 org-clock-out-remove-zero-time-clocks t
@@ -1404,7 +1407,7 @@ Also the home tasks
 ("j" "Journal")
 ("jt" "Today" entry
 (file+datetree+prompt journal-file-path)
-   "* TODO %K %a\n%i\n%?\n")
+   "* TODO %K %a\n%i\n%?")
 ("jj" "Journal" entry
 (file+datetree+prompt journal-file-path)
    "* %U %K - %a\n%i\n%?\n")
@@ -1638,30 +1641,9 @@ Setup for managing IRC
 Make EWW default
 #+begin_src emacs-lisp
 (setq browse-using-mpv "mpv")
-(setq browse-url-browser-function '((".*google.*maps.*" . browse-url-generic)
-          ;; Github goes to firefox, but not gist
-          ("http.*\/\/github.com" . browse-url-generic)
-          ("groups.google.com" . browse-url-generic)
-          ("docs.google.com" . browse-url-generic)
-          ("melpa.org" . browse-url-generic)
-          ("build.*\.elastic.co" . browse-url-generic)
-          (".*-ci\.elastic.co" . browse-url-generic)
-          ("gradle-enterprise.elastic.co" . browse-url-generic)
-          ("internal-ci\.elastic\.co" . browse-url-generic)
-          ("zendesk\.com" . browse-url-generic)
-          ("salesforce\.com" . browse-url-generic)
-          ("stackoverflow\.com" . browse-url-generic)
-          ("apache\.org\/jira" . browse-url-generic)
-          ("thepoachedegg\.net" . browse-url-generic)
-          ("zoom.us" . browse-url-generic)
-          ("t.co" . browse-url-generic)
-          ("twitter.com" . browse-url-generic)
-          ("\/\/a.co" . browse-url-generic)
-          ("youtube.com" . browse-using-mpv)
+(setq browse-url-browser-function '(("youtube.com" . browse-using-mpv)
           ("youtu.be" . browse-using-mpv)
-          ("amazon.com" . browse-url-generic)
-          ("slideshare.net" . browse-url-generic)
-          ("." . eww-browse-url)))
+          ("." . browse-url-generic)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2017,6 +1999,7 @@ Basic key bindings to play around with frames and window. Binding Delete frame d
 #+begin_src emacs-lisp
 (global-set-key (kbd "C-x w") 'delete-frame)
 (global-set-key (kbd "C-x C-b") 'switch-to-buffer)
+(global-set-key (kbd "C-x C-d") 'dired)
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
@@ -2109,7 +2092,7 @@ Have helm handle most of the things around
   (global-set-key (kbd "C-c h") 'hydra-helm/body)
   (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
   (global-set-key (kbd "C-x b") 'helm-mini)
-  ;; (global-set-key (kbd "C-x C-q") 'view-mode)
+  (define-key dired-mode-map  (kbd "C-x C-q") 'wdired-change-to-wdired-mode)
 #+end_src
 
 ** Org
