@@ -1196,13 +1196,14 @@ List of global org files
    'org-babel-load-languages
    '(
      (python . t)
+     (R . t)
      (prolog . t)
      (lisp . t)
      (shell . t)
      (ein . t)))
 
   (defun my-org-confirm-babel-evaluate (lang body)
-    (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh"))))
+    (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh" "R"))))
 
   (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
