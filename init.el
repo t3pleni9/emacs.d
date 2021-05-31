@@ -30,8 +30,8 @@
                   helm-company markdown-mode+ ssh jupyter dockerfile-mode csv-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
-                  unicode-fonts deft org-roam-server zone eshell-prompt-extras smartscan
-                  org-present))
+                  unicode-fonts deft org-roam-server zone eshell-prompt-extras
+                  org-present pdf-view-restore))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)

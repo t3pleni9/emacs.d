@@ -78,6 +78,7 @@ One require to rule them all
   (require 'org-notify nil :noerror)
   (require 'org-present)
   (require 'eww)
+  (require 'pdf-view-restore)
 #+end_src
 
 * Emacs startup, and others
@@ -1007,9 +1008,26 @@ Dark Mode always
 (setq-default pdf-view-display-size 'fit-page)
 #+end_src
 
+Remember the last read page
+#+begin_src emacs-lisp
+(add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
+(setq pdf-view-restore-filename "~/.emacs.d/.pdf-view-restore")
+#+end_src
+
 ** Org-agenda
+Get a view of month ahead instead of the default 2 weeks.
+#+begin_src emacs-lisp
+(setq-default org-deadline-warning-days 30)
+#+end_src
+
 Org-super-agenda
 #+begin_src emacs-lisp
+(defun get-fortnight-date ()
+  (let* ((now (decode-time))
+         (fortnight (copy-sequence now)))
+  (cl-incf (nth 3 fortnight) 14)
+  (format-time-string "%Y-%m-%d" (apply #'encode-time fortnight))))
+(let (target-date (get-fortnight-date))
 (setq org-agenda-time-grid '((daily today require-timed)
  (800 1000 1200 1400 1600 1800 2000)
  "......" "----------------")
