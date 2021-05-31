@@ -1059,25 +1059,24 @@ Org-super-agenda
                     :order 98)
              (:name "Papers"
                     :tag "@article"
-                    :order 8)
+                    :order 2)
              (:name "Overdue"
                     :deadline past)
              (:name "Bills and Payments"
                     :tag "@bills_and_payments")
              (:name "Important"
                     :priority ("A" "B"))
+             (:name "Inprogress"
+                    :todo "INPROGRESS")
              (:name "Due soon"
                     :deadline future)
-             (:name "Inprogress"
-                    :todo "INPROGRESS"
-                    :order 6)
              (:name "On Hold"
                     :todo "HOLD"
                     :order 7)
              (:name "Shopping List"
                     :tag "@shopping_list")
              (:name "Scheduled earlier"
-                    :scheduled past)))
+                    :scheduled past))))
 
 #+end_src
 
