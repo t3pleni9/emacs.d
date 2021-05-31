@@ -31,3 +31,4 @@ org-clock-save.el
 /README.el
 /var
 /tutorial
+/.pdf-view-restore
