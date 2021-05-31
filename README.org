@@ -455,6 +455,40 @@ Launch Process with custom buffer name
 )
 #+end_src
 
+** Custom Minor Modes
+Sensitive Mode
+#+begin_src emacs-lisp
+  (setq sensitive-extensions '())
+  (define-minor-mode sensitive-mode
+    "For sensitive files like password lists.
+  It disables backup creation and auto saving.
+
+  With no argument, this command toggles the mode.
+  Non-null prefix argument turns on the mode.
+  Null prefix argument turns off the mode."
+    ;; The initial value.
+    nil
+    ;; The indicator for the mode line.
+    " Sensitive"
+    ;; The minor mode bindings.
+    nil
+    (if (symbol-value sensitive-mode)
+        (progn
+    ;; disable backups
+    (set (make-local-variable 'backup-inhibited) t)	
+    ;; disable auto-save
+    (if auto-save-default
+            (progn
+              (auto-save-mode -1)
+              (auto-save-visited-mode -1))))
+      ;resort to default value of backup-inhibited
+      (kill-local-variable 'backup-inhibited)
+      (if auto-save-default
+            (progn
+              (auto-save-mode t)
+              (auto-save-visited-mode t)))))
+#+end_src
+
 * Global Modes
 ** Global 
 
@@ -748,6 +782,7 @@ If the underlying api stops working Use =(browse-web (format "https://api.dictio
 
 ** Org
 #+begin_src emacs-lisp
+  (add-to-list 'sensitive-extensions "gpg")
   (add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.trello$" . org-mode))
@@ -765,6 +800,11 @@ If the underlying api stops working Use =(browse-web (format "https://api.dictio
   (add-hook 'org-mode-hook 'writegood-mode)
   (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
   (add-hook 'org-mode-hook 'org-beamer-mode)
+  (add-hook 'org-mode-hook
+          (lambda ()
+            (let ((filename (buffer-file-name (current-buffer))))
+              (if (and filename (member (file-name-extension filename) sensitive-extensions))
+              (sensitive-mode) (sensitive-mode -1)))))
 #+end_src
 
 ** Dumb Jump
