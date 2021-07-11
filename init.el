@@ -31,7 +31,7 @@
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
                   unicode-fonts deft org-roam-server zone eshell-prompt-extras
-                  org-present pdf-view-restore))
+                  org-present pdf-view-restore ob-elixir elixir-mode))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)

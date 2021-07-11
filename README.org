@@ -79,6 +79,9 @@ One require to rule them all
   (require 'org-present)
   (require 'eww)
   (require 'pdf-view-restore)
+  (require 'org-habit)
+  (require 'ob-elixir)
+  (require 'elixir-mode)
 #+end_src
 
 * Emacs startup, and others
@@ -1004,9 +1007,12 @@ Fine grained zoom with + and - to 10%
 Dark Mode always
 #+begin_src emacs-lisp
 (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
-(setq pdf-view-midnight-colors '("#FDF4C1" . "#282828"))
+(setq pdf-view-midnight-colors '("#AAAA99" . "#282828"))
 (setq-default pdf-view-display-size 'fit-page)
 #+end_src
+
+#+RESULTS:
+: fit-page
 
 Remember the last read page
 #+begin_src emacs-lisp
@@ -1018,6 +1024,7 @@ Remember the last read page
 Get a view of month ahead instead of the default 2 weeks.
 #+begin_src emacs-lisp
 (setq-default org-deadline-warning-days 30)
+(setq-default org-habit-graph-column 80)
 #+end_src
 
 Org-super-agenda
@@ -1048,18 +1055,17 @@ Org-super-agenda
                     :scheduled today)
              (:name "Due Today"
                     :deadline today)
+             (:name "Habit Tracker "
+                    :habit t)
+             (:name "Papers"
+                    :tag "@article")
              (:name "Books"
-                    :tag "@book"
-                    :order 8)
+                    :tag "@book")
              (:name "Courses"
-                    :tag "@course"
-                    :order 8)
+                    :tag "@course")
              (:name "Birthdays & Anniversaries"
                     :tag ("@anniversary" "@birthday")
                     :order 98)
-             (:name "Papers"
-                    :tag "@article"
-                    :order 2)
              (:name "Overdue"
                     :deadline past)
              (:name "Bills and Payments"
@@ -1200,14 +1206,18 @@ List of global org files
      (prolog . t)
      (lisp . t)
      (shell . t)
+     (elixir . t)
      (ein . t)))
 
   (defun my-org-confirm-babel-evaluate (lang body)
-    (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh" "R"))))
+    (not (member lang '("python" "lisp" "emacs-lisp" "clojure" "prolog" "sh" "R" "elixir"))))
 
   (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 #+end_src
+
+#+RESULTS:
+: my-org-confirm-babel-evaluate
 
 ** Org latex
 Add LATEX to path
@@ -1410,7 +1420,7 @@ Deft new file name convention
 ("t" "Todos")
 ("tt" "Task [capture]" entry
 	 (file+headline capture-file-path "Tasks")
-	 "* TODO %K - %a\n%i\n%?\n")
+	 "* TODO %K - %a\n:PROPERTIES:\n:Effort:   %^{Effort}\n:END:\nSCHEDULED: %t\n%i\n%?\n")
 #+end_src
 
 Also the home tasks
@@ -1465,7 +1475,7 @@ Also the home tasks
 ("j" "Journal")
 ("jt" "Today" entry
 (file+datetree+prompt journal-file-path)
-   "* TODO %K %a\n%i\n%?")
+   "* TODO %K %a\n:PROPERTIES:\n:Effort:   %^{Effort}\n:END:\nSCHEDULED: %t\n%i\n%?")
 ("jj" "Journal" entry
 (file+datetree+prompt journal-file-path)
    "* %U %K - %a\n%i\n%?\n")
