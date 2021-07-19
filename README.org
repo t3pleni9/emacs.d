@@ -514,12 +514,12 @@ Sensitive Mode
   (customize-set-variable 'helm-ff-lynx-style-map t)
 
   (setq-default display-line-numbers-width 2
-                display-line-numbers-widen t
-                tab-width 2
-                indent-tabs-mode nil)
+		display-line-numbers-widen t
+		tab-width 2
+		indent-tabs-mode nil)
 
   (display-time-mode 1)
-  (org-roam-mode +1)
+  (org-roam-mode 1)
   (org-notify-start)
 #+end_src
 
@@ -804,6 +804,7 @@ If the underlying api stops working Use =(browse-web (format "https://api.dictio
   (add-hook 'org-mode-hook 'writegood-mode)
   (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
   (add-hook 'org-mode-hook 'org-beamer-mode)
+  (add-hook 'org-mode-hook 'org-bullets-mode)
   (add-hook 'org-mode-hook
           (lambda ()
             (let ((filename (buffer-file-name (current-buffer))))
@@ -991,11 +992,9 @@ Install PDF tools
 
 Always open PDF inside EMACS itself
 #+begin_src emacs-lisp
-(eval-after-load 'org '(require 'org-pdfview))
 
 (add-to-list 'org-file-apps 
-             '("\\.pdf\\'" . (lambda (file link)
-                                     (org-pdfview-open link))))
+             '("\\.pdf\\'" . emacs))
 (add-to-list 'auto-mode-alist '("\\.ps\\'" . doc-view-mode))
 #+end_src
 
@@ -1006,9 +1005,10 @@ Fine grained zoom with + and - to 10%
 
 Dark Mode always
 #+begin_src emacs-lisp
-(add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
-(setq pdf-view-midnight-colors '("#AAAA99" . "#282828"))
-(setq-default pdf-view-display-size 'fit-page)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode)
+  (setq-default pdf-view-display-size 'fit-width)
+  (setq pdf-view-midnight-colors '("#AAAA99" . "#282828"))
+  (setq-default pdf-view-display-size 'fit-page)
 #+end_src
 
 #+RESULTS:
@@ -1168,6 +1168,47 @@ Custom
                 org-clock-out-remove-zero-time-clocks t
                 org-clock-report-include-clocking-task t)
 #+end_src
+
+*** TODO Deadlines based on Effort estimation
+#+begin_src emacs-lisp
+(defun org-schedule-effort ()
+(interactive)
+  (save-excursion
+    (org-back-to-heading t)
+    (let* (
+        (element (org-element-at-point))
+        (effort (org-element-property :Effort element))
+        (scheduled (org-element-property :scheduled element))
+        (ts-year-start (org-element-property :year-start scheduled))
+        (ts-month-start (org-element-property :month-start scheduled))
+        (ts-day-start (org-element-property :day-start scheduled))
+        (ts-hour-start (org-element-property :hour-start scheduled))
+        (ts-minute-start (org-element-property :minute-start scheduled)) )
+      (org-schedule nil (concat
+        (format "%s" ts-year-start)
+        "-"
+        (if (< ts-month-start 10)
+          (concat "0" (format "%s" ts-month-start))
+          (format "%s" ts-month-start))
+        "-"
+        (if (< ts-day-start 10)
+          (concat "0" (format "%s" ts-day-start))
+          (format "%s" ts-day-start))
+        " "
+        (if (< ts-hour-start 10)
+          (concat "0" (format "%s" ts-hour-start))
+          (format "%s" ts-hour-start))
+        ":"
+        (if (< ts-minute-start 10)
+          (concat "0" (format "%s" ts-minute-start))
+          (format "%s" ts-minute-start))
+        "+"
+        effort)) )))
+
+#+end_src
+
+#+RESULTS:
+: org-schedule-effort
 
 ** Files
 List of global org files

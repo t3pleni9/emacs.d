@@ -45,7 +45,7 @@
                   html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org
                   interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+
                   org-password-manager writegood-mode all-the-icons org-bullets pdf-tools
-                  helm-company markdown-mode+ ssh jupyter dockerfile-mode csv-mode csv helm
+                  helm-company ssh jupyter dockerfile-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
                   unicode-fonts deft org-roam-server zone eshell-prompt-extras
@@ -54,7 +54,7 @@
 (when (system-type-is-darwin)
   (defvar myPackages
     '(expand-region doom-themes org-trello ob-prolog dashboard yasnippet-snippets monokai-theme
-                  helm-swoop ttl-mode js2-mode image+ org-pdfview hmac org-super-agenda
+                  helm-swoop ttl-mode js2-mode image+ org-pdftools hmac org-super-agenda
                   json-navigator password-generator yafolding ob-rust darktooth-theme
                   gruvbox-theme web-mode express clojure-mode rust-mode spacemacs-theme
                   docker-compose-mode cmake-project cmake-mode zpresent helm-ag python-pytest
@@ -63,13 +63,14 @@
                   sml-modeline iedit emms json-mode org-brain smart-mode-line-powerline-theme
                   geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header
                   html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org
-                  interleave org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+
-                  org-password-manager writegood-mode all-the-icons org-bullets pdf-tools
-                  helm-company markdown-mode+ ssh jupyter dockerfile-mode csv-mode csv helm
+                  org-noter org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+
+                  writegood-mode all-the-icons org-bullets pdf-tools
+                  helm-company ssh jupyter dockerfile-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
                   unicode-fonts deft org-roam-server zone eshell-prompt-extras
-                  org-present pdf-view-restore ob-elixir elixir-mode)))
+                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan org-drill
+                  dash-functional)))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
@@ -80,7 +81,6 @@
 
 
 ;; init.el ends here
-
 (add-to-list 'load-path "~/.emacs.d/external/")
 (add-to-list 'load-path "~/.emacs.d/external/emacs-totp")
 (add-to-list 'load-path "~/.emacs.d/external/py-build")
