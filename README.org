@@ -82,6 +82,7 @@ One require to rule them all
   (require 'org-habit)
   (require 'ob-elixir)
   (require 'elixir-mode)
+  (require 'org-noter)
 #+end_src
 
 * Emacs startup, and others
@@ -838,9 +839,10 @@ Enable bindings for turtle format
 ** Global
 Time tracking on tasks
 #+begin_src emacs-lisp
-(setq org-clock-persist 'history)
-(org-clock-persistence-insinuate)
-(setq org-log-into-drawer t)
+  (setq org-clock-persist 'history)
+  (setq org-startup-folded t)
+  (org-clock-persistence-insinuate)
+  (setq org-log-into-drawer t)
 #+end_src
 
 Image Scaling 
@@ -1361,6 +1363,21 @@ Org-ref header format to support PDF interleaving
 #+begin_src emacs-lisp
   (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} :: ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n")
 #+end_src
+
+Add compatibility between interleave and org-noter
+#+begin_src emacs-lisp
+(setq org-noter-property-doc-file "INTERLEAVE_PDF"
+      org-noter-property-note-location "INTERLEAVE_PAGE_NOTE")
+#+end_src
+
+Org-noter config
+#+begin_src emacs-lisp
+  (setq org-noter-always-create-frame nil)
+  (setq org-noter-notes-search-path (list bibtex-completion-notes-path "."))
+#+end_src
+
+#+RESULTS:
+
 
 Interleave notes folder 
 #+begin_src emacs-lisp
@@ -2228,6 +2245,16 @@ Org-brain
  (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
 #+end_src
 
+Updating =org-noter-set-doc-split-fraction= in-order to split window with a specific ratio every time org-noter launches. Existing function is kept same, except for the split ratio
+#+begin_src emacs-lisp
+  (setq org-noter-doc-split-ratio '(0.8 .0.5))
+
+  (defun my/org-noter (&optional args)
+      (interactive)
+      (org-entry-put nil org-noter--property-doc-split-fraction (format "%s" org-noter-doc-split-ratio))
+      (org-noter))
+#+end_src
+
 PDF View
 #+begin_src emacs-lisp
 (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
@@ -2236,7 +2263,7 @@ PDF View
 (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
 (define-key pdf-view-mode-map (kbd "C-c C-d") 'pdf-view-midnight-minor-mode)
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-(define-key org-mode-map (kbd "C-c i") 'interleave-mode)
+(define-key org-mode-map (kbd "C-c i") 'my/org-noter)
 #+end_src
 
 ** Audio / Multimedia
