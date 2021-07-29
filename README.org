@@ -1341,27 +1341,29 @@ Function to Update bib files when adding new one.
 
 Org-ref Files 
 #+begin_src emacs-lisp
-    (setq org-ref-pdf-directory "~/Documents/org-notes/research/bibliography/bibtex-pdfs/")
-    (update-bibfiles)
+  (setq org-ref-pdf-directory "~/Documents/org-notes/research/bibliography/bibtex-pdfs/"
+        org-ref-notes-directory "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
+        org-ref-notes-function 'org-ref-notes-function-many-files)
+  (update-bibfiles)
 #+end_src
 
 *** Bibtex
 
 #+begin_src emacs-lisp
-(setq bibtex-completion-library-path "~/Documents/org-notes/research/bibliography/bibtex-pdfs"
-      bibtex-completion-notes-path "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
-      bibtex-completion-pdf-field "File"
-      bibtex-completion-pdf-symbol "⌘"
-      bibtex-completion-notes-symbol "✎"
-      bibtex-completion-additional-search-fields '(tags keywords))
-(setq bibtex-completion-display-formats
-      '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
+  (setq bibtex-completion-library-path "~/Documents/org-notes/research/bibliography/bibtex-pdfs"
+        bibtex-completion-notes-path "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
+        bibtex-completion-pdf-field "File"
+        bibtex-completion-pdf-symbol "⌘"
+        bibtex-completion-notes-symbol "✎"
+        bibtex-completion-additional-search-fields '(tags keywords))
+  (setq bibtex-completion-display-formats
+        '((t . "${author:30} ${title:150} ${year:4} ${=has-pdf=:1}${=has-note=:1} ${=type=:7}")))
 #+end_src
 
 Org-ref header format to support PDF interleaving
 
 #+begin_src emacs-lisp
-  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} :: ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n#+INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n")
+  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} :: ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n\n\n* Notes \n :PROPERTIES: \n :INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n :END:\n")
 #+end_src
 
 Add compatibility between interleave and org-noter
@@ -1376,19 +1378,6 @@ Org-noter config
   (setq org-noter-notes-search-path (list bibtex-completion-notes-path "."))
 #+end_src
 
-#+RESULTS:
-
-
-Interleave notes folder 
-#+begin_src emacs-lisp
-(setq interleave-org-notes-dir-list (list bibtex-completion-notes-path "."))
-#+end_src
-
-Interleave split lines
-
-#+begin_src emacs-lisp
-(setq interleave-split-lines 60)
-#+end_src
 
 ** Org roam
 Org-Roam setup to facilitate note taking for the research
