@@ -50,7 +50,7 @@
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
                   unicode-fonts deft org-roam-server zone eshell-prompt-extras
                   org-present pdf-view-restore ob-elixir elixir-mode ein smartscan org-drill
-                  dash-functional)))
+                  dash-functional org-pomodoro)))
 
 (when (system-type-is-darwin)
   (defvar myPackages
@@ -71,7 +71,7 @@
                   twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
                   unicode-fonts deft org-roam-server zone eshell-prompt-extras
                   org-present pdf-view-restore ob-elixir elixir-mode ein smartscan org-drill
-                  dash-functional)))
+                  dash-functional org-pomodoro)))
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)

@@ -82,6 +82,7 @@ One require to rule them all
   (require 'ob-elixir)
   (require 'elixir-mode)
   (require 'org-noter)
+  (require 'org-pomodoro)
 #+end_src
 
 * Emacs startup, and others
@@ -1369,7 +1370,6 @@ Org-noter config
   (setq org-noter-notes-search-path (list bibtex-completion-notes-path "."))
 #+end_src
 
-
 ** Org roam
 Org-Roam setup to facilitate note taking for the research
 #+begin_src emacs-lisp
@@ -1918,33 +1918,34 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 
 ** Helm
 #+begin_src emacs-lisp
-(defhydra hydra-helm (:color blue)
+  (defhydra hydra-helm (:color blue)
+    "
+  ^
+  ^Helm^              ^Browse^                ^Python^                    ^Org^                
+  ^────^──────────────^──────^────────────────^──────^────────────────────^───^─────────────── 
+  _q_ quit            _i_ imenu               _c_ Conda Activate          _P_ Start/Stop Pomodoro
+  _r_ resume          _s_ swoop               _d_ Conda Deactivate        _I_ Clock In
+  ^^                  _S_ swoop all           _n_ Jupyter Notebooks       _O_ Clock Out
+  ^^                  _k_ kill-ring           _p_ PyBuild
+  ^^                  _b_ org brain           ^^
+  ^^                  _m_ Mark Rings          ^^
+  ^^                  ^^
   "
-^
-^Helm^              ^Browse^                ^Python^                    ^Org^                
-^────^──────────────^──────^────────────────^──────^────────────────────^───^─────────────── 
-_q_ quit            _i_ imenu               _c_ Conda Activate          
-_r_ resume          _s_ swoop               _d_ Conda Deactivate        _I_ Clock In
-^^                  _S_ swoop all           _n_ Jupyter Notebooks       _O_ Clock Out
-^^                  _k_ kill-ring           _p_ PyBuild
-^^                  _b_ org brain           ^^
-^^                  _m_ Mark Rings          ^^
-^^                  ^^
-"
-  ("q" nil)
-  ("r" helm-resume)
-  ("i" helm-imenu)
-  ("b" org-brain-visualize)
-  ("m" helm-all-mark-rings)
-  ("s" helm-swoop)
-  ("S" helm-multi-swoop-all)
-  ("k" helm-show-kill-ring)
-  ("n" ein:notebooklist-open)
-  ("c" pyvenv-workon)
-  ("p" py-build)
-  ("d" pyvenv-deactivate)
-  ("I" org-clock-in)
-  ("O" org-clock-out))
+    ("q" nil)
+    ("r" helm-resume)
+    ("i" helm-imenu)
+    ("b" org-brain-visualize)
+    ("m" helm-all-mark-rings)
+    ("s" helm-swoop)
+    ("S" helm-multi-swoop-all)
+    ("k" helm-show-kill-ring)
+    ("n" ein:notebooklist-open)
+    ("c" pyvenv-workon)
+    ("p" py-build)
+    ("d" pyvenv-deactivate)
+    ("P" org-pomodoro)
+    ("I" org-clock-in)
+    ("O" org-clock-out))
 #+end_src
 
 ** Org
