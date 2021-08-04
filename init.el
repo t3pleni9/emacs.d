@@ -33,7 +33,7 @@
 
 (when (system-type-is-gnu)
   (defvar myPackages
-    '(expand-region doom-themes org-trello ob-prolog dashboard yasnippet-snippets monokai-theme
+    '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme
                   helm-swoop ttl-mode js2-mode image+ org-pdftools hmac org-super-agenda
                   json-navigator password-generator yafolding ob-rust darktooth-theme
                   gruvbox-theme web-mode express clojure-mode rust-mode spacemacs-theme
@@ -54,7 +54,7 @@
 
 (when (system-type-is-darwin)
   (defvar myPackages
-    '(expand-region doom-themes org-trello ob-prolog dashboard yasnippet-snippets monokai-theme
+    '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme
                   helm-swoop ttl-mode js2-mode image+ org-pdftools hmac org-super-agenda
                   json-navigator password-generator yafolding ob-rust darktooth-theme
                   gruvbox-theme web-mode express clojure-mode rust-mode spacemacs-theme

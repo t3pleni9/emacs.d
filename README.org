@@ -58,7 +58,6 @@ One require to rule them all
   (require 'pyb)
   (require 'image+)
   (require 'dashboard)
-  (require 'org-trello)
   (require 'twittering-mode)
   (require 'view)
   (require 'ein)
@@ -790,14 +789,6 @@ If the underlying api stops working Use =(browse-web (format "https://api.dictio
   (add-to-list 'sensitive-extensions "gpg")
   (add-to-list 'auto-mode-alist '("^\\*.org\\*$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-  (add-to-list 'auto-mode-alist '("\\.trello$" . org-mode))
-
-  (add-hook 'org-mode-hook
-          (lambda ()
-            (let ((filename (buffer-file-name (current-buffer))))
-              (when (and filename (string= "trello" (file-name-extension filename)))
-              (org-trello-mode)))))
-
 
   (add-hook 'org-mode-hook 'org-indent-mode)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
@@ -1932,7 +1923,7 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 ^
 ^Helm^              ^Browse^                ^Python^                    ^Org^                
 ^────^──────────────^──────^────────────────^──────^────────────────────^───^─────────────── 
-_q_ quit            _i_ imenu               _c_ Conda Activate          _t_ Trello
+_q_ quit            _i_ imenu               _c_ Conda Activate          
 _r_ resume          _s_ swoop               _d_ Conda Deactivate        _I_ Clock In
 ^^                  _S_ swoop all           _n_ Jupyter Notebooks       _O_ Clock Out
 ^^                  _k_ kill-ring           _p_ PyBuild
@@ -1952,7 +1943,6 @@ _r_ resume          _s_ swoop               _d_ Conda Deactivate        _I_ Cloc
   ("c" pyvenv-workon)
   ("p" py-build)
   ("d" pyvenv-deactivate)
-  ("t" hydra-org-trello/body)
   ("I" org-clock-in)
   ("O" org-clock-out))
 #+end_src
@@ -1986,36 +1976,6 @@ Org-ref Sugars
     ("A" arxiv-add-bibtex-entry)
     ("a" arxiv-lookup)
     ("y" org-bibtex-yank))
-#+end_src
-
-*** org-trello
-Hydra bindings for org-trello
-#+begin_src emacs-lisp
-(defhydra hydra-org-trello (:color blue)
-  "
-  ^Metadata ^                   ^Board^                        ^Card^
-  ^─────────^───────────────────^────^─────────────────────────^────^─────────────
-  _i_ Install Board Metadata    _s_ Sync Buffer                _c_ Sync Card
-  _u_ Update Board Metadata     _J_ Open Board in Browser      _j_ Open card in browser
-  _q_ Quit                      _l_ Show board labels          _a_ Signup on Card
-  ^^                            ^^                             _C_ Add Comment on Card
-  ^^                            ^^                             _D_ Delete Comment on Card
-
-  "
-  ("q" nil)
-;; Board Metadata
-  ("i" org-trello-install-board-metadata) 
-  ("u" org-trello-update-board-metadata) 
-;; Board
-  ("s" org-trello-sync-buffer) 
-  ("J" org-trello-jump-to-trello-board) 
-  ("l" org-trello-show-board-labels) 
-;; Card
-  ("c" org-trello-sync-card) 
-  ("j" org-trello-jump-to-trello-card) 
-  ("a" org-trello-assign-me) 
-  ("C" org-trello-add-card-comment) 
-  ("D" org-trello-delete-card-commen))
 #+end_src
 
 
