@@ -37,8 +37,8 @@
                   helm-company ssh jupyter dockerfile-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   org-alert define-word unicode-fonts eshell-prompt-extras
-                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan org-drill
-                  dash-functional org-pomodoro))
+                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan 
+                  dash-functional org-pomodoro hydra))
 
 (when (system-is-workstation)
   (defvar additionalPackages '()))
