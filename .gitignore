@@ -32,3 +32,4 @@ org-clock-save.el
 /var
 /tutorial
 /.pdf-view-restore
+*.elc
