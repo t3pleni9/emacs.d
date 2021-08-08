@@ -14,77 +14,63 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defun system-type-is-darwin ()
-  "Return true if system is darwin-based (Mac OS X)"
-  (string-equal system-type "darwin")
-  )
+(defun system-is-laptop ()
+  "Returns true if its the laptop work machine"
+  (string-equal system-name "in-justinjose.local"))
 
-;; Check if system is Microsoft Windows
-(defun system-type-is-windows ()
-  "Return true if system is Windows-based (at least up to Win7)"
-  (string-equal system-type "windows-nt")
-  )
+(defun system-is-workstation ()
+  "Returns true if its the laptop work machine"
+  (string-equal system-name "justinj"))
 
-;; Check if system is GNU/Linux
-(defun system-type-is-gnu ()
-  "Return true if system is GNU/Linux-based"
-  (string-equal system-type "gnu/linux")
-  )
-
-(when (system-type-is-gnu)
-  (defvar myPackages
-    '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme
+(defvar basePackages
+  '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme
                   helm-swoop ttl-mode js2-mode image+ org-pdftools hmac org-super-agenda
-                  json-navigator password-generator yafolding ob-rust darktooth-theme
-                  gruvbox-theme web-mode express clojure-mode rust-mode spacemacs-theme
+                  json-navigator yafolding ob-rust darktooth-theme gruvbox-theme
+                  web-mode express clojure-mode rust-mode spacemacs-theme
                   docker-compose-mode cmake-project cmake-mode zpresent helm-ag python-pytest
-                  org-journal calfw-org calfw-ical calfw helm-system-packages rainbow-delimiters
-                  undo-tree dumb-jump helm-spotify spotify vterm yaml-mode anaconda-mode
-                  sml-modeline iedit emms json-mode org-brain smart-mode-line-powerline-theme
+                  helm-system-packages rainbow-delimiters undo-tree dumb-jump vterm yaml-mode anaconda-mode
+                  sml-modeline iedit json-mode smart-mode-line-powerline-theme
                   geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header
-                  html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org
-                  org-noter org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+
+                  html-to-markdown org-babel-eval-in-repl use-package
+                  slime auto-complete git-gutter-fringe+ git-gutter+
                   writegood-mode all-the-icons org-bullets pdf-tools
                   helm-company ssh jupyter dockerfile-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
-                  twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
-                  unicode-fonts deft org-roam-server zone eshell-prompt-extras
+                  org-alert define-word unicode-fonts eshell-prompt-extras
                   org-present pdf-view-restore ob-elixir elixir-mode ein smartscan org-drill
-                  dash-functional org-pomodoro)))
+                  dash-functional org-pomodoro))
 
-(when (system-type-is-darwin)
-  (defvar myPackages
-    '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme
-                  helm-swoop ttl-mode js2-mode image+ org-pdftools hmac org-super-agenda
-                  json-navigator password-generator yafolding ob-rust darktooth-theme
-                  gruvbox-theme web-mode express clojure-mode rust-mode spacemacs-theme
-                  docker-compose-mode cmake-project cmake-mode zpresent helm-ag python-pytest
-                  org-journal calfw-org calfw-ical calfw helm-system-packages rainbow-delimiters
-                  undo-tree dumb-jump helm-spotify spotify vterm yaml-mode anaconda-mode
-                  sml-modeline iedit emms json-mode org-brain smart-mode-line-powerline-theme
-                  geben-helm-projectile helm-projectile virtualenvwrapper org-sticky-header
-                  html-to-markdown org-babel-eval-in-repl bibtex-utils use-package elfeed-org
-                  org-noter org-ref elfeed slime auto-complete git-gutter-fringe+ git-gutter+
-                  writegood-mode all-the-icons org-bullets pdf-tools
-                  helm-company ssh jupyter dockerfile-mode csv helm
-                  multiple-cursors magit material-theme better-defaults elpy wrap-region nov
-                  twittering-mode org-alert volume define-word org-emms org-roam-bibtex org-roam
-                  unicode-fonts deft org-roam-server zone eshell-prompt-extras
-                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan org-drill
-                  dash-functional org-pomodoro)))
+(when (system-is-workstation)
+  (defvar additionalPackages '()))
+
+(when (system-is-laptop)
+  (defvar additionalPackages
+    '(password-generator org-journal calfw-org calfw-ical calfw emms org-brain bibtex-utils elfeed-org
+                  org-noter org-ref elfeed pdf-tools
+                  volume org-emms
+                  deft zone)))
+
 
 (mapc #'(lambda (package)
     (unless (package-installed-p package)
       (package-install package)))
-      myPackages)
-
+      (append basePackages additionalPackages))
 
 
 
 ;; init.el ends here
 (add-to-list 'load-path "~/.emacs.d/external/")
-(add-to-list 'load-path "~/.emacs.d/external/emacs-totp")
 (add-to-list 'load-path "~/.emacs.d/external/py-build")
+
+;; Personal repository for deprecated packages
+(when (system-is-laptop)
+  (add-to-list 'load-path "~/.emacs.d/external/emacs-totp")
+  (add-to-list 'load-path "~/.emacs.d/deprecated/org-password-manager")
+  (add-to-list 'load-path "~/.emacs.d/deprecated/org-roam")
+  (add-to-list 'load-path "~/.emacs.d/deprecated/org-roam-server")
+  (add-to-list 'load-path "~/.emacs.d/deprecated/emacsql")
+  (add-to-list 'load-path "~/.emacs.d/deprecated/emacsql-sqlite"))
+
 (setq custom-file "~/.emacs.d/external/custom-variables.el")
 (load custom-file)
 

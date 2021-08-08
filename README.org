@@ -23,73 +23,84 @@ Post cloning and installation, start EMACS. The initial setup will take some tim
 Along with regular packages, clone the following packages into =<EMACS-config-root>/external/= to utilise their respective functionalities.
 - https://github.com/t3pleni9/emacs-totp.git :: Support of Time based OTP (TOTP) for org-password
 - https://gitlab.com/t3pleni9/py-build.git :: Integrates PyBuild with  projectile and anaconda-venv
+* Common Require
+  Includes all the requires accross multiple machines
+  - [ ] Need to handle personal git projects
+  #+begin_src emacs-lisp
+    (require 'org)
+    (require 'auto-complete)
+    (require 'projectile)
+    (require 'all-the-icons)
+    (require 'multiple-cursors)
+    (require 'virtualenvwrapper)
+    (require 'helm)
+    (require 'helm-projectile)
+    (require 'helm-swoop)
+    (require 'json-mode)
+    (require 'scroll-bar)
+    (require 'async nil :noerror)
+    (require 'org-bullets)
+    (require 'smart-mode-line)
+    (require 'dumb-jump)
+    (require 'iedit)
+    (require 'rust-mode)
+    (require 'org-super-agenda)
+    (require 'pyb)
+    (require 'image+)
+    (require 'dashboard)
+    (require 'view)
+    (require 'ein)
+    (require 'ein-notebook)
+    (require 'org-alert)
+    (require 'alert)
+    (require 'volume)
+    (require 'define-word)
+    (require 'wrap-region)
+    (require 'org-drill)
+    (require 'eshell-prompt-extras)
+    (require 'smartscan)
+    (require 'org-notify nil :noerror)
+    (require 'org-present)
+    (require 'eww)
+    (require 'pdf-view-restore)
+    (require 'org-habit)
+    (require 'ob-elixir)
+    (require 'elixir-mode)
+    (require 'org-pomodoro)
+  #+end_src
 
-* TODO Require
-- [ ] Need to handle personal git projects
-One require to rule them all
+* Require: Laptop
 #+begin_src emacs-lisp
-  (require 'org)
-  (require 'auto-complete)
-  (require 'projectile)
-  (require 'all-the-icons)
-  (require 'multiple-cursors)
-  (require 'virtualenvwrapper)
-  (require 'helm)
-  (require 'helm-projectile)
-  (require 'helm-swoop)
-  (require 'json-mode)
-  (require 'emms-setup)
-  (require 'emms-mode-line)
-  (require 'emms-player-mpv)
-  (require 'scroll-bar)
-  (require 'async nil :noerror)
-  (require 'org-ref)
-  (require 'org-ref-pdf)
-  (require 'org-ref-url-utils)
-  (require 'org-ref-arxiv)
-  (require 'org-bullets)
-  (require 'smart-mode-line)
-  (require 'dumb-jump)
-  (require 'calfw-org)
-  (require 'iedit)
-  (require 'rust-mode)
-  (require 'org-super-agenda)
-  (require 'emacs-totp)
-  (require 'pyb)
-  (require 'image+)
-  (require 'dashboard)
-  (require 'twittering-mode)
-  (require 'view)
-  (require 'ein)
-  (require 'ein-notebook)
-  (require 'org-alert)
-  (require 'alert)
-  (require 'volume)
-  (require 'define-word)
-  (require 'org-roam)
-  (require 'org-roam-server)
-  (require 'deft)
-  (require 'wrap-region)
-  (require 'zone)
-  (require 'org-drill)
-  (require 'eshell-prompt-extras)
-  (require 'smartscan)
-  (require 'org-notify nil :noerror)
-  (require 'org-present)
-  (require 'eww)
-  (require 'pdf-view-restore)
-  (require 'org-habit)
-  (require 'ob-elixir)
-  (require 'elixir-mode)
-  (require 'org-noter)
-  (require 'org-pomodoro)
+  (when (system-is-laptop)
+    (require 'emms-setup)
+    (require 'emms-mode-line)
+    (require 'emms-player-mpv)
+    (require 'org-ref)
+    (require 'org-ref-pdf)
+    (require 'org-ref-url-utils)
+    (require 'org-ref-arxiv)
+    (require 'calfw-org)
+    (require 'emacs-totp)
+    (require 'org-roam)
+    (require 'org-roam-server)
+    (require 'deft)
+    (require 'org-noter)
+    (require 'org-password-manager))
 #+end_src
 
 * Emacs startup, and others
-** Path setting
+** Path setting: Laptop
 #+begin_src emacs-lisp
-(setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
-(setq exec-path (append exec-path '("/usr/local/bin")))
+(when (system-is-laptop)
+  (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
+  (setq exec-path (append exec-path '("/usr/local/bin"))))
+#+end_src
+
+** Path setting: workstation
+#+begin_src emacs-lisp
+(when (system-is-workstation)
+  (setenv "PATH" (concat (getenv "PATH")  ":/home/justin/anaconda3/bin"))
+  (setq exec-path (append exec-path '("/usr/local/bin"))))
 #+end_src
 
 ** Themes
@@ -170,9 +181,10 @@ Make shell not to repeat commands
 
 Set the font to a comfortable level
 #+begin_src emacs-lisp
-(set-face-attribute 'default nil :height 130)
-(setq-default line-spacing 1)
-(set-frame-font "Hack 13" nil t)
+  (set-face-attribute 'default nil :height 130)
+  (setq-default line-spacing 1)
+  (when (system-is-laptop)
+    (set-frame-font "Hack 13" nil t))
 #+end_src
 
 Dired stuffs
@@ -180,19 +192,21 @@ Dired stuffs
 (setq dired-dwim-target t)
 #+end_src
 
-# Zone out 
-# #+begin_src emacs-lisp
-#   (zone-when-idle 600)
-# #+end_src
+ Zone out 
+ #+begin_src emacs-lisp
+   (when (system-is-workstation)
+     (zone-when-idle 600))
+ #+end_src
 
 Unicode character support
 #+begin_src emacs-lisp
-(require 'unicode-fonts)
-(setq unicode-fonts-block-font-mapping
-      '(("Emoticons"
-	 ("Apple Color Emoji" "Symbola" "Quivira")))
-      unicode-fonts-fontset-names '("fontset-default"))
-(unicode-fonts-setup)
+  (require 'unicode-fonts)
+  (when (system-is-laptop)
+    (setq unicode-fonts-block-font-mapping
+          '(("Emoticons"
+       ("Apple Color Emoji" "Symbola" "Quivira")))
+          unicode-fonts-fontset-names '("fontset-default")))
+    (unicode-fonts-setup)
 #+end_src
 
 Don't kill emacs without confirming
@@ -202,7 +216,11 @@ Don't kill emacs without confirming
 
 Show alerts in notifier
 #+begin_src emacs-lisp
-(setq alert-default-style 'osx-notifier)
+  (when (system-is-laptop)
+    (setq alert-default-style 'osx-notifier))
+  (when (system-is-workstation)
+                                          ;(setq alert-default-style 'osx-notifier)
+    )
 #+end_src
 
 Easier marking for TMM
@@ -238,27 +256,19 @@ Have time displayed in status bar
 
 #+end_src
 
-** Display battery
-Disabled as it has started taking time to update
-#+begin_comment
-    (require 'battery)
-    (defun my/battery-mode-line () (let* ((bat (read (cdr (assoc 112 (funcall battery-status-function)))))
-        (index (cl-position-if (lambda(e) (> bat e)) '(85 75 50 35 15 7 2 -1)))
-        (charging (if (string-match-p "charging" (format "%s" (funcall battery-status-function))) "⚡" ""))
-        (symbol (nth index '("[+++]" "[++-]" "[++ ]" "[+- ]" "[+  ]" "[-  ]" "[!  ]" "[.  ]")))
-        (color (nth index (mapcar (lambda(c) (apply 'color-rgb-to-hex c)) (color-gradient '(0.3 1 0.2) '(1 0.2 0.1) 8)))))
-      (propertize (concat symbol charging " " (number-to-string bat) "%% ") 'face (list :foreground color :weight 'bold))))
-#+end_comment
-
 ** Python
 Setup python venv with conda
 #+begin_src emacs-lisp
 
-(venv-initialize-interactive-shells) ;; if you want interactive shell support
-(venv-initialize-eshell) ;; if you want eshell support
-(setq venv-location "~/.miniconda/envs")
-(setenv "WORKON_HOME" "~/.miniconda/envs")
+  (venv-initialize-interactive-shells) ;; if you want interactive shell support
+  (venv-initialize-eshell) ;; if you want eshell support
+  (when (system-is-laptop)
+    (setq venv-location "~/.miniconda/envs")
+    (setenv "WORKON_HOME" "~/.miniconda/envs"))
 
+  (when (system-is-workstation)
+    (setq venv-location "~/anaconda3/envs")
+    (setenv "WORKON_HOME" "~/anaconda3/envs"))
 #+end_src
 
 ** Jupyter Notebooks
@@ -274,6 +284,11 @@ Enable in-lined images in EIN
 #+end_src
 
 ** EMMS
+
+   EMMS is only defined for laptop
+#+begin_src emacs-lisp
+(when (system-is-laptop)
+#+end_src
 
 Constants and File Paths
 #+begin_src emacs-lisp
@@ -303,7 +318,7 @@ Fix the mode-line to just the Track name
 #+begin_src emacs-lisp
   (setq emms-mode-line-mode-line-function
         (lambda nil
-          (propertize " [♫]" 'face (list :foreground "#8080f0" :weight 'bold))))
+          (propertize " [♫]" 'face (list :foreground "#8080f0" :weight 'bold)))))
 #+end_src
 
 ** TRAMP
@@ -515,12 +530,13 @@ Sensitive Mode
   (customize-set-variable 'helm-ff-lynx-style-map t)
 
   (setq-default display-line-numbers-width 2
-		display-line-numbers-widen t
-		tab-width 2
-		indent-tabs-mode nil)
+                display-line-numbers-widen t
+                tab-width 2
+                indent-tabs-mode nil)
 
   (display-time-mode 1)
-  (org-roam-mode 1)
+  (when (system-is-laptop)
+    (org-roam-mode 1))
   (org-notify-start)
 #+end_src
 
@@ -551,7 +567,8 @@ Disable visual line mode in some buffers
 
 Org export support
 #+begin_src emacs-lisp
-(setq doc-view-ghostscript-program "/usr/local/bin/gs")
+  (when (system-is-laptop)
+    (setq doc-view-ghostscript-program "/usr/local/bin/gs"))
 #+end_src
 
 Image view mode
@@ -703,14 +720,17 @@ Bind switch project to =helm-projectile=
 ** Shell
 Setup shell setting to work with zsh
 #+begin_src emacs-lisp
-(setq explicit-shell-file-name "/bin/zsh")
-(setq shell-file-name "zsh")
-(setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
-(setenv "SHELL" shell-file-name)
-(add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
-(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+  (when (system-is-laptop)
+    (setq explicit-shell-file-name "/bin/zsh"))
+  (when (system-is-workstation)
+    (setq explicit-shell-file-name "usr/bin/zsh"))
+  (setq shell-file-name "zsh")
+  (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
+  (setenv "SHELL" shell-file-name)
+  (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)
+  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+  (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -795,14 +815,15 @@ If the underlying api stops working Use =(browse-web (format "https://api.dictio
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
   (add-hook 'org-mode-hook 'flyspell-mode)
   (add-hook 'org-mode-hook 'writegood-mode)
-  (add-hook 'org-mode-hook 'org-password-manager-key-bindings)
+  (when (system-is-laptop)
+    (add-hook 'org-mode-hook 'org-password-manager-key-bindings))
   (add-hook 'org-mode-hook 'org-beamer-mode)
   (add-hook 'org-mode-hook 'org-bullets-mode)
   (add-hook 'org-mode-hook
-          (lambda ()
-            (let ((filename (buffer-file-name (current-buffer))))
-              (if (and filename (member (file-name-extension filename) sensitive-extensions))
-              (sensitive-mode) (sensitive-mode -1)))))
+            (lambda ()
+              (let ((filename (buffer-file-name (current-buffer))))
+                (if (and filename (member (file-name-extension filename) sensitive-extensions))
+                    (sensitive-mode) (sensitive-mode -1)))))
 #+end_src
 
 ** Dumb Jump
@@ -932,15 +953,24 @@ A place to store and remember everything that I can't burden my brain with think
 **** ORG-Agenda: 
 All the above mentioned files just form a part of the bigger agenda.
 #+begin_src emacs-lisp
-(setq org-agenda-files (list tasks-file-path
-projects-file-path
-capture-file-path
-journal-file-path
-references-file-path
-personal-library-file-path
-home-tasks-file-path
-"~/Documents/org-notes/exocortex/daily.org"
-))
+  (when (system-is-laptop)
+    (setq org-agenda-files
+          (list tasks-file-path
+                projects-file-path
+                capture-file-path
+                journal-file-path
+                references-file-path
+                personal-library-file-path
+                home-tasks-file-path
+                "~/Documents/org-notes/exocortex/daily.org")))
+
+  (when (system-is-workstation)
+    (setq org-agenda-files
+          (list tasks-file-path
+                projects-file-path
+                capture-file-path
+                journal-file-path
+                home-tasks-file-path)))
 #+end_src
 
 *** Org TODO cycles
@@ -1255,8 +1285,10 @@ List of global org files
 : my-org-confirm-babel-evaluate
 
 ** Org latex
-Add LATEX to path
-
+Add LATEX to path: Only present in the laptop
+#+begin_src emacs-lisp
+(when (system-is-laptop)
+#+end_src
 #+begin_src emacs-lisp
 (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin/"))
 #+end_src
@@ -1286,11 +1318,15 @@ Add LATEX to path
 Add to global tex-compile commands
 #+begin_src emacs-lisp
 (require 'tex-mode) 
-(add-to-list 'tex-compile-commands '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f"))
+(add-to-list 'tex-compile-commands '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f")))
 #+end_src
 
 ** Org ref
 Search through bibtex reference using helm reference
+Only defined for laptop
+#+begin_src emacs-lisp
+(when (system-is-laptop)
+#+end_src
 #+begin_src emacs-lisp
 (defun my/helm-bibtex-publications (&optional arg)
   "Search BibTeX entries authored by “Jane Doe”.
@@ -1367,10 +1403,14 @@ Add compatibility between interleave and org-noter
 Org-noter config
 #+begin_src emacs-lisp
   (setq org-noter-always-create-frame nil)
-  (setq org-noter-notes-search-path (list bibtex-completion-notes-path "."))
+  (setq org-noter-notes-search-path (list bibtex-completion-notes-path ".")))
 #+end_src
 
 ** Org roam
+   Only defined for laptop
+   #+begin_src emacs-lisp
+     (when (system-is-laptop)
+   #+end_src
 Org-Roam setup to facilitate note taking for the research
 #+begin_src emacs-lisp
 (setq-default org-roam-directory (concat org-directory "/research"))
@@ -1429,7 +1469,7 @@ Deft new file name convention
 (setq deft-file-naming-rules
       '((noslash . "-")
         (nospace . "-")
-        (case-fn . downcase)))
+        (case-fn . downcase))))
 #+end_src
 
 ** Org Present
@@ -1557,6 +1597,10 @@ Capture reference papers with a small help of =C-c r y=
 
 * Internet, Social, Feed Manager
 ** Elfeed
+   Only for laptop
+   #+begin_src emacs-lisp
+(when (system-is-laptop)
+   #+end_src
 Feed reader setups
 *** Configuration 
 [[file:elfeed.org][Configuration Org]]
@@ -1719,7 +1763,7 @@ Play a url at point using mpv
 
 (defun browse-using-mpv (link &rest x)  
   (message "Sent to mpv: %s" link)
-  (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link))
+  (my/launch-process "ElfeedMPV" "*elfeed-video*" "mpv" link)))
 #+end_src
 
 ** IRC
@@ -1739,7 +1783,10 @@ Setup for managing IRC
     (message "Starting Tor sub-process.")
     (my/launch-process "tor-process" "*tor*" "tor")
     (message "Launching Firefox with proxy_profile")
-    (my/launch-process "tor-process" "*tor*" "/Applications/Firefox.app/Contents/MacOS/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/")
+    (when (system-is-laptop)
+      (my/launch-process "tor-process" "*tor*" "/Applications/Firefox.app/Contents/MacOS/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/"))
+    (when (system-is-workstation)
+      (my/launch-process "tor-process" "*tor*" "/usr/bin/firefox" "-P" "proxy_firefox" "--new-window" "https://check.torproject.org/"))
     (message "Process launched in *tor* buffer."))
 #+end_src
 
@@ -1766,7 +1813,10 @@ Make EWW default
 *** Setup firefox
 #+begin_src emacs-lisp
   (setq shr-external-browser 'browse-url-generic)
-  (setq browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox")
+  (when (system-is-laptop)
+    (setq browse-url-generic-program "/Applications/Firefox.app/Contents/MacOS/firefox"))
+  (when (system-is-workstation)
+    (setq browse-url-generic-program "/usr/bin/firefox"))
 #+end_src
 
 * Custom Configurations and Functions
@@ -1836,9 +1886,12 @@ Give Visual Cue using cursor while in view mode
 
 #+end_src
 ** Volume Control
-Current Volume value 
+Current Volume value
+Only definable for laptop
+
 #+begin_src emacs-lisp
-(setq my/current-volume (volume-osascript-get))
+(when (system-is-laptop)
+  (setq my/current-volume (volume-osascript-get))
 #+end_src
 
 Mute/UnMute and store current volume
@@ -1861,7 +1914,7 @@ Increase/Decrease Volume
   (defun my/decrease-volume (&optional arg) 
     (interactive "p")
     (if current-prefix-arg 
-        (my/volume-mute) (volume-osascript-nudge -1)))
+        (my/volume-mute) (volume-osascript-nudge -1))))
 #+end_src
 
 * Hydra
@@ -1900,13 +1953,14 @@ _q_ quit            _b_ list            _d_ directory       _r_ replace
 _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 ^^                  _S_ save all        _f_ file            _s_ ag
 ^^                  ^^                  _p_ project         ^^
-^^                  ^^                  ^^                  ^^
+^^                  ^^                  _F_ file-window     ^^
 "
   ("q" nil)
   ("b" helm-projectile-switch-to-buffer)
   ("d" helm-projectile-find-dir)
   ("D" projectile-dired)
   ("f" helm-projectile)
+  ("F" projectile-find-file-other-window)
   ("i" projectile-invalidate-cache :color red)
   ("K" projectile-kill-buffers)
   ("p" helm-projectile-switch-project)
@@ -1952,6 +2006,7 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 *** org-ref
 Org-ref Sugars
 #+begin_src emacs-lisp
+(when (system-is-laptop)
   (defhydra hydra-org-ref (:color blue)
     "
     ^
@@ -1976,27 +2031,28 @@ Org-ref Sugars
     ("b" doi-add-bibtex-entry)
     ("A" arxiv-add-bibtex-entry)
     ("a" arxiv-lookup)
-    ("y" org-bibtex-yank))
+    ("y" org-bibtex-yank)))
 #+end_src
 
 
 ** Music Player
 Spotify sugars
 #+begin_src emacs-lisp
-(defhydra hydra-spotify (:color blue)
-  "
-  ^
-  ^Spotify  ^             ^Do^
-  ^────────^──────────────^──^─────────────
-  _p_ Play/Pause          _N_ Next
-  _s_ Stop                _P_ Previous
-  _q_ Quit            
-  "
-  ("q" nil)
-  ("p" spotify-playpause)
-  ("N" spotify-next)
-  ("P" spotify-previous)
-  ("s" spotify-quit))
+(when (system-is-laptop)
+  (defhydra hydra-spotify (:color blue)
+    "
+    ^
+    ^Spotify  ^             ^Do^
+    ^────────^──────────────^──^─────────────
+    _p_ Play/Pause          _N_ Next
+    _s_ Stop                _P_ Previous
+    _q_ Quit            
+    "
+    ("q" nil)
+    ("p" spotify-playpause)
+    ("N" spotify-next)
+    ("P" spotify-previous)
+    ("s" spotify-quit))
 #+end_src
 
 EMMS
@@ -2015,11 +2071,11 @@ EMMS
   ("p" emms-pause)
   ("N" emms-next)
   ("P" emms-previous)
-  ("s" emms-stop))
+  ("s" emms-stop)))
 #+end_src
 
 ** Internet, Social, Feed Manager
-Hydra Menu for elfeed and twitter
+Hydra Menu for elfeed
 #+begin_src emacs-lisp
 (defhydra hydra-social-feed (:color blue)
   "
@@ -2166,17 +2222,13 @@ Have helm handle most of the things around
   (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
   (global-set-key (kbd "C-c h") 'hydra-helm/body)
-  (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
+  (when (system-is-laptop)
+    (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications))
   (global-set-key (kbd "C-x b") 'helm-mini)
   (define-key dired-mode-map  (kbd "C-x C-q") 'wdired-change-to-wdired-mode)
 #+end_src
 
 ** Org
-References, Publications and Citations
-#+begin_src emacs-lisp
-(setq org-ref-insert-cite-key "C-c M-]")
-#+end_src
-
 Links agendas and capture templates
 #+begin_src emacs-lisp
   (global-set-key (kbd "C-c l") 'org-store-link)
@@ -2184,6 +2236,13 @@ Links agendas and capture templates
   (global-set-key (kbd "C-c A") 'cfw:open-org-calendar)
   (global-set-key (kbd "C-c c") 'org-capture)
 #+end_src
+
+References, Publications and Citations
+#+begin_src emacs-lisp
+(when (system-is-laptop)
+  (setq org-ref-insert-cite-key "C-c M-]")
+#+end_src
+
 
 Org-ref hydra sugar
 #+begin_src emacs-lisp
@@ -2197,12 +2256,13 @@ Org-brain
 
 Updating =org-noter-set-doc-split-fraction= in-order to split window with a specific ratio every time org-noter launches. Existing function is kept same, except for the split ratio
 #+begin_src emacs-lisp
-  (setq org-noter-doc-split-ratio '(0.8 .0.5))
+    (setq org-noter-doc-split-ratio '(0.8 .0.5))
 
-  (defun my/org-noter (&optional args)
-      (interactive)
-      (org-entry-put nil org-noter--property-doc-split-fraction (format "%s" org-noter-doc-split-ratio))
-      (org-noter))
+    (defun my/org-noter (&optional args)
+        (interactive)
+        (org-entry-put nil org-noter--property-doc-split-fraction (format "%s" org-noter-doc-split-ratio))
+        (org-noter))
+  (define-key org-mode-map (kbd "C-c i") 'my/org-noter))
 #+end_src
 
 PDF View
@@ -2213,14 +2273,14 @@ PDF View
 (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
 (define-key pdf-view-mode-map (kbd "C-c C-d") 'pdf-view-midnight-minor-mode)
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-(define-key org-mode-map (kbd "C-c i") 'my/org-noter)
 #+end_src
 
 ** Audio / Multimedia
 Music Player
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c s") 'hydra-emms/body)
-(global-set-key (kbd "C-c S") 'hydra-spotify/body)
+(when (system-is-laptop)
+  (global-set-key (kbd "C-c s") 'hydra-emms/body)
+  (global-set-key (kbd "C-c S") 'hydra-spotify/body)
 #+end_src
 
 |-----------------+-------------|
@@ -2235,7 +2295,7 @@ Music Player
 #+begin_src emacs-lisp
 (global-set-key (kbd "s-+") 'my/increase-volume)
 (global-set-key (kbd "s-=") 'my/increase-volume)
-(global-set-key (kbd "s--") 'my/decrease-volume)
+(global-set-key (kbd "s--") 'my/decrease-volume))
 #+end_src
 
 ** Json
@@ -2255,13 +2315,15 @@ Pytest keybinding in python mode
 
 ** Password Manager
 #+begin_src emacs-lisp
-(define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
-(define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin)
+(when (system-is-laptop)
+  (define-key org-mode-map (kbd "C-c C-p C-g") 'password-generator-phonetic)
+  (define-key org-mode-map (kbd "C-c C-p C-p") 'org-get-pin))
 #+end_src
 ** EWW / Social Feed
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c f") 'hydra-social-feed/body)
-(global-set-key (kbd "C-c O") 'my/play-with-mpv)
+(when (system-is-laptop)
+  (global-set-key (kbd "C-c f") 'hydra-social-feed/body)
+  (global-set-key (kbd "C-c O") 'my/play-with-mpv)
 #+end_src
 
 Custom open links at point
@@ -2288,7 +2350,7 @@ Custom open links at point
               (">" . my/elfeed-outline-show-play-enclosure)
               ("x" . my/elfeed-say)
               ("*" . elfeed-toggle-star)
-              ("<SPC>" . my/outline-show-full-title)))
+              ("<SPC>" . my/outline-show-full-title))))
 #+end_src
 
 ** View Mode
