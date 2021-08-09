@@ -101,7 +101,7 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
 ** Path setting: workstation
 #+begin_src emacs-lisp
 (when (system-is-workstation)
-  (setenv "PATH" (concat (getenv "PATH")  ":/home/justin/anaconda3/bin"))
+  ;(setenv "PATH" (concat (getenv "PATH")  ":/home/justin/anaconda3/bin"))
   (setq exec-path (append exec-path '("/usr/local/bin"))))
 #+end_src
 
