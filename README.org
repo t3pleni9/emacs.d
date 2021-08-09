@@ -221,8 +221,7 @@ Show alerts in notifier
   (when (system-is-laptop)
     (setq alert-default-style 'osx-notifier))
   (when (system-is-workstation)
-                                          ;(setq alert-default-style 'osx-notifier)
-    )
+    (setq alert-default-style 'growl))
 #+end_src
 
 Easier marking for TMM
