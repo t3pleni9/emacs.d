@@ -1922,26 +1922,27 @@ Increase/Decrease Volume
 * Hydra
 ** GIT
 #+begin_src emacs-lisp
-(defhydra hydra-magit (:color blue)
-  "
-  ^
-  ^Git  ^             ^Do^
-  ^─────^─────────────^──^─────────────
-  _n_ Next Hunk       _p_ Previous Hunk
-  _w_ Show Hunk       _s_ Stage Hunk
-  _q_ Quit            _b_ Blame
-  _c_ Clone           _S_ Status
-  _i_ Init            ^^
-  "
-  ("q" nil)
-  ("n" git-gutter+-next-hunk)
-  ("p" git-gutter+-previous-hunk)
-  ("w" git-gutter+-show-hunk)
-  ("s" git-gutter+-stage-hunks)
-  ("b" magit-blame)
-  ("c" magit-clone)
-  ("i" magit-init)
-  ("S" magit-status))
+  (defhydra hydra-magit (:color blue)
+    "
+    ^
+    ^Git  ^             ^Do^
+    ^─────^─────────────^──^─────────────
+    _n_ Next Hunk       _p_ Previous Hunk
+    _w_ Show Hunk       _s_ Stage Hunk
+    _q_ Quit            _b_ Blame
+    _c_ Clone           _S_ Status
+    _i_ Init            _l_ Git Log for file
+    "
+    ("q" nil)
+    ("n" git-gutter+-next-hunk)
+    ("p" git-gutter+-previous-hunk)
+    ("w" git-gutter+-show-hunk)
+    ("s" git-gutter+-stage-hunks)
+    ("b" magit-blame)
+    ("c" magit-clone)
+    ("i" magit-init)
+    ("S" magit-status)
+    ("l" magit-log-buffer-file))
 #+end_src
 
 ** Projectile
