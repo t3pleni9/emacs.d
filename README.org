@@ -962,15 +962,16 @@ All the above mentioned files just form a part of the bigger agenda.
                 references-file-path
                 personal-library-file-path
                 home-tasks-file-path
-                "~/Documents/org-notes/exocortex/daily.org")))
-
+                "~/Documents/org-notes/Dropbox/org-notes/daily.org")))
+  
   (when (system-is-workstation)
     (setq org-agenda-files
           (list tasks-file-path
                 projects-file-path
                 capture-file-path
                 journal-file-path
-                home-tasks-file-path)))
+                home-tasks-file-path
+                "~/Documents/org-notes/Dropbox/org-notes/daily.org")))
 #+end_src
 
 *** Org TODO cycles
