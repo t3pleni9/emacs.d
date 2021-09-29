@@ -67,6 +67,11 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
     (require 'org-pomodoro)
     (require 'zone)
     (require 'hydra)
+    (require 'org-noter)
+    (require 'org-ref)
+    (require 'org-ref-pdf)
+    (require 'org-ref-url-utils)
+    (require 'org-ref-arxiv)
   #+end_src
 
 * Require: Laptop
@@ -76,17 +81,12 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
       (require 'emms-mode-line)
       (require 'emms-player-mpv)
       (require 'volume)    
-      (require 'org-ref)
-      (require 'org-ref-pdf)
-      (require 'org-ref-url-utils)
-      (require 'org-ref-arxiv)
       (require 'calfw-org)
       (require 'emacs-totp)
       (require 'org-roam)
       (require 'org-roam-server)
       (require 'org-drill)
       (require 'deft)
-      (require 'org-noter)
       (require 'org-password-manager))
 #+end_src
 
@@ -1326,9 +1326,6 @@ Add to global tex-compile commands
 Search through bibtex reference using helm reference
 Only defined for laptop
 #+begin_src emacs-lisp
-(when (system-is-laptop)
-#+end_src
-#+begin_src emacs-lisp
 (defun my/helm-bibtex-publications (&optional arg)
   "Search BibTeX entries authored by “Jane Doe”.
 
@@ -1404,7 +1401,7 @@ Add compatibility between interleave and org-noter
 Org-noter config
 #+begin_src emacs-lisp
   (setq org-noter-always-create-frame nil)
-  (setq org-noter-notes-search-path (list bibtex-completion-notes-path ".")))
+  (setq org-noter-notes-search-path (list bibtex-completion-notes-path "."))
 #+end_src
 
 ** Org roam
@@ -2008,7 +2005,6 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 *** org-ref
 Org-ref Sugars
 #+begin_src emacs-lisp
-(when (system-is-laptop)
   (defhydra hydra-org-ref (:color blue)
     "
     ^
@@ -2033,7 +2029,7 @@ Org-ref Sugars
     ("b" doi-add-bibtex-entry)
     ("A" arxiv-add-bibtex-entry)
     ("a" arxiv-lookup)
-    ("y" org-bibtex-yank)))
+    ("y" org-bibtex-yank))
 #+end_src
 
 
@@ -2224,8 +2220,7 @@ Have helm handle most of the things around
   (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
   (global-set-key (kbd "C-x C-f") #'helm-find-files)
   (global-set-key (kbd "C-c h") 'hydra-helm/body)
-  (when (system-is-laptop)
-    (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications))
+  (global-set-key (kbd "C-x p") 'my/helm-bibtex-publications)
   (global-set-key (kbd "C-x b") 'helm-mini)
   (define-key dired-mode-map  (kbd "C-x C-q") 'wdired-change-to-wdired-mode)
 #+end_src
@@ -2241,7 +2236,6 @@ Links agendas and capture templates
 
 References, Publications and Citations
 #+begin_src emacs-lisp
-(when (system-is-laptop)
   (setq org-ref-insert-cite-key "C-c M-]")
 #+end_src
 
@@ -2266,7 +2260,7 @@ Updating =org-noter-set-doc-split-fraction= in-order to split window with a spec
            (org-entry-properties nil org-noter--property-doc-split-fraction))
            (org-entry-put nil org-noter--property-doc-split-fraction (format "%s" org-noter-doc-split-ratio)))
         (org-noter))
-  (define-key org-mode-map (kbd "C-c i") 'my/org-noter))
+  (define-key org-mode-map (kbd "C-c i") 'my/org-noter)
 #+end_src
 
 #+RESULTS:

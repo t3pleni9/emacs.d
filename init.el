@@ -38,7 +38,7 @@
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   org-alert define-word unicode-fonts eshell-prompt-extras
                   org-present pdf-view-restore ob-elixir elixir-mode ein smartscan 
-                  dash-functional org-pomodoro hydra))
+                  dash-functional org-pomodoro hydra org-ref org-noter pdf-tools))
 
 (when (system-is-workstation)
   (defvar additionalPackages '()))
@@ -46,8 +46,7 @@
 (when (system-is-laptop)
   (defvar additionalPackages
     '(password-generator org-journal calfw-org calfw-ical calfw emms org-brain bibtex-utils elfeed-org
-                  org-noter org-ref elfeed pdf-tools
-                  volume org-emms
+                    elfeed volume org-emms
                   deft zone)))
 
 
