@@ -2261,11 +2261,16 @@ Updating =org-noter-set-doc-split-fraction= in-order to split window with a spec
     (setq org-noter-doc-split-ratio '(0.8 .0.5))
 
     (defun my/org-noter (&optional args)
-        (interactive)
-        (org-entry-put nil org-noter--property-doc-split-fraction (format "%s" org-noter-doc-split-ratio))
+      (interactive)
+      (if (not
+           (org-entry-properties nil org-noter--property-doc-split-fraction))
+           (org-entry-put nil org-noter--property-doc-split-fraction (format "%s" org-noter-doc-split-ratio)))
         (org-noter))
   (define-key org-mode-map (kbd "C-c i") 'my/org-noter))
 #+end_src
+
+#+RESULTS:
+: my/org-noter
 
 PDF View
 #+begin_src emacs-lisp
