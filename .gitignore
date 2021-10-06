@@ -33,3 +33,4 @@ org-clock-save.el
 /tutorial
 /.pdf-view-restore
 *.elc
+org-roam.db
