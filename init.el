@@ -16,11 +16,13 @@
 
 (defun system-is-laptop ()
   "Returns true if its the laptop work machine"
-  (string-equal system-name "in-justinjose.local"))
+  (or (string-equal system-name "Justins-MBP") (string-equal system-name "Justins-MacBook-Pro.local")))
 
 (defun system-is-workstation ()
   "Returns true if its the laptop work machine"
   (string-equal system-name "justinj"))
+
+(defvar additionalPackages '())
 
 (defvar basePackages
   '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme

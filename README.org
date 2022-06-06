@@ -94,7 +94,7 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
 ** Path setting: Laptop
 #+begin_src emacs-lisp
 (when (system-is-laptop)
-  (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/in-justin.jose/.miniconda/bin" ":/Users/in-justin.jose/.local/bin"))
+  (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin" ":/Users/justinjose/.miniconda/bin" ":/Users/justinjose/.local/bin"))
   (setq exec-path (append exec-path '("/usr/local/bin"))))
 #+end_src
 
@@ -1012,6 +1012,16 @@ After multiple iterations of the TODO cycles, finally decided on using a simple 
           ("POSTPONED" . "#008080")))
 #+end_src
 
+Mark tasks as done if subtasks are done
+#+begin_src emacs-lisp
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+
+(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+#+end_src
+
 ** PDF view
 Install PDF tools 
 #+begin_src emacs-lisp
@@ -1057,62 +1067,85 @@ Get a view of month ahead instead of the default 2 weeks.
 
 Org-super-agenda
 #+begin_src emacs-lisp
-(defun get-fortnight-date ()
-  (let* ((now (decode-time))
-         (fortnight (copy-sequence now)))
-  (cl-incf (nth 3 fortnight) 14)
-  (format-time-string "%Y-%m-%d" (apply #'encode-time fortnight))))
-(let (target-date (get-fortnight-date))
-(setq org-agenda-time-grid '((daily today require-timed)
- (800 1000 1200 1400 1600 1800 2000)
- "......" "----------------")
-        org-agenda-skip-scheduled-if-done t
-        org-agenda-skip-deadline-if-done t
-        org-agenda-include-deadlines t
-        org-agenda-include-diary nil
-        org-agenda-use-time-grid t
-        org-agenda-block-separator nil
-        org-agenda-compact-blocks t
-        org-agenda-start-with-log-mode t)
+  (defun get-fortnight-date ()
+    (let* ((now (decode-time))
+           (fortnight (copy-sequence now)))
+    (cl-incf (nth 3 fortnight) 14)
+    (format-time-string "%Y-%m-%d" (apply #'encode-time fortnight))))
+    (setq org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t%-6e% s")
+                                (todo . " %i %-12:c %-6e")
+                                (tags . " %i %-12:c")
+                                (search . " %i %-12:c")))
+  (let (target-date (get-fortnight-date))
+  (setq org-agenda-time-grid '((daily today require-timed)
+   (800 1000 1200 1400 1600 1800 2000)
+   "......" "----------------")
+          org-agenda-skip-scheduled-if-done t
+          org-agenda-skip-deadline-if-done t
+          org-agenda-include-deadlines t
+          org-agenda-include-diary nil
+          org-agenda-use-time-grid t
+          org-agenda-block-separator nil
+          org-agenda-compact-blocks t
+          org-agenda-start-with-log-mode t)
 
-    (setq org-super-agenda-groups
-           '((:log t)
-             (:name "Schedule"
-                    :time-grid t)
-             (:name "Today "
-                    :scheduled today)
-             (:name "Due Today"
-                    :deadline today)
-             (:name "Habit Tracker "
-                    :habit t)
-             (:name "Papers"
-                    :tag "@article")
-             (:name "Books"
-                    :tag "@book")
-             (:name "Courses"
-                    :tag "@course")
-             (:name "Birthdays & Anniversaries"
-                    :tag ("@anniversary" "@birthday")
-                    :order 98)
-             (:name "Overdue"
-                    :deadline past)
-             (:name "Bills and Payments"
-                    :tag "@bills_and_payments")
-             (:name "Important"
-                    :priority ("A" "B"))
-             (:name "Inprogress"
-                    :todo "INPROGRESS")
-             (:name "Due soon"
-                    :deadline future)
-             (:name "On Hold"
-                    :todo "HOLD"
-                    :order 7)
-             (:name "Shopping List"
-                    :tag "@shopping_list")
-             (:name "Scheduled earlier"
-                    :scheduled past))))
+      (setq org-super-agenda-groups
+             '((:log t)
+               (:name "Schedule"
+                      :time-grid t)
+               (:name "Today "
+                      :scheduled today)
+               (:name "Due Today"
+                      :deadline today)
+               (:name "Habit Tracker "
+                      :habit t)
+               (:name "Papers"
+                      :tag "@article")
+               (:name "Books"
+                      :tag "@book")
+               (:name "Courses"
+                      :tag "@course")
+               (:name "Birthdays & Anniversaries"
+                      :tag ("@anniversary" "@birthday")
+                      :order 98)
+               (:name "Overdue"
+                      :deadline past)
+               (:name "Bills and Payments"
+                      :tag "@bills_and_payments")
+               (:name "Important"
+                      :priority ("A" "B"))
+               (:name "Inprogress"
+                      :todo "INPROGRESS")
+               (:name "Due soon"
+                      :deadline future)
+               (:name "On Hold"
+                      :todo "HOLD"
+                      :order 7)
+               (:name "Shopping List"
+                      :tag "@shopping_list")
+               (:name "Scheduled earlier"
+                      :scheduled past))))
 
 #+end_src
+
+#+RESULTS:
+| :log  | t                         |            |                          |        |    |
+| :name | Schedule                  | :time-grid | t                        |        |    |
+| :name | Today                     | :scheduled | today                    |        |    |
+| :name | Due Today                 | :deadline  | today                    |        |    |
+| :name | Habit Tracker             | :habit     | t                        |        |    |
+| :name | Papers                    | :tag       | @article                 |        |    |
+| :name | Books                     | :tag       | @book                    |        |    |
+| :name | Courses                   | :tag       | @course                  |        |    |
+| :name | Birthdays & Anniversaries | :tag       | (@anniversary @birthday) | :order | 98 |
+| :name | Overdue                   | :deadline  | past                     |        |    |
+| :name | Bills and Payments        | :tag       | @bills_and_payments      |        |    |
+| :name | Important                 | :priority  | (A B)                    |        |    |
+| :name | Inprogress                | :todo      | INPROGRESS               |        |    |
+| :name | Due soon                  | :deadline  | future                   |        |    |
+| :name | On Hold                   | :todo      | HOLD                     | :order |  7 |
+| :name | Shopping List             | :tag       | @shopping_list           |        |    |
+| :name | Scheduled earlier         | :scheduled | past                     |        |    |
 
 Display TODO list in a formatted manner
 #+begin_src emacs-lisp
@@ -2196,6 +2229,12 @@ Push point to mark ring
 (global-set-key (kbd "C-`") 'push-mark-no-activate)
 #+end_src
 
+Dumb Jump
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-M-g") 'xref-find-definitions)
+  (global-set-key (kbd "C-M-p") 'xref-pop-marker-stack)
+#+end_src
+
 ** GIT
 Git key bindings, with added sugar of hydra
 #+begin_src emacs-lisp
@@ -2290,10 +2329,10 @@ Music Player
 |-----------------+-------------|
 | Volume Control  | Key Binding |
 |-----------------+-------------|
-| Increase volume | =s-+=       |
-| Decrease Volume | =s--=       |
-| Mute Volume     | =C-u s--=   |
-| Un Mute Volume  | =C-u s-+=   |
+| Increase volume | =s-+=         |
+| Decrease Volume | =s--=         |
+| Mute Volume     | =C-u s--=     |
+| Un Mute Volume  | =C-u s-+=     |
 |-----------------+-------------|
 
 #+begin_src emacs-lisp
