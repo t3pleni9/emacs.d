@@ -528,7 +528,7 @@ Evil mode setup
 
     ;; no vim insert bindings
     :config
-    (evil-mode 1)
+    (evil-mode 0)
     (evil-ex-define-cmd "q" 'kill-this-buffer)
     ;; Need to type out :quit to close emacs
     (evil-ex-define-cmd "quit" 'evil-quit)
@@ -548,7 +548,6 @@ Evil mode setup
 #+end_src
 
 #+begin_src emacs-lisp
-  ;; (global-display-line-numbers-mode t)
   (auto-save-visited-mode t)
   (global-visual-line-mode t)
 
@@ -671,8 +670,17 @@ Standard Indent value to 2
 (setq-default standard-indent 2)
 #+end_src
 
+Make line numbers relative
+#+begin_src emacs-lisp
+  (defun enable-relative-line-numbers-hook ()
+      (display-line-numbers-mode)
+      (setq display-line-numbers 'relative))
+#+end_src
+
 Programming Mode Hooks
 #+begin_src emacs-lisp
+  (add-hook 'prog-mode-hook #'enable-relative-line-numbers-hook)
+  (add-hook 'yaml-mode-hook #'enable-relative-line-numbers-hook)
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'prog-mode-hook #'yafolding-mode)
   (add-hook 'json-mode-hook #'yafolding-mode)
@@ -1089,6 +1097,17 @@ Remember the last read page
 (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode)
 (setq pdf-view-restore-filename "~/.emacs.d/.pdf-view-restore")
 #+end_src
+
+Fix evil conflict with pdf-tool
+#+begin_src emacs-lisp
+(evil-set-initial-state 'pdf-view-mode 'emacs)
+(add-hook 'pdf-view-mode-hook
+  (lambda ()
+    (set (make-local-variable 'evil-emacs-state-cursor) (list nil))))
+#+end_src
+
+#+RESULTS:
+| (lambda nil (set (make-local-variable 'evil-emacs-state-cursor) (list nil))) | (lambda nil (set (make-local-variable 'evil-evilified-state-cursor) (list nil))) | pdf-view-restore-mode | pdf-tools-enable-minor-modes |
 
 ** Org-agenda
 Get a view of month ahead instead of the default 2 weeks.
@@ -2267,6 +2286,12 @@ Dumb Jump
   (global-set-key (kbd "C-M-p") 'xref-pop-marker-stack)
 #+end_src
 
+** Evil
+Remap =/= to <spc>
+#+begin_src emacs-lisp
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "SPC") 'evil-search-forward))
+#+end_src
 ** GIT
 Git key bindings, with added sugar of hydra
 #+begin_src emacs-lisp

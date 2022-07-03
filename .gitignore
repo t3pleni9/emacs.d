@@ -34,3 +34,5 @@ org-clock-save.el
 /.pdf-view-restore
 *.elc
 org-roam.db
+.tutor
+.git-bkp
