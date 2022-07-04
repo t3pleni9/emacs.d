@@ -528,7 +528,7 @@ Evil mode setup
 
     ;; no vim insert bindings
     :config
-    (evil-mode 0)
+    (evil-mode 1)
     (evil-ex-define-cmd "q" 'kill-this-buffer)
     ;; Need to type out :quit to close emacs
     (evil-ex-define-cmd "quit" 'evil-quit)
@@ -1105,9 +1105,6 @@ Fix evil conflict with pdf-tool
   (lambda ()
     (set (make-local-variable 'evil-emacs-state-cursor) (list nil))))
 #+end_src
-
-#+RESULTS:
-| (lambda nil (set (make-local-variable 'evil-emacs-state-cursor) (list nil))) | (lambda nil (set (make-local-variable 'evil-evilified-state-cursor) (list nil))) | pdf-view-restore-mode | pdf-tools-enable-minor-modes |
 
 ** Org-agenda
 Get a view of month ahead instead of the default 2 weeks.
