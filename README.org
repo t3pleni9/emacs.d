@@ -528,11 +528,11 @@ Evil mode setup
 
     ;; no vim insert bindings
     :config
-    (evil-mode 1)
+    (evil-mode 0)
     (evil-ex-define-cmd "q" 'kill-this-buffer)
     ;; Need to type out :quit to close emacs
     (evil-ex-define-cmd "quit" 'evil-quit)
-    (setq evil-default-state 'emacs)
+    (setq evil-default-state 'normal)
     (setq 
       evil-normal-state-tag (propertize " Normal " 'face '((:background "#77DD76" :foreground "black")))
       evil-emacs-state-tag (propertize " Emacs " 'face '((:background "#78A2CC" :foreground "black")))
@@ -1141,6 +1141,8 @@ Org-super-agenda
              '((:log t)
                (:name "Schedule"
                       :time-grid t)
+               (:name "Project Schedule "
+                      :tag "@schedule")
                (:name "Today "
                       :scheduled today)
                (:name "Due Today"
@@ -1179,6 +1181,7 @@ Org-super-agenda
 #+RESULTS:
 | :log  | t                         |            |                          |        |    |
 | :name | Schedule                  | :time-grid | t                        |        |    |
+| :name | Project Schedule          | :tag       | @schedule                |        |    |
 | :name | Today                     | :scheduled | today                    |        |    |
 | :name | Due Today                 | :deadline  | today                    |        |    |
 | :name | Habit Tracker             | :habit     | t                        |        |    |
@@ -1498,22 +1501,39 @@ Org-Roam setup to facilitate note taking for the research
 (setq-default org-roam-directory (concat org-directory "/research"))
 (setq org-roam-completion-system 'helm)
 (setq org-roam-graph-exclude-matcher '("reference"))
+(setq org-roam-index-file (concat org-roam-directory "/README.org"))
 #+end_src
 
 Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+begin_src emacs-lisp
-  (setq-default org-roam-capture-templates '(("d" "default" plain
-    (function org-roam-capture--get-point)
-    "%?" :file-name "notes/%<%Y%m%d%H%M%S>" :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n
-  " :unnarrowed t)
-  ;; ("b" "bookends" plain (function org-roam-capture--get-point)
-  ;;            "- tags :: [[open-ext:bookends://sonnysoftware.com/${bid}][Bookends link]]\n- reference :: ${fcite}\n\n%?"
-  ;;            :file-name "exocortex/notes/${slug}"
-  ;;            :head "#+TITLE: ${title}\n#+DATE: %<%Y-%m-%d>\n#+ROAM_KEY: ${ref}\n\
-  ;; #+BID: ${bid}\n#+PDF_FILE: ${pdf}\n#+CATEGORY: article\n\n"
-  ;;            :unnarrowed t
-  ;;            :immediate-finish t)
-  ))
+  (setq-default org-roam-capture-templates
+    '(
+      ("u" "Unordered Notes" plain
+       (function org-roam-capture--get-point)
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n"
+       :file-name "exocortex/unordered/%<%Y%m%d%H%M%S>_${slug}"
+       :immediate-finish t)
+      ("r" "References Notes" plain
+       (function org-roam-capture--get-point)
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n"
+       :file-name "exocortex/references/%<%Y%m%d%H%M%S>_${slug}"
+       :immediate-finish t)
+      ("n" "Permanant Note" plain
+       (function org-roam-capture--get-point)
+       "%?" :file-name "exocortex/permanant/%<%Y%m%d%H%M%S>_${slug}"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - prev :: %a\n - next ::  \n - tags :: \n\n %i\n"
+       :unnarrowed t)
+      ("p" "Project" plain
+       (function org-roam-capture--get-point)
+       "%?" :file-name "exocortex/projects/%<%Y%m%d%H%M%S>_${slug}"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K\n"
+       :unnarrowed t)
+      ("t" "tags" plain
+       (function org-roam-capture--get-point)
+       "%?" :file-name "exocortex/tags/%<%Y%m%d%H%M%S>_${slug}"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - tags :: \n\n %i\n"
+       :unnarrowed t)
+      ))
 #+end_src
 
 Roam Server
@@ -1875,10 +1895,20 @@ Setup for managing IRC
 ** EWW
 Make EWW default
 #+begin_src emacs-lisp
-(setq browse-using-mpv "mpv")
-(setq browse-url-browser-function '(("youtube.com" . browse-using-mpv)
-          ("youtu.be" . browse-using-mpv)
-          ("." . browse-url-generic)))
+  (setq browse-using-mpv "mpv")
+  (when (system-is-laptop)
+    (setq browse-url-browser-function
+          '(("youtube.com" . browse-using-mpv)
+            ("youtu.be" . browse-using-mpv)
+            ("docs.google.com" . browse-url-default-macosx-browser)  ;; Open google docs in the default browser
+            ("trello.com" . browse-url-default-macosx-browser)  ;; Open google docs in the default browser
+            ("." . browse-url-default-macosx-browser))))
+  (when (system-is-workstation)
+    (setq browse-url-browser-function
+          '(("youtube.com" . browse-using-mpv)
+            ("youtu.be" . browse-using-mpv)
+            ("." . browse-url-generic))
+          ))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2099,7 +2129,8 @@ Org-ref Sugars
     _A_ Add arxiv bibtex      _a_ Arxiv Search        _i_ Insert Link reference
     _q_ Quit                  ^^                      _c_ Create New Note      
     ^^                        ^^                      _d_ Deft
-    ^^                        ^^                      _s_ Org-roam Server
+    ^^                        ^^                      _s_ Switch Buffer
+    ^^                        ^^                      _0_ Roam Index
     "
     ("q" nil)
     ("r" org-roam)
@@ -2107,13 +2138,14 @@ Org-ref Sugars
     ("i" org-roam-insert)
     ("c" org-roam-capture)
     ("d" deft)
-    ("s" my/launch-org-roam-firefox)
+    ("s" org-roam-switch-to-buffer)
     ("L" org-ref-helm-insert-label-link) 
     ("I" org-ref-helm-insert-ref-link)
     ("b" doi-add-bibtex-entry)
     ("A" arxiv-add-bibtex-entry)
     ("a" arxiv-lookup)
-    ("y" org-bibtex-yank))
+    ("y" org-bibtex-yank)
+    ("0" org-roam-jump-to-index))
 #+end_src
 
 
