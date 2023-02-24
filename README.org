@@ -979,13 +979,13 @@ A place to store and remember everything that I can't burden my brain with think
 
 - References :: All the papers which need to be read, are captured into references.bib, whose offshot gets captured in references. They get planned and scheduled, and at max may be a part of a project. The section in references only moves to Projects, and never to Inbox.
 #+begin_src emacs-lisp
-(setq references-file-path "~/Documents/org-notes/research/bibliography/references.org")
+(setq references-file-path "~/Documents/org-notes/slipbox/bibliography/references.org")
 #+end_src
 
 - Personal Library :: A collection of novels - fictional and non fictional to read. Its always good to have a habit for reading
 
 #+begin_src emacs-lisp
-(setq personal-library-file-path "~/Documents/org-notes/research/reading-list/library.org")
+(setq personal-library-file-path "~/Documents/org-notes/slipbox/reading-list/library.org")
 #+end_src
 
 - Projects :: This makes sure that everything I start gets done. Things move from capture into projects, gets scheduled and mostly has notes and sub items - scheduled or unscheduled. Nothing gets added to projects without having lived in capture
@@ -1441,7 +1441,7 @@ Function to Update bib files when adding new one.
 #+begin_src emacs-lisp
   (defun update-bibfiles () 
     (interactive)
-    (let* ((bib-path "~/Documents/org-notes/research/bibliography/" ) (bib-files 
+    (let* ((bib-path "~/Documents/org-notes/slipbox/bibliography/" ) (bib-files 
            (mapcar 
             (lambda (x) (concat bib-path x )) 
             (directory-files bib-path nil "bib$"))))
@@ -1454,8 +1454,8 @@ Function to Update bib files when adding new one.
 
 Org-ref Files 
 #+begin_src emacs-lisp
-  (setq org-ref-pdf-directory "~/Documents/org-notes/research/bibliography/bibtex-pdfs/"
-        org-ref-notes-directory "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
+  (setq org-ref-pdf-directory "~/Documents/org-notes/slipbox/bibliography/bibtex-pdfs/"
+        org-ref-notes-directory "~/Documents/org-notes/slipbox/bibliography/helm-bibtex-notes"
         org-ref-notes-function 'org-ref-notes-function-many-files)
   (update-bibfiles)
 #+end_src
@@ -1463,8 +1463,8 @@ Org-ref Files
 *** Bibtex
 
 #+begin_src emacs-lisp
-  (setq bibtex-completion-library-path "~/Documents/org-notes/research/bibliography/bibtex-pdfs"
-        bibtex-completion-notes-path "~/Documents/org-notes/research/bibliography/helm-bibtex-notes"
+  (setq bibtex-completion-library-path "~/Documents/org-notes/slipbox/bibliography/bibtex-pdfs"
+        bibtex-completion-notes-path "~/Documents/org-notes/slipbox/bibliography/helm-bibtex-notes"
         bibtex-completion-pdf-field "File"
         bibtex-completion-pdf-symbol "⌘"
         bibtex-completion-notes-symbol "✎"
@@ -1498,11 +1498,14 @@ Org-noter config
    #+end_src
 Org-Roam setup to facilitate note taking for the research
 #+begin_src emacs-lisp
-(setq-default org-roam-directory (concat org-directory "/research"))
+(setq-default org-roam-directory (concat org-directory "/slipbox"))
 (setq org-roam-completion-system 'helm)
 (setq org-roam-graph-exclude-matcher '("reference"))
 (setq org-roam-index-file (concat org-roam-directory "/README.org"))
 #+end_src
+
+#+RESULTS:
+: ~/Documents/org-notes/slipbox/README.org
 
 Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+begin_src emacs-lisp
@@ -1510,31 +1513,139 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
     '(
       ("u" "Unordered Notes" plain
        (function org-roam-capture--get-point)
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%i\n"
        :file-name "exocortex/unordered/%<%Y%m%d%H%M%S>_${slug}"
-       :immediate-finish t)
+       :immediate-finish t
+       :jump-to-captured t
+       :unnarrowed t)
       ("r" "References Notes" plain
        (function org-roam-capture--get-point)
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - %a\n%i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%i\n"
        :file-name "exocortex/references/%<%Y%m%d%H%M%S>_${slug}"
-       :immediate-finish t)
+       :immediate-finish t
+       :jump-to-captured t
+       :unnarrowed t)
       ("n" "Permanant Note" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/permanant/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - prev :: %a\n - next ::  \n - tags :: \n\n %i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- prev :: %a\n - next ::  \n - tags :: \n\n %i\n"
+       :immediate-finish t
+       :jump-to-captured t
        :unnarrowed t)
       ("p" "Project" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/projects/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n"
+       :immediate-finish t
+       :jump-to-captured t
        :unnarrowed t)
       ("t" "tags" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/tags/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%K - tags :: \n\n %i\n"
+       :head "#+TITLE: ${title}\n#+FILETAGS: \"TAG\"\n#+ROAM_ALIAS: \"#${slug}\"\n- tags :: \n\n %i\n"
+       :immediate-finish t
+       :jump-to-captured t
        :unnarrowed t)
       ))
 #+end_src
+
+#+RESULTS:
+| u | Unordered Notes | plain | #'org-roam-capture--get-point | :head | #+TITLE: ${title} |
+
+#+begin_src emacs-lisp
+  (defun my/org-roam-insert-tags (&optional lowercase completions filter-fn description)
+    "Find an Org-roam file, and insert a relative org link to it at point.
+  If LOWERCASE, downcase the title before insertion.
+  COMPLETIONS is a list of completions to be used instead of
+  `org-roam--get-title-path-completions`.
+  FILTER-FN is the name of a function to apply on the candidates
+  which takes as its argument an alist of path-completions.
+  If DESCRIPTION is provided, use this as the link label.  See
+  `org-roam--get-title-path-completions' for details."
+    (interactive "P")
+    (let* ((region (and (region-active-p)
+                        ;; following may lose active region, so save it
+                        (cons (region-beginning) (region-end))))
+           (region-text (when region
+                          (buffer-substring-no-properties (car region) (cdr region))))
+           (completions (--> (or completions
+                                 (org-roam--get-title-path-completions))
+                             (if filter-fn
+                                 (funcall filter-fn it)
+                               it)))
+           (title-with-tags (org-roam-completion--completing-read "File: " completions
+                                                                  :initial-input region-text))
+           (res (cdr (assoc title-with-tags completions)))
+           (title (or (plist-get res :title)
+                      title-with-tags))
+           (target-file-path (plist-get res :path))
+           (description (or description region-text title))
+           (link-description (org-roam--format-link-title (if lowercase
+                                                              (downcase description)
+                                                            description))))
+      (if (and target-file-path
+               (file-exists-p target-file-path))
+          (progn
+            (when region ;; Remove previously selected text.
+              (delete-region (car region) (cdr region)))
+            (insert (org-roam--format-link target-file-path link-description))
+            (my/auto-insert-backlinks (buffer-file-name) target-file-path))
+        (when (org-roam-capture--in-process-p)
+          (user-error "Nested Org-roam capture processes not supported"))
+        (let ((org-roam-capture--info `((title . ,title-with-tags)
+                                        (slug . ,(org-roam--title-to-slug title-with-tags))))
+              (org-roam-capture--context 'title))
+          (add-hook 'org-capture-after-finalize-hook #'org-roam-capture--insert-link-h)
+          (setq org-roam-capture-additional-template-props (list :region region
+                                                                 :link-description link-description
+                                                                 :capture-fn 'org-roam-insert))
+          (org-roam--with-template-error 'org-roam-capture-templates
+            (org-roam-capture--capture))))
+      ))
+
+  (defun my/insert-backlinks-with-capture ()
+    (my/auto-insert-backlinks
+     (plist-get org-capture-plist :original-file)
+     (plist-get (plist-get org-capture-plist :org-roam) :file-path))
+    (org-roam-capture--insert-link-h))
+
+  (defun my/org-roam-insert-immediate (arg &rest args)
+    (interactive "P")
+    (let ((args (cons arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                            '(:immediate-finish t :jump-to-captured nil)))))
+      (apply #'org-roam-insert args)))
+#+end_src
+
+#+RESULTS:
+: my/org-roam-insert-immediate
+
+#+begin_src emacs-lisp
+  (defun my/org-file-get-title (file)
+    (with-current-buffer (find-file-noselect file)
+      (cadar (org-collect-keywords '("TITLE")))))
+
+  (defun my/auto-insert-backlinks (source-file-path target-file-path &rest args)
+    (interactive p)
+    (with-current-buffer
+        (find-file-noselect target-file-path)
+      (unless (ignore-errors
+                (org-find-exact-headline-in-buffer "Backlinks"))
+        (goto-char (point-max))
+        (insert "\n")
+        (org-insert-heading nil nil t)
+        (insert "Backlinks"))
+      (goto-char (org-find-exact-headline-in-buffer "Backlinks"))
+      (end-of-line)
+      (insert
+       (concat "\n- "
+               (org-roam--format-link source-file-path (my/org-file-get-title source-file-path))))
+      (save-buffer)))
+
+#+end_src
+
+#+RESULTS:
+: my/auto-insert-backlinks
 
 Roam Server
 #+begin_src emacs-lisp
@@ -1554,7 +1665,7 @@ Autolaunch firefox when ever org-roam-server keys are pressed
 
 *** Deft
 #+begin_src emacs-lisp
-(setq deft-directory (concat org-directory "/research"))
+(setq deft-directory (concat org-directory "/slipbox"))
 
 (setq deft-extensions '("org"))
 (setq deft-default-extension "org")
@@ -1600,7 +1711,7 @@ Deft new file name convention
 ("t" "Todos")
 ("tt" "Task [capture]" entry
 	 (file+headline capture-file-path "Tasks")
-	 "* TODO %K - %a\n:PROPERTIES:\n:Effort:   %^{Effort}\n:END:\nSCHEDULED: %t\n%i\n%?\n")
+	 "* TODO :PROPERTIES:\n:Effort:   %^{Effort}\n:END:\nSCHEDULED: %t\n%i\n%?\n")
 #+end_src
 
 Also the home tasks
@@ -2122,32 +2233,55 @@ Org-ref Sugars
   (defhydra hydra-org-ref (:color blue)
     "
     ^
-    ^Org-ref  ^               ^Do^                    ^Roam^                  
-    ^─────^───────────────────^──^────────────────────^────^──────────────────
-    _L_ Create label          _I_ Insert Reference    _r_ Org-Roam
-    _b_ Add doi bibtex        _y_ Bibtex Yank         _f_ Roam Find Files 
-    _A_ Add arxiv bibtex      _a_ Arxiv Search        _i_ Insert Link reference
-    _q_ Quit                  ^^                      _c_ Create New Note      
-    ^^                        ^^                      _d_ Deft
-    ^^                        ^^                      _s_ Switch Buffer
-    ^^                        ^^                      _0_ Roam Index
+    ^Org-ref^                 ^Do^                   
+    ^─────^───────────────────^──^───────────────────
+    _l_ Create label          _i_ Insert Reference   
+    _b_ Add doi bibtex        _y_ Bibtex Yank        
+    _A_ Add arxiv bibtex      _a_ Arxiv Search       
+    _q_ Quit                  ^^                     
+    ^^                        ^^                     
+    ^^                        ^^                     
+    ^^                        ^^                     
+    "
+    ("q" nil)
+    ("l" org-ref-helm-insert-label-link) 
+    ("i" org-ref-helm-insert-ref-link)
+    ("b" doi-add-bibtex-entry)
+    ("A" arxiv-add-bibtex-entry)
+    ("a" arxiv-lookup)
+    ("y" org-bibtex-yank))
+#+end_src
+*** Org-roam
+#+begin_src emacs-lisp
+  (defhydra hydra-org-roam (:color blue)
+    "
+    ^
+    ^Org-roam^                  ^Note^                    ^Search^                  
+    ^─────^─────────────────────^────^────────────────────^────^──────────────────
+    _r_ Org-Roam                _c_ Create New Note       _d_ Deft
+    _f_ Roam Find Files         _T_ Create for today      _s_ Switch Buffer
+    _i_ Insert Link reference   _t_ Insert Tags           _b_ Backlink Mode
+    _0_ Roam Index              ^^  
+    _q_ Quit                    ^^                      
+    ^^                          ^^                      
+    ^^                          ^^                      
+    ^^                          ^^                      
     "
     ("q" nil)
     ("r" org-roam)
     ("f" org-roam-find-file)
-    ("i" org-roam-insert)
+    ("i" my/org-roam-insert-immediate)
+    ("b" org-roam-backlinks-mode)
     ("c" org-roam-capture)
     ("d" deft)
     ("s" org-roam-switch-to-buffer)
-    ("L" org-ref-helm-insert-label-link) 
-    ("I" org-ref-helm-insert-ref-link)
-    ("b" doi-add-bibtex-entry)
-    ("A" arxiv-add-bibtex-entry)
-    ("a" arxiv-lookup)
-    ("y" org-bibtex-yank)
+    ("T" org-roam-dailies-today)
+    ("t" my/org-roam-insert-tags)
     ("0" org-roam-jump-to-index))
 #+end_src
 
+#+RESULTS:
+: hydra-org-roam/body
 
 ** Music Player
 Spotify sugars
@@ -2370,13 +2504,19 @@ References, Publications and Citations
 
 Org-ref hydra sugar
 #+begin_src emacs-lisp
-(global-set-key (kbd "C-c r") 'hydra-org-ref/body)
+(global-set-key (kbd "C-c b") 'hydra-org-ref/body)
 #+end_src
 
-Org-brain
+#+RESULTS:
+: hydra-org-ref/body
+
+Org-roam
 #+begin_src emacs-lisp
- (define-key org-mode-map (kbd "C-c b") 'org-brain-visualize)
+ (global-set-key (kbd "C-c r") 'hydra-org-roam/body)
 #+end_src
+
+#+RESULTS:
+: hydra-org-roam/body
 
 Updating =org-noter-set-doc-split-fraction= in-order to split window with a specific ratio every time org-noter launches. Existing function is kept same, except for the split ratio
 #+begin_src emacs-lisp
