@@ -1513,7 +1513,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
     '(
       ("u" "Unordered Notes" plain
        (function org-roam-capture--get-point)
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n\n-tags :: \n- ref :: %a\n%i\n"
        :file-name "exocortex/unordered/%<%Y%m%d%H%M%S>_${slug}"
        :immediate-finish t
        :jump-to-captured t
@@ -1528,7 +1528,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
       ("n" "Permanant Note" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/permanant/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- prev :: %a\n - next ::  \n - tags :: \n\n %i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- tags :: \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
@@ -1548,9 +1548,6 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
        :unnarrowed t)
       ))
 #+end_src
-
-#+RESULTS:
-| u | Unordered Notes | plain | #'org-roam-capture--get-point | :head | #+TITLE: ${title} |
 
 #+begin_src emacs-lisp
   (defun my/org-roam-insert-tags (&optional lowercase completions filter-fn description)
