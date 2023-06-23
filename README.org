@@ -512,6 +512,41 @@ Sensitive Mode
               (auto-save-visited-mode t)))))
 #+end_src
 
+** Scala
+#+begin_src emacs-lisp
+  (use-package scala-mode
+    :interpreter ("scala" . scala-mode)
+    :mode "\\.s\\(cala\\|bt\\)$")
+#+end_src
+
+Fix indentation issues for =scala-3= while using =scala-mode=
+Following the configuration code in [[https://sideshowcoder.com/2021/12/30/new-scala-3-syntax-in-emacs/][New Scala 3 syntax in Emacs]]
+#+begin_src emacs-lisp
+  (defun is-scala3-project ()
+    "Check if the current project is using scala3.
+
+  Loads the build.sbt file for the project and serach for the scalaVersion."
+    (projectile-with-default-dir (projectile-project-root)
+      (when (file-exists-p "build.sbt")
+        (with-temp-buffer
+          (insert-file-contents "build.sbt")
+          (search-forward "scalaVersion := \"3" nil t)))))
+
+  (defun with-disable-for-scala3 (orig-scala-mode-map:add-self-insert-hooks &rest arguments)
+      "When using scala3 skip adding indention hooks."
+      (unless (is-scala3-project)
+        (apply orig-scala-mode-map:add-self-insert-hooks arguments)))
+
+  (advice-add #'scala-mode-map:add-self-insert-hooks :around #'with-disable-for-scala3)
+
+  (defun disable-scala-indent ()
+    "In scala 3 indent line does not work as expected due to whitespace grammar."
+    (when (is-scala3-project)
+      (setq indent-line-function 'indent-relative-maybe)))
+
+  (add-hook 'scala-mode-hook #'disable-scala-indent)
+#+end_src
+
 * Global Modes
 ** Global
 
@@ -951,6 +986,11 @@ Wrap region for word formatting
      ("_" "_" nil org-mode)
      ("`" "`" nil prog-mode)
      ("$" "$" nil (org-mode latex-mode))))
+#+end_src
+
+Open org links in the same window
+#+begin_src emacs-lisp
+(setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
 #+end_src
 
 ** Exo-cortex
@@ -1525,14 +1565,14 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
-      ("n" "Permanant Note" plain
+      ("p" "Permanant Note" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/permanant/%<%Y%m%d%H%M%S>_${slug}"
        :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- tags :: \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
-      ("p" "Project" plain
+      ("P" "Project" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/projects/%<%Y%m%d%H%M%S>_${slug}"
        :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n"
@@ -1698,6 +1738,26 @@ Deft new file name convention
               (org-remove-inline-images)
               (org-present-read-write)))
 #+end_src
+#+begin_src emacs-lisp
+  (use-package org-tree-slide
+    :hook ((org-tree-slide-play . (lambda ()
+                (org-display-inline-images)
+                (setq text-scale-mode-amount 5)
+                (org-present-read-only)
+                (text-scale-mode 1)))
+           (org-tree-slide-stop . (lambda ()
+                (setq text-scale-mode-amount 0)
+                (text-scale-mode 1)
+                (org-remove-inline-images)
+                (org-present-read-write))))
+    :custom
+    (org-tree-slide-slide-in-effect "End")
+    (org-tree-slide-activate-message "Start")
+    (org-tree-slide-deactivate-message nil)
+    (org-tree-slide-header t)
+    (org-tree-slide-breadcrumbs " > ")
+    (org-image-actual-width nil))
+#+end_src
 
 ** Capture Templates                                        :non_exec_block:
 
@@ -1711,7 +1771,7 @@ Deft new file name convention
 ("t" "Todos")
 ("tt" "Task [capture]" entry
 	 (file+headline capture-file-path "Tasks")
-	 "* TODO :PROPERTIES:\n:Effort:   %^{Effort}\n:END:\nSCHEDULED: %t\n%i\n%?\n")
+	 "* TODO \nSCHEDULED: %t\n:PROPERTIES:\n:Effort:   %^{Effort}\n:END:\n%i\n%?\n")
 #+end_src
 
 Also the home tasks
@@ -1766,7 +1826,7 @@ Also the home tasks
 ("j" "Journal")
 ("jt" "Today" entry
 (file+datetree+prompt journal-file-path)
-   "* TODO %K %a\n:PROPERTIES:\n:Effort:   %^{Effort}\n:END:\nSCHEDULED: %t\n%i\n%?")
+   "* TODO %K %a\nSCHEDULED: %t\n:PROPERTIES:\n:Effort:   %^{Effort}\n:END:\n%i\n%?")
 ("jj" "Journal" entry
 (file+datetree+prompt journal-file-path)
    "* %U %K - %a\n%i\n%?\n")
@@ -2204,24 +2264,25 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
   _q_ quit            _i_ imenu               _c_ Conda Activate          _P_ Start/Stop Pomodoro
   _r_ resume          _s_ swoop               _d_ Conda Deactivate        _I_ Clock In
   ^^                  _S_ swoop all           _n_ Jupyter Notebooks       _O_ Clock Out
-  ^^                  _k_ kill-ring           _p_ PyBuild
-  ^^                  _b_ org brain           ^^
-  ^^                  _m_ Mark Rings          ^^
+  ^^                  _k_ kill-ring           _N_ Start Jupyter Server    _T_ Tree slide Mode
+  ^^                  _m_ Mark Rings          _p_ PyBuild    
+  ^^                  ^^
   ^^                  ^^
   "
     ("q" nil)
     ("r" helm-resume)
     ("i" helm-imenu)
-    ("b" org-brain-visualize)
     ("m" helm-all-mark-rings)
     ("s" helm-swoop)
     ("S" helm-multi-swoop-all)
     ("k" helm-show-kill-ring)
     ("n" ein:notebooklist-open)
+    ("N" ein:jupyter-server-start)
     ("c" pyvenv-workon)
     ("p" py-build)
     ("d" pyvenv-deactivate)
     ("P" org-pomodoro)
+    ("T" org-tree-slide-mode)
     ("I" org-clock-in)
     ("O" org-clock-out))
 #+end_src
@@ -2543,6 +2604,16 @@ PDF View
 (define-key pdf-view-mode-map (kbd "C-c C-d") 'pdf-view-midnight-minor-mode)
 (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
 #+end_src
+
+Tree slide mode
+#+begin_src emacs-lisp
+  (define-key org-tree-slide-mode-map (kbd "j") 'org-tree-slide-move-next-tree)
+  (define-key org-tree-slide-mode-map (kbd "k") 'org-tree-slide-move-previous-tree)
+  (define-key org-tree-slide-mode-map (kbd "q") 'org-tree-slide-mode)
+#+end_src
+
+#+RESULTS:
+: org-tree-slide-mode
 
 ** Audio / Multimedia
 Music Player
