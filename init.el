@@ -40,7 +40,7 @@
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   org-alert define-word unicode-fonts eshell-prompt-extras
                   org-present pdf-view-restore ob-elixir elixir-mode ein smartscan 
-                  dash-functional org-pomodoro hydra org-ref org-noter pdf-tools))
+                  dash-functional org-pomodoro hydra org-ref org-noter pdf-tools typescript-mode scala-mode))
 
 (when (system-is-workstation)
   (defvar additionalPackages '()))

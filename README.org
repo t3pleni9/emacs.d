@@ -72,6 +72,8 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
     (require 'org-ref-pdf)
     (require 'org-ref-url-utils)
     (require 'org-ref-arxiv)
+    (require 'scala-mode)
+    (require 'typescript-mode)
   #+end_src
 
 * Require: Laptop
