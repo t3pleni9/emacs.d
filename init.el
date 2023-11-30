@@ -1,4 +1,4 @@
-
+﻿
 ;; init.el --- Emacs configuration
 
 ;; INSTALL PACKAGES
@@ -8,11 +8,17 @@
 (require 'epa-file)
 
 
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+;(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
+(setq package-archives
+      '(("melpa" . "https://melpa.org/packages/")
+        ("gnu" . "https://elpa.gnu.org/packages/")
+        ("org" . "http://orgmode.org/elpa/")))
+
 (package-initialize)
 
 (when (not package-archive-contents)
-  (package-refresh-contents))
+  (package-refresh-contents)˙)
 
 (defun system-is-laptop ()
   "Returns true if its the laptop work machine"
@@ -39,16 +45,17 @@
                   helm-company ssh jupyter dockerfile-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   org-alert define-word unicode-fonts eshell-prompt-extras
-                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan 
-                  dash-functional org-pomodoro hydra org-ref org-noter pdf-tools typescript-mode scala-mode))
+                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan lsp-mode lsp-ui
+                  ;;emacsql emacsql-sqlite
+                  dash-functional org-pomodoro hydra org-ref org-noter pdf-tools typescript-mode scala-mode emms calfw calfw-org))
 
 (when (system-is-workstation)
   (defvar additionalPackages '()))
-
+(when (system-is-laptop) (message "It is a laptop dummy"))
 (when (system-is-laptop)
   (defvar additionalPackages
     '(password-generator org-journal calfw-org calfw-ical calfw emms org-brain bibtex-utils elfeed-org
-                    elfeed volume org-emms
+                    elfeed volume org-emms org-drill org-tree-slide
                   deft zone)))
 
 
@@ -70,7 +77,8 @@
   (add-to-list 'load-path "~/.emacs.d/deprecated/org-roam")
   (add-to-list 'load-path "~/.emacs.d/deprecated/org-roam-server")
   (add-to-list 'load-path "~/.emacs.d/deprecated/emacsql")
-  (add-to-list 'load-path "~/.emacs.d/deprecated/emacsql-sqlite"))
+  (add-to-list 'load-path "~/.emacs.d/deprecated/emacsql-sqlite")
+  )
 
 (setq custom-file "~/.emacs.d/external/custom-variables.el")
 (load custom-file)
@@ -79,3 +87,4 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
+(put 'scroll-left 'disabled nil)
