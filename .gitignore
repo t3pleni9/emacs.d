@@ -36,3 +36,4 @@ org-clock-save.el
 org-roam.db
 .tutor
 .git-bkp
+.lsp-session-v1
