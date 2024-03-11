@@ -1517,6 +1517,22 @@ Add to global tex-compile commands
 (add-to-list 'tex-compile-commands '("latexmk -pdflatex='pdflatex -interaction nonstopmode' -pdf -bibtex -f %f")))
 #+end_src
 
+Show latex preview for formula after save
+#+begin_src emacs-lisp
+(defun my/org-render-latex-fragments ()
+      (progn (org-toggle-latex-fragment)
+             (org-toggle-latex-fragment))
+    (org-toggle-latex-fragment))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (add-hook 'after-save-hook 'my/org-render-latex-fragments nil 'make-the-hook-local)))
+
+(add-hook 'org-mode-hook 'my/org-render-latex-fragments)
+#+end_src
+
+#+RESULTS:
+
 ** Org ref
 Search through bibtex reference using helm reference
 Only defined for laptop
@@ -1650,6 +1666,13 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
+      ("s" "Permanant Sub Note" plain
+       (function org-roam-capture--get-point)
+       "%?" :file-name "exocortex/permanant/${sub-folder}/%<%Y%m%d%H%M%S>_${slug}"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- tags :: \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
+       :immediate-finish t
+       :jump-to-captured t
+       :unnarrowed t) 
       ("P" "Project" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/projects/%<%Y%m%d%H%M%S>_${slug}"
@@ -1668,7 +1691,6 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+end_src
 
 #+RESULTS:
-| u | Unordered Notes | plain | #'org-roam-capture--get-point | :head | #+TITLE: ${title} |
 
 #+begin_src emacs-lisp
   (defun my/org-roam-insert-tags (&optional lowercase completions filter-fn description)
@@ -2231,6 +2253,16 @@ Duplicate an entire line
   (move-beginning-of-line 1)
   )
 #+end_src
+
+Get title from a url
+#+begin_src emacs-lisp
+  (defun www-get-page-title (url)
+    (with-current-buffer (url-retrieve-synchronously url)
+      (goto-char 0)
+      (re-search-forward "<title>\\(.*\\)<[/]title>" nil t 1)
+      (match-string 1)))
+#+end_src
+
 ** View Mode
 Open Read-only files in view-mode by default
 #+begin_src emacs-lisp
