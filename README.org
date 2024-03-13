@@ -1531,7 +1531,14 @@ Show latex preview for formula after save
 (add-hook 'org-mode-hook 'my/org-render-latex-fragments)
 #+end_src
 
-#+RESULTS:
+Bigger latex fragment
+
+#+begin_src emacs-lisp
+(plist-put org-format-latex-options :scale 1.2)
+#+end_src
+
+
+
 
 ** Org ref
 Search through bibtex reference using helm reference
