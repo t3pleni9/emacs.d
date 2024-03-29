@@ -552,7 +552,7 @@ Examples:
   (when (require 'org-ref nil t)
     (seq-find
      (lambda (prefix) (s-prefix? prefix ref))
-     (-map (lambda (type) (concat type ":"))
+     (-map (lambda (type) (concat (car type) ":"))
            org-ref-cite-types))))
 
 (defun org-roam--ref-type (ref)
