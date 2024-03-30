@@ -1661,8 +1661,8 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
        :unnarrowed t)
       ("r" "References Notes" plain
        (function org-roam-capture--get-point)
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n%i\n"
-       :file-name "exocortex/references/%<%Y%m%d%H%M%S>_${slug}"
+       :head "#+TITLE: ${title}\n#+FILETAGS: \"REFERENCE\"\n#+ROAM_ALIAS: \"${slug}\"\n%i\n"
+       :file-name "references/%<%Y%m%d%H%M%S>_${slug}"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
@@ -1682,8 +1682,8 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
        :unnarrowed t) 
       ("P" "Project" plain
        (function org-roam-capture--get-point)
-       "%?" :file-name "exocortex/projects/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n"
+       "%?" :file-name "projects/%<%Y%m%d%H%M%S>_${slug}"
+       :head "#+TITLE: ${title}\n#+FILETAGS: \"PROJECTS\"\n#+ROAM_ALIAS: \"${slug}\"\n"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
