@@ -1768,6 +1768,62 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 : my/org-roam-insert-immediate
 
 #+begin_src emacs-lisp
+(defun my/org-roam-insert-labels (&optional lowercase completions filter-fn description)
+    "Find an Org-roam file, and insert a relative org link to it at point.
+  If LOWERCASE, downcase the title before insertion.
+  COMPLETIONS is a list of completions to be used instead of
+  `org-roam--get-title-path-completions`.
+  FILTER-FN is the name of a function to apply on the candidates
+  which takes as its argument an alist of path-completions.
+  If DESCRIPTION is provided, use this as the link label.  See
+  `org-roam--get-title-path-completions' for details."
+    (interactive "P")
+    (let* ((region (and (region-active-p)
+                        ;; following may lose active region, so save it
+                        (cons (region-beginning) (region-end))))
+           (region-text (when region
+                          (buffer-substring-no-properties (car region) (cdr region))))
+           (line-no (line-number-at-pos))
+           (completions (--> (or completions
+                                 (org-roam--get-title-path-completions))
+                             (if filter-fn
+                                 (funcall filter-fn it)
+                               it)))
+           (title-with-tags (org-roam-completion--completing-read "File: " completions
+                                                                  :initial-input region-text))
+           (res (cdr (assoc title-with-tags completions)))
+           (title (or (plist-get res :title)
+                      title-with-tags))
+           (target-file-path (plist-get res :path))
+           (description (or description region-text title))
+           (link-description (org-roam--format-link-title (if lowercase
+                                                              (downcase description)
+                                                            description))))
+      (if (and target-file-path
+               (file-exists-p target-file-path))
+          (progn
+            (when region ;; Remove previously selected text.
+              (delete-region (car region) (cdr region)))
+            (insert (org-roam--format-link target-file-path link-description))
+            (my/auto-insert-labeled-backlinks (buffer-file-name) target-file-path region-text line-no))
+        (when (org-roam-capture--in-process-p)
+          (user-error "Nested Org-roam capture processes not supported"))
+        (let ((org-roam-capture--info `((title . ,title-with-tags)
+                                        (slug . ,(org-roam--title-to-slug title-with-tags))))
+              (org-roam-capture--context 'title))
+          (add-hook 'org-capture-after-finalize-hook #'org-roam-capture--insert-link-h)
+          (setq org-roam-capture-additional-template-props (list :region region
+                                                                 :link-description link-description
+                                                                 :capture-fn 'org-roam-insert))
+          (org-roam--with-template-error 'org-roam-capture-templates
+            (org-roam-capture--capture))))
+      ))
+#+end_src
+
+#+RESULTS:
+: my/org-roam-insert-labels
+
+#+begin_src emacs-lisp
   (defun my/org-file-get-title (file)
     (with-current-buffer (find-file-noselect file)
       (cadar (org-collect-keywords '("TITLE")))))
@@ -1787,6 +1843,36 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
       (insert
        (concat "\n- "
                (org-roam--format-link source-file-path (my/org-file-get-title source-file-path))))
+      (save-buffer)))
+
+  (defun my/org-roam-format-link-line-no (target &optional description line-no)
+  "Formats an org link for a given file TARGET and link DESCRIPTION."
+  (let* ((here (ignore-errors
+                 (-> (or (buffer-base-buffer)
+                         (current-buffer))
+                     (buffer-file-name)
+                     (file-truename)
+                     (file-name-directory)))))
+    (org-link-make-string
+     (concat "file:" (if here
+                         (file-relative-name target here)
+                       target) (if line-no (concat "::" (number-to-string line-no)) ""))
+     description)))
+  (defun my/auto-insert-labeled-backlinks (source-file-path target-file-path  label &optional line-no &rest args)
+    (interactive p)
+    (with-current-buffer
+        (find-file-noselect target-file-path)
+      (unless (ignore-errors
+                (org-find-exact-headline-in-buffer "References"))
+        (goto-char (point-max))
+        (insert "\n")
+        (org-insert-heading nil nil t)
+        (insert "References"))
+      (goto-char (org-find-exact-headline-in-buffer "References"))
+      (end-of-line)
+      (insert
+       (concat "\n- "
+               (my/org-roam-format-link-line-no source-file-path label line-no)))
       (save-buffer)))
 
 #+end_src
@@ -1940,7 +2026,7 @@ Also the home tasks
 #+end_src
 
 *** Reference Papers
-Capture reference papers with a small help of =C-c r y=
+Capture reference papers with a small help of =C-c b y=
 #+begin_src emacs-lisp
 ("r" "Paper" entry
 (file+headline references-file-path "Papers")
@@ -2439,7 +2525,7 @@ Org-ref Sugars
     _r_ Org-Roam                _c_ Create New Note       _d_ Deft
     _f_ Roam Find Files         _T_ Create for today      _s_ Switch Buffer
     _i_ Insert Link reference   _t_ Insert Tags           _b_ Backlink Mode
-    _0_ Roam Index              ^^  
+    _0_ Roam Index              _l_ Label region  
     _q_ Quit                    ^^                      
     ^^                          ^^                      
     ^^                          ^^                      
@@ -2455,6 +2541,7 @@ Org-ref Sugars
     ("s" org-roam-switch-to-buffer)
     ("T" org-roam-dailies-today)
     ("t" my/org-roam-insert-tags)
+    ("l" my/org-roam-insert-labels)
     ("0" org-roam-jump-to-index))
 #+end_src
 
