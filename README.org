@@ -1790,7 +1790,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
                                  (funcall filter-fn it)
                                it)))
            (title-with-tags (org-roam-completion--completing-read "File: " completions
-                                                                  :initial-input region-text))
+                                                                  :initial-input ""))
            (res (cdr (assoc title-with-tags completions)))
            (title (or (plist-get res :title)
                       title-with-tags))
