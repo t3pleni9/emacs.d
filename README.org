@@ -1654,7 +1654,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
     '(
       ("u" "Unordered Notes" plain
        (function org-roam-capture--get-point)
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n\n- tags :: \n- ref :: %a\n%i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n\n #tag \n- ref :: %a\n%i\n"
        :file-name "exocortex/unordered/%<%Y%m%d%H%M%S>_${slug}"
        :immediate-finish t
        :jump-to-captured t
@@ -1669,14 +1669,14 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
       ("p" "Permanant Note" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/permanant/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- tags :: \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n #tag \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
       ("s" "Permanant Sub Note" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/permanant/${sub-folder}/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n- tags :: \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
+       :head "#+TITLE: ${title}\n#+ROAM_ALIAS: \"${slug}\"\n #tags \n- Links \n - prev :: %a\n - others :: \n\n\n %i\n"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t) 
@@ -1690,7 +1690,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
       ("t" "tags" plain
        (function org-roam-capture--get-point)
        "%?" :file-name "exocortex/tags/%<%Y%m%d%H%M%S>_${slug}"
-       :head "#+TITLE: ${title}\n#+FILETAGS: \"TAG\"\n#+ROAM_ALIAS: \"#${slug}\"\n- tags :: \n\n %i\n"
+       :head "#+TITLE: ${title}\n#+FILETAGS: \"TAG\"\n#+ROAM_ALIAS: \"#${slug}\"\n #tags \n\n %i\n"
        :immediate-finish t
        :jump-to-captured t
        :unnarrowed t)
