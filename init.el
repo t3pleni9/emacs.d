@@ -45,7 +45,7 @@
                   helm-company ssh jupyter dockerfile-mode csv helm
                   multiple-cursors magit material-theme better-defaults elpy wrap-region nov
                   org-alert define-word unicode-fonts eshell-prompt-extras
-                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan lsp-mode lsp-ui
+                  org-present pdf-view-restore ob-elixir elixir-mode ein smartscan lsp-mode lsp-ui god-mode
                   ;;emacsql emacsql-sqlite
                   dash-functional org-pomodoro hydra org-ref org-noter pdf-tools typescript-mode scala-mode emms calfw calfw-org))
 

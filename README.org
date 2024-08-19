@@ -309,6 +309,8 @@ Enable in-lined images in EIN
 (add-hook 'go-mode-hook #'yas-minor-mode)
 #+end_src
 
+#+RESULTS:
+
 ** EMMS
 
    EMMS is only defined for laptop
@@ -349,14 +351,16 @@ Fix the mode-line to just the Track name
 
 ** TRAMP
 #+begin_src emacs-lisp
-(defun add-ssh-agent-to-tramp ()
-  (cl-pushnew '("-A")
-              (cadr (assoc 'tramp-login-args
-                           ; if on Windows using Putty with Pageant,
-                           ; replace "ssh" with "plink"
-                           (assoc "ssh" tramp-methods)))
-              :test #'equal))
-(add-ssh-agent-to-tramp)
+  ;; (defun add-ssh-agent-to-tramp ()
+  ;;   (cl-pushnew '("-A")
+  ;;               (cadr (assoc 'tramp-login-args
+  ;;                            ; if on Windows using Putty with Pageant,
+  ;;                            ; replace "ssh" with "plink"
+  ;;                            (assoc "ssh" tramp-methods)))
+  ;;               :test #'equal))
+  ;; (add-ssh-agent-to-tramp)
+(require 'tramp)
+(setq tramp-default-method "ssh")
 #+end_src
 
 ** eShell
@@ -584,41 +588,10 @@ Following the configuration code in [[https://sideshowcoder.com/2021/12/30/new-s
 * Global Modes
 ** Global
 
-Evil mode setup
-
-#+begin_src example
-  (use-package evil
-    :demand t
-    :bind (("<escape>" . keyboard-escape-quit))
-    :init
-    ;; allows for using cgn
-    ;; (setq evil-search-module 'evil-search)
-    (setq evil-disable-insert-state-bindings t)
-
-    ;; no vim insert bindings
-    :config
-    (evil-mode 0)
-    (evil-ex-define-cmd "q" 'kill-this-buffer)
-    ;; Need to type out :quit to close emacs
-    (evil-ex-define-cmd "quit" 'evil-quit)
-    (setq evil-default-state 'normal)
-    (setq 
-      evil-normal-state-tag (propertize " Normal " 'face '((:background "#77DD76" :foreground "black")))
-      evil-emacs-state-tag (propertize " Emacs " 'face '((:background "#78A2CC" :foreground "black")))
-      evil-insert-state-tag (propertize " Insert " 'face '((:background "#FF6962" :foreground "white")))
-      evil-visual-state-tag (propertize " Visual " 'face '((:background "#F7DA63" :foreground "black")))
-      evil-emacs-state-cursor '("white" box)
-      evil-normal-state-cursor '("green" box)
-      evil-visual-state-cursor '("cyan" box)
-      evil-insert-state-cursor '("cyan" bar)
-      evil-replace-state-cursor '("red" bar)
-      evil-operator-state-cursor '("red" hollow))
-    )
-#+end_src
-
 #+begin_src emacs-lisp
   (auto-save-visited-mode t)
   (global-visual-line-mode t)
+  (column-number-mode t)
 
   (helm-mode 1)
   (pyvenv-mode 1)
@@ -643,6 +616,34 @@ Evil mode setup
   (org-notify-start)
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/.undo-tree/")))
 #+end_src
+
+God mode
+
+#+begin_src emacs-lisp
+  (god-mode)
+  (global-set-key (kbd "<escape>") #'god-mode) 
+  ;; Update cursor
+  (defun my-god-mode-update-cursor ()
+    (setq cursor-type (if (or god-local-mode buffer-read-only)
+                        'bar
+                        'box)))
+  (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
+  (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
+
+
+  ;; Update mode-line
+  (defun my-god-mode-enabled-modeline () 
+      (set-face-background 'mode-line "#5555ff")
+  )
+  (defun my-god-mode-disabled-modeline () 
+      (set-face-background 'mode-line "#0a2832")
+  )
+  (add-hook 'god-mode-enabled-hook #'my-god-mode-enabled-modeline)
+  (add-hook 'god-mode-disabled-hook #'my-god-mode-disabled-modeline)
+
+#+end_src
+
+#+RESULTS:
 
 Disable line numbers in some buffers
 #+begin_src emacs-lisp :results output
@@ -1617,7 +1618,7 @@ Org-ref Files
 Org-ref header format to support PDF interleaving
 
 #+begin_src emacs-lisp
-  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} :: ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n\n\n* Notes \n :PROPERTIES: \n :INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n :END:\n")
+  (setq bibtex-completion-notes-template-multiple-files "#+TITLE: ${title} - ${author-or-editor} (${year})\n#+ROAM_KEY: cite:${=key=}\n\n\n* Notes \n :PROPERTIES: \n :INTERLEAVE_PDF: ../bibtex-pdfs/${=key=}.pdf\n :END:\n")
 #+end_src
 
 Add compatibility between interleave and org-noter
@@ -1878,7 +1879,7 @@ Have a separate Notes folder for captures. Helps in keeping the thoughts clean
 #+end_src
 
 #+RESULTS:
-: my/auto-insert-backlinks
+: my/auto-insert-labeled-backlinks
 
 Roam Server
 #+begin_src emacs-lisp
@@ -2961,4 +2962,4 @@ Create a new Notebook
 Execute all cells
 #+begin_src emacs-lisp
 (define-key ein:notebook-mode-map (kbd "C-c C-e") 'ein:worksheet-execute-all-cell)
-#+end_src
+#+end_SEC
