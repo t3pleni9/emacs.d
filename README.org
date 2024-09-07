@@ -74,6 +74,7 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
     (require 'org-ref-arxiv)
     (require 'scala-mode)
     (require 'typescript-mode)
+    (require 'god-mode) 
   #+end_src
 
 * Require: Laptop
@@ -202,8 +203,7 @@ Dired stuffs
 
  Zone out 
  #+begin_src emacs-lisp
-   (when (system-is-workstation)
-     (zone-when-idle 600))
+ (zone-when-idle 600)
  #+end_src
 
 Unicode character support
@@ -620,7 +620,7 @@ Following the configuration code in [[https://sideshowcoder.com/2021/12/30/new-s
 God mode
 
 #+begin_src emacs-lisp
-  (god-mode)
+
   (global-set-key (kbd "<escape>") #'god-mode) 
   ;; Update cursor
   (defun my-god-mode-update-cursor ()
@@ -2694,8 +2694,21 @@ Move line up and down
 *** Shell
 Have a Doom styled console launch binding
 #+begin_src emacs-lisp
-  ;; (global-set-key (kbd "s-`") 'vterm)
-  (global-set-key (kbd "s-`") (lambda () (interactive) (eshell 'N)))
+  (global-set-key (kbd "s-`") 'vterm)
+  (global-set-key (kbd "s-1") (lambda () (interactive) (eshell 'N)))
+#+end_src
+
+=term= font and styling
+#+begin_src emacs-lisp
+
+(defun my/term-face () 
+(interactive)
+(setq buffer-face-mode-face '(:family "Source Code Pro" :height 115 ))
+   (buffer-face-mode t)
+)
+
+(add-hook 'vterm-mode-hook 'my/term-face)
+(add-hook 'eshell-mode-hook 'my/term-face)
 #+end_src
 
 ** Basic Text editing
@@ -2921,11 +2934,9 @@ Custom open links at point
 #+end_src
 
 ** View Mode
+Disable view-mode using ~e~  (=view-exit=)
 
-*Not required as Evil mode is included!*
-+Disable view-mode using ~e~  (=view-exit=)+
-
-+Remap movement keys to ~b~, ~f~, ~n~ and ~p~+
+Remap movement keys to ~b~, ~f~, ~n~ and ~p~
 #+begin_src emacs-lisp
 (define-key view-mode-map (kbd "b") 'backward-char)
 (define-key view-mode-map (kbd "f") 'forward-char)
@@ -2933,7 +2944,7 @@ Custom open links at point
 (define-key view-mode-map (kbd "p") 'previous-line)
 #+end_src
 
-+Also add basic vim key bindings:  ~h~, ~l~, ~j~ and ~k~+
+Also add basic vim key bindings:  ~h~, ~l~, ~j~ and ~k~
 
 #+begin_src emacs-lisp
 (define-key view-mode-map (kbd "h") 'backward-char)
@@ -2942,13 +2953,13 @@ Custom open links at point
 (define-key view-mode-map (kbd "k") 'previous-line)
 #+end_src
 
-+Remap scroll screen and previous screen to ~v~ and ~V~+
+Remap scroll screen and previous screen to ~v~ and ~V~
 #+begin_src emacs-lisp
 (define-key view-mode-map (kbd "v") 'scroll-up-command)
 (define-key view-mode-map (kbd "V") 'scroll-down-command)
 #+end_src
 
-+Remap recenter-top-bottom ~l~+
+Remap recenter-top-bottom ~l~
 #+begin_src emacs-lisp
  (define-key view-mode-map (kbd "l") 'recenter-top-bottom)
 #+end_src
