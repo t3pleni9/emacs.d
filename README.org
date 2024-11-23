@@ -75,6 +75,8 @@ Along with regular packages, clone the following packages into =<EMACS-config-ro
     (require 'scala-mode)
     (require 'typescript-mode)
     (require 'god-mode) 
+    (require 'indent-bars)
+    (require 'kkp)
   #+end_src
 
 * Require: Laptop
@@ -203,7 +205,7 @@ Dired stuffs
 
  Zone out 
  #+begin_src emacs-lisp
- (zone-when-idle 600)
+ ;(zone-when-idle 600)
  #+end_src
 
 Unicode character support
@@ -279,6 +281,11 @@ Setup python venv with conda
     (setq venv-location "~/anaconda3/envs")
     (setenv "WORKON_HOME" "~/anaconda3/envs"))
 #+end_src
+#+begin_src emacs-lisp
+  (use-package indent-bars
+    :hook ((python-mode yaml-mode) . indent-bars-mode))
+#+end_src  
+
 
 ** Jupyter Notebooks
 Set jupyter executable path and Notebook path
@@ -592,7 +599,9 @@ Following the configuration code in [[https://sideshowcoder.com/2021/12/30/new-s
   (auto-save-visited-mode t)
   (global-visual-line-mode t)
   (column-number-mode t)
+  (global-kkp-mode t)
 
+  (set-cursor-color "#6785c5") 
   (helm-mode 1)
   (pyvenv-mode 1)
   (electric-pair-mode t)
@@ -621,7 +630,7 @@ God mode
 
 #+begin_src emacs-lisp
 
-  (global-set-key (kbd "<escape>") #'god-mode) 
+  ;; (global-set-key (kbd "<escape>") #'god-mode) 
   ;; Update cursor
   (defun my-god-mode-update-cursor ()
     (setq cursor-type (if (or god-local-mode buffer-read-only)
