@@ -2521,16 +2521,20 @@ _i_ reset cache     _K_ kill all        _D_ root            _R_ regexp replace
 ** Org
 *** org-ref
 Org-ref Sugars
+
 #+begin_src emacs-lisp
+  (setq live-references-folder (concat org-roam-directory "/references/live-notes"))
+  (setq tablet-references-folder (concat org-roam-directory "/references/tablet"))
+
   (defhydra hydra-org-ref (:color blue)
     "
     ^
-    ^Org-ref^                 ^Do^                   
-    ^─────^───────────────────^──^───────────────────
-    _l_ Create label          _i_ Insert Reference   
-    _b_ Add doi bibtex        _y_ Bibtex Yank        
+    ^Org-ref^                 ^Do^                  ^Go To^ 
+    ^─────^───────────────────^──^──────────────────^─────^──────────────────
+    _l_ Create label          _i_ Insert Reference  _L_ Live Notes 
+    _b_ Add doi bibtex        _y_ Bibtex Yank       _T_ Tablet Sync 
     _A_ Add arxiv bibtex      _a_ Arxiv Search       
-    _q_ Quit                  ^^                     
+    _q_ Quit                  ^^
     ^^                        ^^                     
     ^^                        ^^                     
     ^^                        ^^                     
@@ -2541,6 +2545,8 @@ Org-ref Sugars
     ("b" doi-add-bibtex-entry)
     ("A" arxiv-add-bibtex-entry)
     ("a" arxiv-lookup)
+    ("L" (dired live-references-folder))
+    ("T" (dired tablet-references-folder))
     ("y" org-bibtex-yank))
 #+end_src
 *** Org-roam
@@ -2574,7 +2580,7 @@ Org-ref Sugars
 #+end_src
 
 #+RESULTS:
-: hydra-org-roam/body
+: hydra-org-ref-more/body
 
 ** Music Player
 Spotify sugars
