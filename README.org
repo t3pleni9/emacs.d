@@ -243,6 +243,15 @@ Easier marking for TMM
 #+end_src
 
 
+** Terminal clipboard
+#+begin_src emacs-lisp
+  (defadvice kill-ring-save (before copy-to-system-in-tty activate) 
+    (pcase system-type  
+      ('gnu/linux
+       (call-process-region (ad-get-arg 0) (ad-get-arg 1) "xsel" nil nil nil "-ib"))  
+      ('darwin
+       (call-process-region (ad-get-arg 0) (ad-get-arg 1) "pbcopy" nil nil nil))  ))
+#+end_src
 
 ** Dashboard
 #+begin_src emacs-lisp
