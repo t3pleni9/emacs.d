@@ -168,6 +168,12 @@ Make life a little bit more easier
 (setq echo-keystrokes 0.1)
 #+end_src
 
+Always split vertically
+#+begin_src emacs-lisp
+(setq split-height-threshold 200)
+(setq split-width-threshold 200)
+#+end_src
+
 Full screen, and server
 #+begin_src emacs-lisp
   (toggle-frame-fullscreen)
@@ -287,9 +293,10 @@ Setup python venv with conda
     (setenv "WORKON_HOME" "~/.miniconda/envs"))
 
   (when (system-is-workstation)
-    (setq venv-location "~/anaconda3/envs")
-    (setenv "WORKON_HOME" "~/anaconda3/envs"))
+    (setq venv-location "~/miniconda3/envs")
+    (setenv "WORKON_HOME" "~/miniconda3/envs"))
 #+end_src
+
 #+begin_src emacs-lisp
   (use-package indent-bars
     :hook ((python-mode yaml-mode) . indent-bars-mode))
