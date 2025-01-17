@@ -31,7 +31,7 @@
 (defvar additionalPackages '())
 
 (defvar basePackages
-  '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme
+  '(expand-region doom-themes ob-prolog dashboard yasnippet-snippets monokai-theme xclip
                   helm-swoop ttl-mode js2-mode image+ org-pdftools hmac org-super-agenda
                   json-navigator yafolding ob-rust darktooth-theme gruvbox-theme
                   web-mode express clojure-mode rust-mode spacemacs-theme
