@@ -8,13 +8,16 @@
 (require 'epa-file)
 
 
-;(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 (setq package-archives
-      '(("melpa" . "https://melpa.org/packages/")
-        ("gnu" . "https://elpa.gnu.org/packages/")
+      '(("gnu" . "https://elpa.gnu.org/packages/")
         ("org" . "http://orgmode.org/elpa/")))
 
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; ﻿(add-to-list 'package-archives
+;;              '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 (when (not package-archive-contents)
@@ -22,7 +25,7 @@
 
 (defun system-is-laptop ()
   "Returns true if its the laptop work machine"
-  (or (string-equal system-name "Justins-MBP") (string-equal system-name "Justins-MacBook-Pro.local")))
+  (or (string-equal system-name "Justins-MBP") (string-equal system-name "Justins-MacBook-Pro.local") (string-equal system-name "pandacat") ))
 
 (defun system-is-workstation ()
   "Returns true if its the laptop work machine"
