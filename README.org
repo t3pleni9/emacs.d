@@ -175,14 +175,8 @@ Always split vertically
 (setq split-width-threshold 200)
 #+end_src
 
-Full screen, and server
-#+begin_src emacs-lisp
-    ;(toggle-frame-fullscreen)
-    ;(unless (daemonp) (server-mode t))
-#+end_src
-
 Font setup for deamon mode
-#+begin_src emacs-lisp-
+#+begin_src emacs-lisp
     (defun my-configure-font (frame)
     "Configure font given initial non-daemon FRAME.
   Intended for `after-make-frame-functions'."
@@ -190,12 +184,8 @@ Font setup for deamon mode
       (set-frame-font "JetBrains Mono 10" nil t)
       (remove-hook 'server-after-make-frame-hook #'my-configure-font))
 
-  (add-hook 'server-after-make-frame-hook #'my-configure-font)
-  ;; (add-hook 'after-make-frame-functions #'my-configure-font)
+  (add-hook 'after-make-frame-functions #'my-configure-font)
 #+end_src
-
-#+RESULTS:
-
 
 Garbage Collection
 #+begin_src emacs-lisp
@@ -606,19 +596,6 @@ Following the configuration code in [[https://sideshowcoder.com/2021/12/30/new-s
 
 #+RESULTS:
 | disable-scala-indent |
-
-** Client Mode
-#+begin_src comment
-    (defun my-configure-font (frame)
-    "Configure font given initial non-daemon FRAME.
-  Intended for `after-make-frame-functions'."
-    (progn
-    (remove-hook 'after-make-frame-functions 'my-configure-font)))
-
-  (add-hook 'after-make-frame-functions 'my-configure-font)
-#+end_src
-
-#+RESULTS:
 
 * Global Modes
 ** Global
